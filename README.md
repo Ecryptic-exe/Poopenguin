@@ -15,6 +15,11 @@
 
 Because every server deserves a little chaos, camaraderie, and a penguin with attitude.
 
+## 📦 Required Packages
+
+- Discord
+- Python 3.9 
+
 ---
 
-Stay tuned for more features coming soon!
+Note from author: I code this just for fun. Stay tuned for more features coming soon!
