@@ -1,0 +1,11 @@
+{
+    "1394697832199487599": {
+        "message_id": null,
+        "channel_id": null,
+        "target": null,
+        "required_votes": 3,
+        "admin_only": false,
+        "duration": 300.0,
+        "voters": []
+    }
+}
