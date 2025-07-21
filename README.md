@@ -22,4 +22,4 @@ Because Chunithm players deserve a little chaos, camaraderie, and a penguin with
 
 ---
 
-Note from author: I code this just for fun. Stay tuned for more features coming soon!
+Note from author: I code this just for fun. Originally used for Chunithm Team Rebellion (aka Byakuya Onlyfans) Discord server. Stay tuned for more features coming soon!
