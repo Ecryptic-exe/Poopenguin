@@ -18,6 +18,22 @@ SETTINGS_FILE = 'vote_settings.json'
 # Store recent messages for repeat detection per channel
 recent_messages = {}  # Dictionary with channel_id as key and list of messages as value
 
+# Copypasta to send when "兒歌" is detected
+COPYPASTA1 = """
+喂！你話邊個CHUNITHM譜面係「兒歌」？
+
+話晒CHUNITHM係音遊界嘅頂級機台，譜面設計精細到爆，點會係你講嗰啲低能兒歌可比！？係咪當你喺幼稚園拎住波波池嘅波玩咁簡單？
+
+定係你連Basic難度都Clear唔到，仲喺度亂吠！屌你老母，係咪以為拎住兩粒Note亂笠就叫玩音遊啊？
+
+仆你個街，CHUNITHM嘅譜面設計係為咗挑戰你嘅反應同節奏感，唔係畀你當卡拉OK機咁hea玩！你呢啲連筷子都拎唔穩嘅扑街，點會明白點樣Full Combo一首14+嘅歌！
+
+講真，你咁樣亂講真係激嬲晒所有CHUNITHM玩家！有無試過喺機台前同班友連打幾粒鐘，汗流浹背仲要同機台嘅鬼畜判定鬥智鬥力？仲要望住個屏幕閃到好似癲病發作咁，條條Note同彩虹咁飛過嚟，你仲話係兒歌？！
+
+有無試過為咗一個SSS Rank打到手指抽筋？仲喺度話「兒歌」，你係咪同CHUNITHM有仇啊？屌你嘅，你有種就去機鋪同我現場表演AJ一次「L9」嘅Ultima譜面！唔係就唔好喺度扮音遊達人，仲要亂講咁低能嘅評論！
+
+我同你講，每一首歌、每一個譜面都係設計師同玩家嘅心血結晶！下次再喺度亂講「兒歌」，小心我叫Sum哥喺機鋪度同你單挑，用「祈 -我ら神祖と共に歩む者なり-」嘅Master譜面教你點樣做人！仆街，識講就講啲有建設性嘅嘢，唔係就收皮啦！
+"""
 
 # Load vote settings
 def load_settings():
@@ -73,8 +89,17 @@ async def on_message(message):
     # Process commands
     await bot.process_commands(message)
 
-    # Check for repeated messages in the specific channel
+    # Check for "兒歌" in the message
     current_message = message.content.strip()
+    if "兒歌" in current_message:
+        print(f"Detected '兒歌' in message: '{current_message}' from {message.author} in channel {message.channel.id}")
+        try:
+            await message.channel.send(COPYPASTA1)
+            print(f"Bot sent copypasta in channel {message.channel.id}")
+        except discord.errors.Forbidden:
+            print(f"Failed to send copypasta in channel {message.channel.id}: Missing permissions")
+
+    # Check for repeated messages in the specific channel
     channel_id = message.channel.id
     if current_message:  # Only process non-empty messages
         print(f"Processing message in channel {channel_id}: '{current_message}' from {message.author}")  # Debug log
@@ -178,7 +203,9 @@ async def setvote(ctx, arg: str):
             num_votes = int(arg)
             if num_votes < 1:
                 await ctx.send("Number of votes must be at least 1.")
-                return
+
+
+            return
             settings['required_votes'] = num_votes
             settings['admin_only'] = False
             save_settings(settings)
