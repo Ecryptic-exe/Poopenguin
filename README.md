@@ -11,9 +11,9 @@
   When three different users send the **exact same message** consecutively, Poopenguin joins the bandwagon and echoes the phrase too.  
 
 
-## 🤖 Why Poopenguin?
+## 🤖 Why Naming it Poopenguin?
 
-Because every server deserves a little chaos, camaraderie, and a penguin with attitude.
+Because Chunithm players deserve a little chaos, camaraderie, and a penguin with attitude.
 
 ## 📦 Required Packages
 
