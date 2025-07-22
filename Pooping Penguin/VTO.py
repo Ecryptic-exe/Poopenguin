@@ -75,7 +75,7 @@ async def on_message(message):
 
     # Check for specific keywords in the message
     current_message = message.content.strip().lower()
-    if any(keyword in current_message for keyword in ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼", "眼老", "nemumi", "umi", "oceanic", "cinaeco", "海洋", "xevel", "wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet", "tiola", "1007456", "7456", "厠所", "who finger", "誰手指", "世界衛生組織手指"]):
+    if any(keyword in current_message for keyword in ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼", "眼老", "ねむ", "nemumi", "umi", "oceanic", "ocean", "cinaeco", "海洋", "xevel", "wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指"]):
         print(f"Detected keyword in message: '{current_message}' from {message.author} in channel {message.channel.id}")
         try:
             # Send appropriate copypasta based on detected keyword
