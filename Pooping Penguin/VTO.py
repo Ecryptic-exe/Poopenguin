@@ -19,6 +19,7 @@ SETTINGS_FILE = 'vote_settings.json'
 # Store recent messages for repeat detection per channel
 recent_messages = {}  # Dictionary with channel_id as key and list of messages as value
 
+
 # Load vote settings
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
@@ -75,7 +76,10 @@ async def on_message(message):
 
     # Check for specific keywords in the message
     current_message = message.content.strip().lower()
-    if any(keyword in current_message for keyword in ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼", "眼老", "ねむ", "nemumi", "umi", "oceanic", "ocean", "cinaeco", "海洋", "xevel", "x7124", "wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指"]):
+    if any(keyword in current_message for keyword in
+           ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼", "眼老", "ねむ", "nemumi", "umi", "oceanic", "ocean",
+            "cinaeco", "海洋", "xevel", "x7124", "wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜",
+            "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指"]):
         print(f"Detected keyword in message: '{current_message}' from {message.author} in channel {message.channel.id}")
         try:
             # Send appropriate copypasta based on detected keyword
@@ -83,7 +87,9 @@ async def on_message(message):
                 await message.channel.send(COPYPASTA_BBSONG)
                 print(f"Bot sent COPYPASTA_BBSONG in channel {message.channel.id}")
 
-            elif any(keyword in current_message for keyword in ["wup", "what's ? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet", "tiola", "1007456", "7456", "厠所", "rebellion"]):
+            elif any(keyword in current_message for keyword in
+                     ["wup", "what's ? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet",
+                      "tiola", "1007456", "7456", "厠所", "rebellion"]):
                 await message.channel.send(COPYPASTA_7381)
                 print(f"Bot sent COPYPASTA_7381 in channel {message.channel.id}")
 
@@ -96,7 +102,11 @@ async def on_message(message):
                 print(f"Bot sent COPYPASTA_WHOFINGER in channel {message.channel.id}")
             else:
                 # Randomly select one of the three copypastas
-                selected_copypasta = random.choice([COPYPASTA_XEVEL, COPYPASTA_X7124, COPYPASTA_MARSHMELLOWRABBIT1, COPYPASTA_MARSHMELLOWRABBIT2, COPYPASTA_MARSHMELLOWRABBIT3, COPYPASTA_MARSHMELLOWRABBIT4, COPYPASTA_MARSHMELLOWRABBIT5, COPYPASTA_MARSHMELLOWRABBIT6, COPYPASTA_MARSHMELLOWRABBIT7, COPYPASTA_MARSHMELLOWRABBIT8, COPYPASTA_MARSHMELLOWRABBIT9, COPYPASTA_MARSHMELLOWRABBIT10, COPYPASTA_INSTANTNOODLES])
+                selected_copypasta = random.choice(
+                    [COPYPASTA_XEVEL, COPYPASTA_X7124, COPYPASTA_MARSHMELLOWRABBIT1, COPYPASTA_MARSHMELLOWRABBIT2,
+                     COPYPASTA_MARSHMELLOWRABBIT3, COPYPASTA_MARSHMELLOWRABBIT4, COPYPASTA_MARSHMELLOWRABBIT5,
+                     COPYPASTA_MARSHMELLOWRABBIT6, COPYPASTA_MARSHMELLOWRABBIT7, COPYPASTA_MARSHMELLOWRABBIT8,
+                     COPYPASTA_MARSHMELLOWRABBIT9, COPYPASTA_MARSHMELLOWRABBIT10, COPYPASTA_INSTANTNOODLES])
                 await message.channel.send(selected_copypasta)
                 print(
                     f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta[:30]}...")
