@@ -79,7 +79,7 @@ async def on_message(message):
     if any(keyword in current_message for keyword in
            ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼", "眼老", "ねむ", "nemumi", "umi", "oceanic", "ocean",
             "cinaeco", "海洋", "xevel", "x7124", "wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜",
-            "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指"]):
+            "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指", "0識", "teach", "希望你教"]):
         print(f"Detected keyword in message: '{current_message}' from {message.author} in channel {message.channel.id}")
         try:
             # Send appropriate copypasta based on detected keyword
@@ -100,6 +100,11 @@ async def on_message(message):
             elif any(keyword in current_message for keyword in ["who finger", "誰手指", "世界衛生組織手指"]):
                 await message.channel.send(COPYPASTA_WHOFINGER)
                 print(f"Bot sent COPYPASTA_WHOFINGER in channel {message.channel.id}")
+
+            elif any(keyword in current_message for keyword in ["0識", "teach", "希望你教"]):
+                await message.channel.send(COPYPASTA_0KNOW)
+                print(f"Bot sent COPYPASTA_0KNOW in channel {message.channel.id}")
+
             else:
                 # Randomly select one of the three copypastas
                 selected_copypasta = random.choice(
