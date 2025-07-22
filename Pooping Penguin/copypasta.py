@@ -131,3 +131,7 @@ COPYPASTA_REBELLION = """
 （以下附上榜一的艷照）
 很婆，認同請分享
 """
+
+COPYPASTA_0KNOW = """
+喂，你又喺度扮晒0識？
+"""
