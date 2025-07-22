@@ -89,7 +89,7 @@ async def on_message(message):
 
             elif any(keyword in current_message for keyword in
                      ["wup", "what's ? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet",
-                      "tiola", "1007456", "7456", "厠所", "rebellion"]):
+                      "tiola", "1007456", "7456", "厠所"]):
                 await message.channel.send(COPYPASTA_7381)
                 print(f"Bot sent COPYPASTA_7381 in channel {message.channel.id}")
 
