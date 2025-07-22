@@ -11,7 +11,7 @@
   When three different users send the **exact same message** consecutively, Poopenguin joins the bandwagon and echoes the phrase too.
 
 - **Copypasta Trigger**  
-  When the bot detects the term 兒歌, it responds by sending a predefined copypasta to stir up the chaos even more. The exact message can be customized to fit your server's unique flavor of nonsense.
+  When the bot detects different terms, it responds by sending a predefined copypasta to stir up the chaos even more. The exact message can be customized to fit your server's unique flavor of nonsense.
 
 ## 🤖 Why Naming it Poopenguin?
 
