@@ -13,6 +13,15 @@
 - **Copypasta Trigger**  
   When the bot detects different terms, it responds by sending a predefined copypasta to stir up the chaos even more. The exact message can be customized to fit your server's unique flavor of nonsense.
 
+- **Question Response**  
+  Get a response based on a random success rate.
+
+- **Random Choice**  
+  Randomly select one option from a list of choices.
+
+- **Random Number Generation**  
+  Generate a random number within a specified range.
+  
 ## 🤖 Why Naming it Poopenguin?
 
 Because Chunithm players deserve a little chaos, camaraderie, and a penguin with attitude.
@@ -20,7 +29,8 @@ Because Chunithm players deserve a little chaos, camaraderie, and a penguin with
 ## 📦 Required Packages
 
 - Discord
-- Python 3.9 
+- Python 3.9
+- pypresence
 
 ---
 
