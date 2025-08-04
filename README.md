@@ -21,6 +21,9 @@
 
 - **Random Number Generation**  
   Generate a random number within a specified range.
+
+- **Random Colour Generator**  
+  Generate a random colour.
   
 ## 🤖 Why Naming it Poopenguin?
 
