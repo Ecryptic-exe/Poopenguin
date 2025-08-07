@@ -6,7 +6,6 @@ import re
 import asyncio
 from datetime import timedelta
 import random
-from pypresence import AioPresence  # Use AioPresence for async compatibility
 from copypasta import *
 
 intents = discord.Intents.default()
@@ -23,10 +22,14 @@ SETTINGS_FILE = 'vote_settings.json'
 # Store recent messages for repeat detection per channel
 recent_messages = {}  # Dictionary with channel_id as key and list of messages as value
 
-# Discord Rich Presence client
-RPC = None
-CLIENT_ID = '1394318386875596872'  # Replace with your actual Discord Application Client ID
-
+# Status messages to rotate
+STATUS_MESSAGES = [
+    "Type !help or ping me for full command manual",
+    "Listening to Frums - Parvorbital",
+    "Listening to Ice - Floor Of Lava",
+    "ね、簡単でしょ？",
+    "Contact natherox on Discord for support"
+]
 
 # Load settings (vote and language)
 def load_settings():
@@ -35,12 +38,10 @@ def load_settings():
             return json.load(f)
     return {'required_votes': 3, 'admin_only': False, 'language': {}}
 
-
 # Save settings
 def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(settings, f, indent=4)
-
 
 # Parse time string (e.g., '1d', '2h', '30m', '10s', 'random')
 def parse_time(time_str):
@@ -68,30 +69,12 @@ def parse_time(time_str):
         return timedelta(seconds=value)
     return None
 
-
-# Initialize Discord Rich Presence (asynchronous)
-async def update_presence():
-    global RPC
-    try:
-        RPC = AioPresence(client_id=CLIENT_ID, loop=bot.loop)  # Use bot's event loop
-        await RPC.connect()
-        await RPC.update(
-            state="Pooping penguin shit",
-            details="ね、簡単でしょ？",
-            start=1507665886,
-            end=1507665886,
-            large_image="mithra_original",  # Updated to match C code
-            large_text="Mithra OnlyFans",  # Updated to match C code
-            small_image="mithra_original",  # Reused from previous version
-            small_text="Mithra OnlyFans",
-            party_id="ae488379-351d-4a4f-ad32-2b9b01c91657",
-            party_size=[1, 69],
-            join="MTI4NzM0OjFpMmhuZToxMjMxMjM="
-        )
-        print("Discord Rich Presence updated successfully")
-    except Exception as e:
-        print(f"Failed to update Discord Rich Presence: {e}")
-
+# Function to rotate status messages
+async def rotate_status():
+    while True:
+        for status in STATUS_MESSAGES:
+            await bot.change_presence(activity=discord.Game(name=status))
+            await asyncio.sleep(10)  # Wait 10 seconds before changing to next status
 
 # Help menu with buttons
 class HelpMenu(discord.ui.View):
@@ -162,12 +145,11 @@ class HelpMenu(discord.ui.View):
             content="Help menu closed." if self.language == 'english' else "幫助選單已關閉。", embed=None, view=None)
         self.stop()
 
-
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user}')
-    await update_presence()  # Initialize Discord Rich Presence on bot startup
-
+    # Start the status rotation
+    bot.loop.create_task(rotate_status())
 
 @bot.event
 async def on_message(message):
@@ -293,7 +275,6 @@ async def on_message(message):
                     recent_messages[channel_id] = []
                 except discord.errors.Forbidden:
                     print(f"Failed to send message in channel {channel_id}: Missing permissions")
-
 
 @bot.command()
 async def help(ctx, *, command: str = None):
@@ -535,7 +516,6 @@ async def help(ctx, *, command: str = None):
             )
             await ctx.send(embed=embed)
 
-
 @bot.command()
 async def vto(ctx, member: discord.Member, time_str: str = None):
     settings = load_settings()
@@ -607,7 +587,6 @@ async def vto(ctx, member: discord.Member, time_str: str = None):
             with open('votes.json', 'w') as f:
                 json.dump(votes, f, indent=4)
 
-
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def setvote(ctx, arg: str):
@@ -643,7 +622,6 @@ async def setvote(ctx, arg: str):
                 "無效輸入。請使用數字（例如，`5`）或 `admin` 進行僅限管理員投票。"
             )
 
-
 @bot.command()
 async def lang(ctx):
     """Toggles the language of the bot's help panel between English and Chinese."""
@@ -655,7 +633,6 @@ async def lang(ctx):
     settings['language'][guild_id] = new_language
     save_settings(settings)
     await ctx.send(f"Language set to {new_language.capitalize()}." if new_language == 'english' else f"語言設置為中文。")
-
 
 @bot.command()
 async def ask(ctx, *, question: str):
@@ -688,7 +665,6 @@ async def ask(ctx, *, question: str):
 
     await ctx.send(response)
 
-
 @bot.command()
 async def pick(ctx, *choices):
     """Randomly selects one option from the provided choices."""
@@ -708,9 +684,8 @@ async def pick(ctx, *choices):
         f"我選擇了：{choice}"
     )
 
-
 @bot.command()
-async def rng(ctx, min_val: str = '1', max_val: str = '100', type: str = 'int'):
+async def rng(ctx, min_val: str = '1', max_val: str = '100 likeness', type: str = 'int'):
     """Generates a random number between min and max (default is integer)."""
     settings = load_settings()
     language = settings.get('language', {}).get(str(ctx.guild.id), 'english')
@@ -753,7 +728,6 @@ async def rng(ctx, min_val: str = '1', max_val: str = '100', type: str = 'int'):
         f"隨機數：{result}"
     )
 
-
 @bot.command()
 async def rcg(ctx):
     """Generates a random color in hexadecimal format with a preview."""
@@ -781,7 +755,6 @@ async def rcg(ctx):
     )
 
     await ctx.send(embed=embed)
-
 
 @bot.event
 async def on_reaction_add(reaction, user):
@@ -841,6 +814,5 @@ async def on_reaction_add(reaction, user):
         # Save updated vote data
         with open('votes.json', 'w') as f:
             json.dump(votes, f, indent=4)
-
 
 bot.run('API')
