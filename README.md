@@ -33,7 +33,6 @@ Because Chunithm players deserve a little chaos, camaraderie, and a penguin with
 
 - Discord
 - Python 3.9
-- pypresence
 
 ---
 
