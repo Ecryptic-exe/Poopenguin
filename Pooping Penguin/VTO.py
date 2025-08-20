@@ -16,7 +16,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 # Remove default help command
 bot.remove_command('help')
 
-# File to store vote and language settings
+# File to store vote, language, and auto-reaction settings
 SETTINGS_FILE = 'vote_settings.json'
 
 # Store recent messages for repeat detection per channel
@@ -31,12 +31,12 @@ STATUS_MESSAGES = [
     "Contact natherox on Discord for support"
 ]
 
-# Load settings (vote and language)
+# Load settings (vote, language, and auto-reaction)
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, 'r') as f:
             return json.load(f)
-    return {'required_votes': 3, 'admin_only': False, 'language': {}}
+    return {'required_votes': 3, 'admin_only': False, 'language': {}, 'autoreact': {}}
 
 # Save settings
 def save_settings(settings):
@@ -156,6 +156,33 @@ async def on_message(message):
     if message.author.bot:  # Ignore bot messages
         return
 
+    # Auto-react to messages in channels with configured emoji
+    settings = load_settings()
+    channel_id = str(message.channel.id)
+    if channel_id in settings.get('autoreact', {}):
+        autoreact_settings = settings['autoreact'][channel_id]
+        # Handle legacy format (string instead of dictionary)
+        if isinstance(autoreact_settings, str):
+            # Convert legacy string to new dictionary format
+            settings['autoreact'][channel_id] = {
+                'emoji': autoreact_settings,
+                'user_id': None
+            }
+            save_settings(settings)  # Save updated settings
+            autoreact_settings = settings['autoreact'][channel_id]  # Refresh variable
+        # Now proceed with auto-reaction logic
+        emoji = autoreact_settings['emoji']
+        user_id = autoreact_settings.get('user_id')
+        # Apply reaction if no specific user is set or if the message author matches the specified user
+        if user_id is None or str(message.author.id) == user_id:
+            try:
+                await message.add_reaction(emoji)
+                print(f"Auto-reacted with {emoji} to message in channel {channel_id}")
+            except discord.Forbidden:
+                print(f"Failed to auto-react in channel {channel_id}: Missing permissions")
+            except discord.HTTPException:
+                print(f"Failed to auto-react in channel {channel_id}: Invalid emoji")
+
     # Check if the bot is mentioned
     if bot.user.mentioned_in(message) and not message.mention_everyone:
         content = message.content.strip().lower()
@@ -166,7 +193,7 @@ async def on_message(message):
             await bot.get_command('help')(ctx)
         else:
             # Check if the command is valid and show specific command help
-            valid_commands = ['vto', 'setvote', 'lang', 'ask', 'pick', 'rng', 'rcg']
+            valid_commands = ['vto', 'setvote', 'lang', 'ask', 'pick', 'rng', 'rcg', 'setperms', 'autoreact']
             if command in valid_commands:
                 await bot.get_command('help')(ctx, command=command)
             else:
@@ -183,26 +210,19 @@ async def on_message(message):
     # Check for specific keywords in the message
     current_message = message.content.strip().lower()
     if any(keyword in current_message for keyword in
-           ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼老", "ねむ", "nemumi", "umi", "sea", "海", "睡", "sleep",
-            "marshmellow rabbit",
-            "oceanic", "ocean", "angel dust", "cinaeco", "海洋", "xevel", "x7124", "7124", "stalk", "eye", "眼", "👁",
-            "wanderers",
-            "noodles", "即食面", "公仔面", "即食麵", "公仔麵", "煮麵", "煮面", "wup", "what's up? pop!", "1007381", "7381",
-            "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指",
-            "rebellion", "0識",
+           ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼老", "ねむ", "nemumi", "marshmellow rabbit",
+            "oceanic", "angel dust", "cinaeco", "海洋", "xevel", "7124", "aca", "caca", "卡卡", "貓男",
+            "wanderers", "wup", "what's up? pop!", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop",
+            "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指", "rebellion", "0識",
             "希望你教", "希望教", "我我我", "me me me", "mememe", "私私私", "吾吾吾", "火龍果", "火龍威果", "pitaya", "dragon fruit",
             "giselle", "吉賽兒", "鷄飼料", "雞飼料", "son of sun", "sos", "太陽", "太陽之子", "太陽兒子", "日兒子",
-            "blythe", "pasta", "pizza", "意粉", "披薩", "🍕", "spaghetti", "🍝"]):
+            "loong9", "西龍九", "西鳳九", "西凰九", "西九小凰帝", "西九鳳凰小皇帝", "suika", "西瓜", "harry", "哈利陳", "狼鬼", "ウルガレオン"]):
         print(f"Detected keyword in message: '{current_message}' from {message.author} in channel {message.channel.id}")
         try:
             # Send appropriate copypasta based on detected keyword
             if "兒歌" in current_message:
                 await message.channel.send(COPYPASTA_BBSONG)
                 print(f"Bot sent COPYPASTA_BBSONG in channel {message.channel.id}")
-            elif any(keyword in current_message for keyword in
-                     ["blythe", "pasta", "pizza", "意粉", "披薩", "🍕", "spaghetti", "🍝"]):
-                await message.channel.send("I love you, you love me forever")
-                print(f"Bot sent I love you, you love me forever in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in
                      ["我我我", "me me me", "mememe", "私私私", "吾吾吾"]):
                 await message.channel.send(COPYPASTA_MEMEME)
@@ -229,8 +249,26 @@ async def on_message(message):
             elif any(keyword in current_message for keyword in ["0識", "希望你教", "希望教"]):
                 await message.channel.send(COPYPASTA_0KNOW)
                 print(f"Bot sent COPYPASTA_0KNOW in channel {message.channel.id}")
+            elif any(keyword in current_message for keyword in
+                     ["loong9", "西龍九", "西鳳九", "西凰九", "西九小凰帝", "西九鳳凰小皇帝"]):
+                # Randomly select one of the copypastas
+                selected_copypasta1 = random.choice(
+                    [COPYPASTA_LOONG91, COPYPASTA_LOONG92, COPYPASTA_LOONG93, COPYPASTA_LOONG94, COPYPASTA_LOONG95,
+                     COPYPASTA_LOONG96, COPYPASTA_LOONG97, COPYPASTA_LOONG98, COPYPASTA_LOONG99, COPYPASTA_LOONG910,
+                     COPYPASTA_LOONG911, COPYPASTA_LOONG912, COPYPASTA_LOONG913])
+                await message.channel.send(selected_copypasta1)
+                print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta1[:30]}...")
+            elif any(keyword in current_message for keyword in ["harry", "哈利陳", "狼鬼", "ウルガレオン"]):
+                # Randomly select one of the copypastas
+                selected_copypasta2 = random.choice(
+                    [COPYPASTA_HARRYCH1, COPYPASTA_HARRYCH2, COPYPASTA_LOONG99, COPYPASTA_HARRYCH3, COPYPASTA_HARRYCH4])
+                await message.channel.send(selected_copypasta2)
+                print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta2[:30]}...")
+            elif any(keyword in current_message for keyword in ["suika", "西瓜"]):
+                await message.channel.send(COPYPASTA_SUIKA)
+                print(f"Bot sent COPYPASTA_SUIKA in channel {message.channel.id}")
             else:
-                # Randomly select one of the three copypastas
+                # Randomly select one of the copypastas
                 selected_copypasta = random.choice(
                     [COPYPASTA_XEVEL, COPYPASTA_X7124P1, COPYPASTA_X7124P2, COPYPASTA_X7124P3, COPYPASTA_X7124P4,
                      COPYPASTA_MARSHMELLOWRABBIT1, COPYPASTA_MARSHMELLOWRABBIT2,
@@ -412,6 +450,38 @@ async def help(ctx, *, command: str = None):
                 'english': "- Returns a random color in hexadecimal format (e.g., #FF5733) with a preview in an embed.\n- The color is generated by randomly selecting values for red, green, and blue channels.",
                 'chinese': "- 返回一個隨機的十六進制格式顏色（例如，#FF5733）並在嵌入中顯示預覽。\n- 顏色通過隨機選擇紅、綠、藍通道的值生成。"
             }
+        },
+        {
+            'name': 'setperms',
+            'description': {
+                'english': "Grants permissions to a specific role in a specific channel (Admin only).",
+                'chinese': "在特定頻道中為特定角色授予權限（僅限管理員）。"
+            },
+            'usage': "`!setperms <channel_id> <role_id>`",
+            'arguments': {
+                'english': "**channel_id**: The ID of the channel to modify permissions for.\n**role_id**: The ID of the role to grant permissions to.\n- Example: `!setperms 1378628443637289030 1353377672633389207`",
+                'chinese': "**頻道 ID**：要修改權限的頻道 ID。\n**角色 ID**：要授予權限的角色 ID。\n- 示例：`!setperms 1378628443637289030 1353377672633389207`"
+            },
+            'notes': {
+                'english': "- Requires administrator permissions.\n- The bot must have `manage_channels` permission.\n- Grants view, send messages, and read message history permissions to the role.\n- Use Discord Developer Mode to get channel and role IDs.",
+                'chinese': "- 需要管理員權限。\n- 機器人必須具有 `manage_channels` 權限。\n- 為角色授予查看、發送消息和閱讀消息歷史記錄的權限。\n- 使用 Discord 開發者模式獲取頻道和角色 ID。"
+            }
+        },
+        {
+            'name': 'autoreact',
+            'description': {
+                'english': "Sets an emoji to auto-react to messages from a specific user or all messages in the channel, or disables auto-reactions.",
+                'chinese': "設置一個表情符號以自動對頻道中特定用戶或所有消息進行反應，或禁用自動反應。"
+            },
+            'usage': "`!autoreact [emoji] [user]`",
+            'arguments': {
+                'english': "**emoji**: (Optional) The emoji to auto-react with. If omitted, disables auto-reactions in the channel.\n**user**: (Optional) The user whose messages to auto-react to (must be mentioned, e.g., `@User`). If omitted, reacts to all messages.\n- Example: `!autoreact 😊 @User`, `!autoreact 😊`, `!autoreact` (disables auto-reactions)",
+                'chinese': "**表情符號**：（可選）用於自動反應的表情符號。如果省略，則禁用頻道中的自動反應。\n**用戶**：（可選）要自動反應的用戶消息（必須提及，例如，`@User`）。如果省略，則對所有消息進行反應。\n- 示例：`!autoreact 😊 @User`、`!autoreact 😊`、`!autoreact`（禁用自動反應）"
+            },
+            'notes': {
+                'english': "- No special permissions required for users.\n- The bot must have `add_reactions` permission.\n- Settings are saved persistently in `vote_settings.json`.\n- Only one emoji can be set per channel, and it applies to either a specific user or all messages.",
+                'chinese': "- 用戶無需特殊權限。\n- 機器人必須具有 `add_reactions` 權限。\n- 設置將持久保存到 `vote_settings.json`。\n- 每個頻道只能設置一個表情符號，且適用於特定用戶或所有消息。"
+            }
         }
     ]
 
@@ -440,11 +510,13 @@ async def help(ctx, *, command: str = None):
                 "**Repeat Message Detection**: If three different users send the same message consecutively in a channel, "
                 "the bot will echo that message.\n"
                 "**Timeout Voting System**: Users can vote to timeout a member using the `!vto` command. Voting can be configured "
-                "to require a specific number of votes or be restricted to admins only.\n"
+                "to require a specific number of votes or be admin-only.\n"
                 "**Question Response**: Use `!ask` to get a response based on a random success rate.\n"
                 "**Random Choice**: Use `!pick` to randomly select one option from a list of choices.\n"
                 "**Random Number Generation**: Use `!rng` to generate a random number within a specified range.\n"
-                "**Random Color Generation**: Use `!rcg` to generate a random color in hexadecimal format with a preview."
+                "**Random Color Generation**: Use `!rcg` to generate a random color in hexadecimal format with a preview.\n"
+                "**Channel Permissions**: Use `!setperms` to grant permissions to a role in a specific channel (Admin only).\n"
+                "**Auto-Reactions**: Use `!autoreact` to set an emoji to auto-react to messages from a specific user or all messages in a channel, or disable it."
                 if language == 'english' else
                 "**關鍵詞回應**：當消息中檢測到特定關鍵詞時，機器人會回應用特定的迷因文本。\n"
                 "**重複消息檢測**：如果三個不同用戶在同一頻道連續發送相同消息，機器人會重複該消息。\n"
@@ -452,7 +524,9 @@ async def help(ctx, *, command: str = None):
                 "**問題回應**：使用 `!ask` 根據隨機成功率獲得回應。\n"
                 "**隨機選擇**：使用 `!pick` 從選項列表中隨機選擇一個。\n"
                 "**隨機數生成**：使用 `!rng` 在指定範圍內生成隨機數。\n"
-                "**隨機顏色生成**：使用 `!rcg` 生成一個隨機的十六進制格式顏色並附帶預覽。"
+                "**隨機顏色生成**：使用 `!rcg` 生成一個隨機的十六進制格式顏色並附帶預覽。\n"
+                "**頻道權限**：使用 `!setperms` 在特定頻道中為角色授予權限（僅限管理員）。\n"
+                "**自動反應**：使用 `!autoreact` 設置表情符號以自動對頻道中特定用戶或所有消息進行反應，或禁用。"
             ),
             inline=False
         )
@@ -685,7 +759,7 @@ async def pick(ctx, *choices):
     )
 
 @bot.command()
-async def rng(ctx, min_val: str = '1', max_val: str = '100 likeness', type: str = 'int'):
+async def rng(ctx, min_val: str = '1', max_val: str = '100', type: str = 'int'):
     """Generates a random number between min and max (default is integer)."""
     settings = load_settings()
     language = settings.get('language', {}).get(str(ctx.guild.id), 'english')
@@ -755,6 +829,146 @@ async def rcg(ctx):
     )
 
     await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def setperms(ctx, channel_id: str, role_id: str):
+    """Grants permissions to a specific role in a specific channel (Admin only)."""
+    settings = load_settings()
+    language = settings.get('language', {}).get(str(ctx.guild.id), 'english')
+
+    # Validate that inputs are numeric (IDs)
+    try:
+        channel_id = int(channel_id)
+        role_id = int(role_id)
+    except ValueError:
+        await ctx.send(
+            "Channel ID and Role ID must be valid numbers." if language == 'english' else
+            "頻道 ID 和角色 ID 必須是有效數字。"
+        )
+        return
+
+    # Fetch the channel and role
+    channel = ctx.guild.get_channel_or_thread(channel_id)  # Supports both text channels and threads
+    role = ctx.guild.get_role(role_id)
+
+    # Check if channel and role exist
+    if not channel:
+        await ctx.send(
+            "Channel not found. Please provide a valid channel ID." if language == 'english' else
+            "找不到頻道。請提供有效的頻道 ID。"
+        )
+        return
+    if not role:
+        await ctx.send(
+            "Role not found. Please provide a valid role ID." if language == 'english' else
+            "找不到角色。請提供有效的角色 ID。"
+        )
+        return
+
+    # Check if bot has manage_channels permission
+    if not ctx.guild.me.guild_permissions.manage_channels:
+        await ctx.send(
+            "I don't have permission to manage channels!" if language == 'english' else
+            "我沒有管理頻道的權限！"
+        )
+        return
+
+    try:
+        # Define the permissions to grant
+        permissions = {
+            role: discord.PermissionOverwrite(
+                view_channel=True,
+                send_messages=True,
+                read_message_history=True
+            )
+        }
+
+        # Update the channel's permissions
+        await channel.edit(overwrites={**channel.overwrites, **permissions})
+        await ctx.send(
+            f"Permissions updated: Role {role.mention} can now view and send messages in {channel.mention}." if language == 'english' else
+            f"權限已更新：角色 {role.mention} 現在可以在 {channel.mention} 中查看和發送消息。"
+        )
+    except discord.Forbidden:
+        await ctx.send(
+            "Failed to update permissions. Missing permissions." if language == 'english' else
+            "無法更新權限。缺少權限。"
+        )
+    except Exception as e:
+        await ctx.send(
+            f"An error occurred: {str(e)}" if language == 'english' else
+            f"發生錯誤：{str(e)}"
+        )
+
+@bot.command()
+async def autoreact(ctx, emoji: str = None, user: discord.Member = None):
+    """Sets an emoji to auto-react to messages from a specific user or all messages in the channel, or disables auto-reactions."""
+    settings = load_settings()
+    language = settings.get('language', {}).get(str(ctx.guild.id), 'english')
+    channel_id = str(ctx.channel.id)
+
+    # Check if bot has add_reactions permission
+    if not ctx.guild.me.guild_permissions.add_reactions:
+        await ctx.send(
+            "I don't have permission to add reactions!" if language == 'english' else
+            "我沒有添加反應的權限！"
+        )
+        return
+
+    # Initialize autoreact settings if not present
+    settings['autoreact'] = settings.get('autoreact', {})
+
+    if emoji:
+        # Validate the emoji
+        try:
+            # Attempt to add the emoji as a reaction to verify it's valid
+            temp_message = await ctx.send("Testing emoji...")
+            await temp_message.add_reaction(emoji)
+            await temp_message.delete()
+        except discord.HTTPException:
+            await ctx.send(
+                "Invalid emoji. Please provide a valid emoji." if language == 'english' else
+                "無效的表情符號。請提供有效的表情符號。"
+            )
+            return
+        except discord.Forbidden:
+            await ctx.send(
+                "I don't have permission to add reactions!" if language == 'english' else
+                "我沒有添加反應的權限！"
+            )
+            return
+
+        # Set the emoji and optional user for auto-reactions in this channel
+        settings['autoreact'][channel_id] = {
+            'emoji': emoji,
+            'user_id': str(user.id) if user else None
+        }
+        save_settings(settings)
+        if user:
+            await ctx.send(
+                f"Auto-reactions enabled: Will react with {emoji} to messages from {user.mention} in {ctx.channel.mention}." if language == 'english' else
+                f"自動反應已啟用：將對 {ctx.channel.mention} 中 {user.mention} 的消息使用 {emoji} 進行反應。"
+            )
+        else:
+            await ctx.send(
+                f"Auto-reactions enabled: Will react with {emoji} to all messages in {ctx.channel.mention}." if language == 'english' else
+                f"自動反應已啟用：將對 {ctx.channel.mention} 中的所有消息使用 {emoji} 進行反應。"
+            )
+    else:
+        # Disable auto-reactions for this channel
+        if channel_id in settings['autoreact']:
+            del settings['autoreact'][channel_id]
+            save_settings(settings)
+            await ctx.send(
+                f"Auto-reactions disabled in {ctx.channel.mention}." if language == 'english' else
+                f"已在 {ctx.channel.mention} 中禁用自動反應。"
+            )
+        else:
+            await ctx.send(
+                f"Auto-reactions were not enabled in {ctx.channel.mention}." if language == 'english' else
+                f"{ctx.channel.mention} 中尚未啟用自動反應。"
+            )
 
 @bot.event
 async def on_reaction_add(reaction, user):
