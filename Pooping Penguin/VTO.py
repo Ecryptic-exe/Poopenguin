@@ -18,6 +18,7 @@ bot.remove_command('help')
 
 # File to store vote, language, and auto-reaction settings
 SETTINGS_FILE = 'vote_settings.json'
+VOTES_FILE = 'votes.json'
 
 # Store recent messages for repeat detection per channel
 recent_messages = {}  # Dictionary with channel_id as key and list of messages as value
@@ -42,6 +43,18 @@ def load_settings():
 def save_settings(settings):
     with open(SETTINGS_FILE, 'w') as f:
         json.dump(settings, f, indent=4)
+
+# Load votes
+def load_votes():
+    if os.path.exists(VOTES_FILE):
+        with open(VOTES_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Save votes
+def save_votes(votes):
+    with open(VOTES_FILE, 'w') as f:
+        json.dump(votes, f, indent=4)
 
 # Parse time string (e.g., '1d', '2h', '30m', '10s', 'random')
 def parse_time(time_str):
@@ -255,7 +268,7 @@ async def on_message(message):
                 selected_copypasta1 = random.choice(
                     [COPYPASTA_LOONG91, COPYPASTA_LOONG92, COPYPASTA_LOONG93, COPYPASTA_LOONG94, COPYPASTA_LOONG95,
                      COPYPASTA_LOONG96, COPYPASTA_LOONG97, COPYPASTA_LOONG98, COPYPASTA_LOONG99, COPYPASTA_LOONG910,
-                     COPYPASTA_LOONG911, COPYPASTA_LOONG912, COPYPASTA_LOONG913])
+                     COPYPASTA_LOONG911, COPYPASTA_LOONG912])
                 await message.channel.send(selected_copypasta1)
                 print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta1[:30]}...")
             elif any(keyword in current_message for keyword in ["harry", "哈利陳", "狼鬼", "ウルガレオン"]):
@@ -351,8 +364,8 @@ async def help(ctx, *, command: str = None):
                 'chinese': "**成員**：要暫停的用戶（必須提及，例如，`@User`）。\n**時間**：（可選）暫停的持續時間（例如，`1d`、`2h`、`30m`、`10s` 或 `random`）。如果省略，默認為 5 分鐘。\n- 格式：`1d`（天）、`2h`（小時）、`30m`（分鐘）、`10s`（秒）或 `random`（1 秒到 90 天的隨機時長）。\n- 示例：`!vto @User 30m`、`!vto @User random`。"
             },
             'notes': {
-                'english': "- Users vote by reacting with 🖕 to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.",
-                'chinese': "- 用戶通過對投票消息反應 🖕 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。"
+                'english': "- Users vote by reacting with 🖕 to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.\n- Multiple vote sessions can run concurrently.",
+                'chinese': "- 用戶通過對投票消息反應 🖕 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。\n- 可同時進行多個投票會話。"
             }
         },
         {
@@ -459,8 +472,8 @@ async def help(ctx, *, command: str = None):
             },
             'usage': "`!setperms <channel_id> <role_id>`",
             'arguments': {
-                'english': "**channel_id**: The ID of the channel to modify permissions for.\n**role_id**: The ID of the role to grant permissions to.\n- Example: `!setperms 1378628443637289030 1353377672633389207`",
-                'chinese': "**頻道 ID**：要修改權限的頻道 ID。\n**角色 ID**：要授予權限的角色 ID。\n- 示例：`!setperms 1378628443637289030 1353377672633389207`"
+                'english': "**channel_id**: The ID of the channel to modify permissions for.\n**role_id**: The ID of the role to grant permissions to.",
+                'chinese': "**頻道 ID**：要修改權限的頻道 ID。\n**角色 ID**：要授予權限的角色 ID。"
             },
             'notes': {
                 'english': "- Requires administrator permissions.\n- The bot must have `manage_channels` permission.\n- Grants view, send messages, and read message history permissions to the role.\n- Use Discord Developer Mode to get channel and role IDs.",
@@ -506,27 +519,33 @@ async def help(ctx, *, command: str = None):
         embed.add_field(
             name="🔹 Features" if language == 'english' else "🔹 功能",
             value=(
-                "**Keyword Responses**: The bot responds with specific copypastas when certain keywords are detected in messages.\n"
-                "**Repeat Message Detection**: If three different users send the same message consecutively in a channel, "
-                "the bot will echo that message.\n"
-                "**Timeout Voting System**: Users can vote to timeout a member using the `!vto` command. Voting can be configured "
-                "to require a specific number of votes or be admin-only.\n"
-                "**Question Response**: Use `!ask` to get a response based on a random success rate.\n"
-                "**Random Choice**: Use `!pick` to randomly select one option from a list of choices.\n"
-                "**Random Number Generation**: Use `!rng` to generate a random number within a specified range.\n"
-                "**Random Color Generation**: Use `!rcg` to generate a random color in hexadecimal format with a preview.\n"
-                "**Channel Permissions**: Use `!setperms` to grant permissions to a role in a specific channel (Admin only).\n"
-                "**Auto-Reactions**: Use `!autoreact` to set an emoji to auto-react to messages from a specific user or all messages in a channel, or disable it."
+                "**Keyword Responses**: Sends copypastas for specific keywords in messages.\n"
+                "**Repeat Detection**: Echoes a message if three different users send it consecutively.\n"
+                "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once."
                 if language == 'english' else
-                "**關鍵詞回應**：當消息中檢測到特定關鍵詞時，機器人會回應用特定的迷因文本。\n"
-                "**重複消息檢測**：如果三個不同用戶在同一頻道連續發送相同消息，機器人會重複該消息。\n"
-                "**暫停投票系統**：用戶可以使用 `!vto` 命令投票暫停某成員。投票可配置為需要特定票數或僅限管理員。\n"
-                "**問題回應**：使用 `!ask` 根據隨機成功率獲得回應。\n"
-                "**隨機選擇**：使用 `!pick` 從選項列表中隨機選擇一個。\n"
-                "**隨機數生成**：使用 `!rng` 在指定範圍內生成隨機數。\n"
-                "**隨機顏色生成**：使用 `!rcg` 生成一個隨機的十六進制格式顏色並附帶預覽。\n"
-                "**頻道權限**：使用 `!setperms` 在特定頻道中為角色授予權限（僅限管理員）。\n"
-                "**自動反應**：使用 `!autoreact` 設置表情符號以自動對頻道中特定用戶或所有消息進行反應，或禁用。"
+                "**關鍵詞回應**：對消息中的特定關鍵詞回應迷因文本。\n"
+                "**重複檢測**：若三個不同用戶連續發送相同消息，則重複該消息。\n"
+                "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。"
+            ),
+            inline=False
+        )
+
+        embed.add_field(
+            name=" " if language == 'english' else " ",
+            value=(
+                "**Random Response**: `!ask` gives answers based on a random success rate.\n"
+                "**Random Choice**: `!pick` selects one option from a list.\n"
+                "**Random Number**: `!rng` generates a number in a range.\n"
+                "**Random Color**: `!rcg` creates a hex color with a preview.\n"
+                "**Permissions**: `!setperms` grants channel access (admin only).\n"
+                "**Auto-Reactions**: `!autoreact` sets emoji reactions for messages."
+                if language == 'english' else
+                "**隨機回應**：`!ask` 根據隨機成功率回應。\n"
+                "**隨機選擇**：`!pick` 從選項列表中選一個。\n"
+                "**隨機數**：`!rng` 生成範圍內的數字。\n"
+                "**隨機顏色**：`!rcg` 生成十六進制顏色並預覽。\n"
+                "**權限**：`!setperms` 授予頻道權限（僅限管理員）。\n"
+                "**自動反應**：`!autoreact` 為消息設置表情反應。"
             ),
             inline=False
         )
@@ -595,13 +614,13 @@ async def vto(ctx, member: discord.Member, time_str: str = None):
     settings = load_settings()
     required_votes = settings['required_votes']
     admin_only = settings['admin_only']
+    language = settings.get('language', {}).get(str(ctx.guild.id), 'english')
 
     # Parse the time string
     timeout_duration = parse_time(time_str)
     if not timeout_duration:
         await ctx.send(
-            "Invalid time format. Use format like `1d`, `2h`, `30m`, `10s`, or `random`. Default is 5m if omitted." if settings.get(
-                'language', {}).get(str(ctx.guild.id), 'english') == 'english' else
+            "Invalid time format. Use format like `1d`, `2h`, `30m`, `10s`, or `random`. Default is 5m if omitted." if language == 'english' else
             "無效的時間格式。請使用如 `1d`、`2h`、`30m`、`10s` 或 `random` 的格式。如果省略，默認為 5 分鐘。"
         )
         return
@@ -609,8 +628,7 @@ async def vto(ctx, member: discord.Member, time_str: str = None):
     # Check if bot has permission to timeout
     if not ctx.guild.me.guild_permissions.moderate_members:
         await ctx.send(
-            "I don't have permission to timeout members!" if settings.get('language', {}).get(str(ctx.guild.id),
-                                                                                              'english') == 'english' else
+            "I don't have permission to timeout members!" if language == 'english' else
             "我沒有權限暫停成員！"
         )
         return
@@ -623,7 +641,7 @@ async def vto(ctx, member: discord.Member, time_str: str = None):
         f"Vote to timeout {member.mention} for {'random duration' if is_random else str(timeout_duration)}. "
         f"React with 🖕 to vote 'Yes'. "
         f"{'(Admin votes only)' if admin_only else f'({required_votes} votes needed)'}"
-        if settings.get('language', {}).get(str(ctx.guild.id), 'english') == 'english' else
+        if language == 'english' else
         f"投票暫停 {member.mention} {'隨機時長' if is_random else str(timeout_duration)}。 "
         f"使用 🖕 反應投票 '是'。 "
         f"{'（僅限管理員投票）' if admin_only else f'（需要 {required_votes} 票）'}"
@@ -637,29 +655,32 @@ async def vto(ctx, member: discord.Member, time_str: str = None):
         'required_votes': required_votes,
         'admin_only': admin_only,
         'duration': timeout_duration.total_seconds(),
-        'voters': []
+        'voters': [],
+        'channel_id': ctx.channel.id  # Store channel ID for cleanup messages
     }
 
-    # Save vote data to file
-    with open('votes.json', 'w') as f:
-        json.dump({str(vote_data['message_id']): vote_data}, f, indent=4)
+    # Load existing votes and add new vote
+    votes = load_votes()
+    votes[str(vote_data['message_id'])] = vote_data
+    save_votes(votes)
 
     # Wait for 3 minutes to check if vote threshold is met
     await asyncio.sleep(180)  # 3 minutes
-    with open('votes.json', 'r') as f:
-        votes = json.load(f)
+    votes = load_votes()
     if str(vote_data['message_id']) in votes:
         vote_data = votes[str(vote_data['message_id'])]
         if len(vote_data['voters']) < vote_data['required_votes']:
-            await ctx.send(
-                f"Not enough votes to timeout {member.mention}. Vote session closed." if settings.get('language',
-                                                                                                      {}).get(
-                    str(ctx.guild.id), 'english') == 'english' else
-                f"沒有足夠的票數來暫停 {member.mention}。投票已關閉。"
-            )
+            try:
+                channel = ctx.guild.get_channel(int(vote_data['channel_id']))
+                if channel:
+                    await channel.send(
+                        f"Not enough votes to timeout {member.mention}. Vote session closed." if language == 'english' else
+                        f"沒有足夠的票數來暫停 {member.mention}。投票已關閉。"
+                    )
+            except discord.Forbidden:
+                print(f"Failed to send vote closure message in channel {vote_data['channel_id']}: Missing permissions")
             del votes[str(vote_data['message_id'])]
-            with open('votes.json', 'w') as f:
-                json.dump(votes, f, indent=4)
+            save_votes(votes)
 
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -976,10 +997,9 @@ async def on_reaction_add(reaction, user):
         return
 
     # Load vote data
-    if not os.path.exists('votes.json'):
+    if not os.path.exists(VOTES_FILE):
         return
-    with open('votes.json', 'r') as f:
-        votes = json.load(f)
+    votes = load_votes()
 
     message_id = str(reaction.message.id)
     if message_id not in votes:
@@ -999,34 +1019,32 @@ async def on_reaction_add(reaction, user):
     # Add voter to list if not already voted
     if user.id not in vote_data['voters']:
         vote_data['voters'].append(user.id)
+        votes[message_id] = vote_data  # Update the votes dictionary
+        save_votes(votes)
 
         # Check if vote threshold is reached
         if len(vote_data['voters']) >= vote_data['required_votes']:
             target = reaction.message.guild.get_member(vote_data['target'])
+            language = load_settings().get('language', {}).get(str(reaction.message.guild.id), 'english')
             if target:
                 try:
                     duration = timedelta(seconds=vote_data['duration'])
-                    await target.timeout(duration, reason="Voted out by community")
+                    await target.timeout(duration, reason="Voted to timeout")
                     await reaction.message.channel.send(
-                        f"{target.mention} has been timed out for {duration}." if load_settings().get('language',
-                                                                                                      {}).get(
-                            str(reaction.message.guild.id), 'english') == 'english' else
+                        f"{target.mention} has been timed out for {duration}." if language == 'english' else
                         f"{target.mention} 已被暫停 {duration}。"
                     )
                 except discord.Forbidden:
                     await reaction.message.channel.send(
-                        "Failed to timeout user. Missing permissions." if load_settings().get('language', {}).get(
-                            str(reaction.message.guild.id), 'english') == 'english' else
-                        "無法暫停用戶。缺少權限。"
+                        "I don't have permission to timeout this member!" if language == 'english' else
+                        "我沒有權限暫停此成員！"
                     )
-            # Clean up vote data
+                except Exception as e:
+                    await reaction.message.channel.send(
+                        f"An error occurred: {str(e)}" if language == 'english' else
+                        f"發生錯誤：{str(e)}"
+                    )
             del votes[message_id]
-        else:
-            # Update vote data
-            votes[message_id] = vote_data
-
-        # Save updated vote data
-        with open('votes.json', 'w') as f:
-            json.dump(votes, f, indent=4)
+            save_votes(votes)
 
 bot.run('API')
