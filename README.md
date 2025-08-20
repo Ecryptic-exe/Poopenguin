@@ -24,6 +24,13 @@
 
 - **Random Colour Generator**  
   Generate a random colour.
+
+- **Auto Reaction**  
+  Auto react with an emoji of your choice in a specific channel. You can even decide who to react with only.
+
+[ADMIN ONLY]
+- **Channel Permissions**  
+  Just in case if you accidentally removed your permission to a specific channel, you can do a quick fix.
   
 ## 🤖 Why Naming it Poopenguin?
 
