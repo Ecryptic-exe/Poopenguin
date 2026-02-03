@@ -223,19 +223,30 @@ async def on_message(message):
     # Check for specific keywords in the message
     current_message = message.content.strip().lower()
     if any(keyword in current_message for keyword in
-           ["兒歌", "老師", "teacher", "sensei", "眠", "nemu", "眠夢", "眼老", "ねむ", "nemumi", "marshmellow rabbit",
-            "oceanic", "angel dust", "cinaeco", "海洋", "xevel", "7124", "aca", "caca", "卡卡", "貓男",
-            "wanderers", "wup", "what's up? pop!", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop",
-            "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指", "rebellion", "0識",
+           ["兒歌", "nemu", "眠夢", "眼老", "ねむ", "nemumi", "marshmellow rabbit", "棉花糖兔", "cinaeco", "海洋", "aca", "caca", "卡卡", "貓男",
+            "wup", "what's up? pop!", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "西龍九", "loong9", "kyouran",
+            "toilet", "tiola", "厠所", "who finger", "誰手指", "世界衛生組織手指", "0識",
             "希望你教", "希望教", "我我我", "me me me", "mememe", "私私私", "吾吾吾", "火龍果", "火龍威果", "pitaya", "dragon fruit",
-            "giselle", "吉賽兒", "鷄飼料", "雞飼料", "son of sun", "sos", "太陽", "太陽之子", "太陽兒子", "日兒子",
-            "loong9", "西龍九", "西鳳九", "西凰九", "西九小凰帝", "西九鳳凰小皇帝", "suika", "西瓜", "harry", "哈利陳", "狼鬼", "ウルガレオン"]):
+            "giselle", "吉賽兒", "鷄飼料", "雞飼料", "son of sun", "sos", "太陽", "太陽之子", "太陽兒子", "日兒子", "harry", "哈利陳",
+            "狼鬼", "ウルガレオン", "唉唉唉", "哎哎哎", "嗚嗚嗚", "😭😭😭", "Diu Diu Diu", "DiuDiuDiu", "屌屌屌"]):
         print(f"Detected keyword in message: '{current_message}' from {message.author} in channel {message.channel.id}")
         try:
             # Send appropriate copypasta based on detected keyword
             if "兒歌" in current_message:
                 await message.channel.send(COPYPASTA_BBSONG)
                 print(f"Bot sent COPYPASTA_BBSONG in channel {message.channel.id}")
+            elif any(keyword in current_message for keyword in
+                         ["唉唉唉", "哎哎哎"]):
+                await message.channel.send(COPYPASTA_AIAIAI)
+                print(f"Bot sent COPYPASTA_AIAIAI in channel {message.channel.id}")
+            elif any(keyword in current_message for keyword in
+                     ["嗚嗚嗚", "😭😭😭"]):
+                await message.channel.send(COPYPASTA_CRY)
+                print(f"Bot sent COPYPASTA_CRY in channel {message.channel.id}")
+            elif any(keyword in current_message for keyword in
+                     ["Diu Diu Diu", "DiuDiuDiu", "屌屌屌"]):
+                await message.channel.send(COPYPASTA_DIUDIUDIU)
+                print(f"Bot sent COPYPASTA_DIUDIUDIU in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in
                      ["我我我", "me me me", "mememe", "私私私", "吾吾吾"]):
                 await message.channel.send(COPYPASTA_MEMEME)
@@ -245,41 +256,37 @@ async def on_message(message):
                 await message.channel.send("狗也不屌")
                 print(f"Bot sent 狗也不屌 in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in
-                     ["火龍果", "火龍威果", "pitaya", "dragon fruit"]):
+                     ["火龍果", "火龍威果", "pitaya", "dragon fruit", "果龍火"]):
                 await message.channel.send(COPYPASTA_4PITAYA)
                 print(f"Bot sent COPYPASTA_4PITAYA in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in
-                     ["wup", "what's up? pop!", "1007381", "7381", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet",
-                      "tiola", "1007456", "7456", "厠所"]):
+                     ["wup", "what's up? pop!", "我操破譜", "臥槽破譜", "woc破譜", "whats up pop", "toilet",
+                      "tiola", "厠所"]):
                 await message.channel.send(COPYPASTA_7381)
                 print(f"Bot sent COPYPASTA_7381 in channel {message.channel.id}")
-            elif any(keyword in current_message for keyword in ["rebellion"]):
-                await message.channel.send(COPYPASTA_REBELLION)
-                print(f"Bot sent COPYPASTA_REBELLION in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in ["who finger", "誰手指", "世界衛生組織手指"]):
                 await message.channel.send(COPYPASTA_WHOFINGER)
                 print(f"Bot sent COPYPASTA_WHOFINGER in channel {message.channel.id}")
             elif any(keyword in current_message for keyword in ["0識", "希望你教", "希望教"]):
                 await message.channel.send(COPYPASTA_0KNOW)
                 print(f"Bot sent COPYPASTA_0KNOW in channel {message.channel.id}")
-            elif any(keyword in current_message for keyword in
-                     ["loong9", "西龍九", "西鳳九", "西凰九", "西九小凰帝", "西九鳳凰小皇帝"]):
-                # Randomly select one of the copypastas
-                selected_copypasta1 = random.choice(
-                    [COPYPASTA_LOONG91, COPYPASTA_LOONG92, COPYPASTA_LOONG93, COPYPASTA_LOONG94, COPYPASTA_LOONG95,
-                     COPYPASTA_LOONG96, COPYPASTA_LOONG97, COPYPASTA_LOONG98, COPYPASTA_LOONG99, COPYPASTA_LOONG910,
-                     COPYPASTA_LOONG911, COPYPASTA_LOONG912])
-                await message.channel.send(selected_copypasta1)
-                print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta1[:30]}...")
             elif any(keyword in current_message for keyword in ["harry", "哈利陳", "狼鬼", "ウルガレオン"]):
                 # Randomly select one of the copypastas
                 selected_copypasta2 = random.choice(
-                    [COPYPASTA_HARRYCH1, COPYPASTA_HARRYCH2, COPYPASTA_LOONG99, COPYPASTA_HARRYCH3, COPYPASTA_HARRYCH4])
+                    [COPYPASTA_HARRYCH1, COPYPASTA_HARRYCH2, COPYPASTA_HARRYCH3, COPYPASTA_HARRYCH4])
                 await message.channel.send(selected_copypasta2)
                 print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta2[:30]}...")
-            elif any(keyword in current_message for keyword in ["suika", "西瓜"]):
-                await message.channel.send(COPYPASTA_SUIKA)
-                print(f"Bot sent COPYPASTA_SUIKA in channel {message.channel.id}")
+            elif any(keyword in current_message for keyword in ["loong9", "西龍九", "kyouran"]):
+                # Randomly select one of the copypastas
+                selected_copypasta3 = random.choice(
+                    [COPYPASTA_LOONG91, COPYPASTA_LOONG92, COPYPASTA_LOONG93, COPYPASTA_LOONG94, COPYPASTA_LOONG95,
+                     COPYPASTA_LOONG96, COPYPASTA_LOONG97])
+                await message.channel.send(selected_copypasta3)
+                print(f"Bot sent randomly selected copypasta in channel {message.channel.id}: {selected_copypasta3[:30]}...")
+            elif any(keyword in current_message for keyword in
+                     ["沒錢", "窮", "冇錢", "無錢", "no money", "身無分文"]):
+                await message.channel.send("團長出資")
+                print(f"Bot sent 團長出資 in channel {message.channel.id}")
             else:
                 # Randomly select one of the copypastas
                 selected_copypasta = random.choice(
