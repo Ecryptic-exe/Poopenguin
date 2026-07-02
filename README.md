@@ -31,6 +31,7 @@
 [ADMIN ONLY]
 - **Channel Permissions**  
   Just in case if you accidentally removed your permission to a specific channel, you can do a quick fix.
+- **Add/Remove Keyword Sets and Trigger Words**  
   
 ## 🤖 Why Naming it Poopenguin?
 
@@ -43,4 +44,4 @@ Because Chunithm players deserve a little chaos, camaraderie, and a penguin with
 
 ---
 
-Note from author: I code this just for fun. Originally used for Chunithm Team Rebellion (aka Byakuya Onlyfans) Discord server. Stay tuned for more features coming soon!
+Note from author: Code for Fun.
