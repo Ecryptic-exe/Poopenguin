@@ -1,0 +1,20 @@
+{
+  "1522248979448856649": {
+    "message_id": 1522248979448856649,
+    "target": 711977156728717372,
+    "required_votes": 3,
+    "admin_only": false,
+    "duration": 300.0,
+    "voters": [],
+    "channel_id": 709266126277967944
+  },
+  "1522248979549655041": {
+    "message_id": 1522248979549655041,
+    "target": 711977156728717372,
+    "required_votes": 3,
+    "admin_only": false,
+    "duration": 300.0,
+    "voters": [],
+    "channel_id": 709266126277967944
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "sets": {
+    "example": {
+      "keywords": [
+        "example"
+      ],
+      "responses": [
+        "example"
+      ],
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Copy this file to key.py (which is gitignored) and fill in your bot token.
+api = "your-discord-bot-token-here"
