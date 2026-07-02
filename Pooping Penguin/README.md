@@ -34,10 +34,6 @@ cp key.py.example key.py   # then paste your bot token in
 python bot.py
 ```
 
-`data/keyword_sets.json` is already seeded with everything the old hardcoded
-`on_message()` chain in `vto.py` used to match, so behaviour is unchanged out
-of the box.
-
 ## Managing keyword sets
 
 Keyword sets are **global** — shared across every server the bot is in,
