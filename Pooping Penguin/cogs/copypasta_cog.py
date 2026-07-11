@@ -1,7 +1,12 @@
 """
-!copypasta <type> <text> - posts a random copypasta from a chosen type's
-template pool, with `{text}` in the template swapped out for whatever the
-user passed in.
+!copypasta <type> <value1> [value2 ...] - posts a random copypasta from a
+chosen type's template pool, with each of that type's {placeholder} names
+swapped out for the values you pass in, matched positionally in the
+order the type's placeholders were first established (see
+copypasta_manager.py). Most types only have one placeholder (usually
+{text}), so most of the time it's just `!copypasta tag @User`. A type
+whose templates use more than one placeholder, e.g. `{people}的{act}很
+弱智`, needs that many values: `!copypasta thattype Alice 打籃球`.
 
 Three seed types ship in data/copypasta_sets.json:
   tag       - "<@user/name> is handsome" style lines
@@ -76,7 +81,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         raise error
 
     @commands.group(name="copypasta", aliases=["cp"], invoke_without_command=True)
-    async def copypasta(self, ctx, type: str = None, *, text: str = None):
+    async def copypasta(self, ctx, type: str = None, *values):
         """Posts a random copypasta from a type's template pool."""
         language = self._lang(ctx)
 
@@ -85,10 +90,14 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             if types:
                 names = ", ".join(f"`{n}`" for n in sorted(types))
                 await ctx.send(t(language,
-                    f"Usage: `!copypasta <type> <text>`. Available types: {names}.\n"
-                    f"Example: `!copypasta tag @User`, `!copypasta activity digging`, `!copypasta song a song`.",
-                    f"用法：`!copypasta <類型> <文字>`。可用類型：{names}。\n"
-                    f"示例：`!copypasta tag @User`、`!copypasta activity digging`、`!copypasta song a song`。"))
+                    f"Usage: `!copypasta <type> <value1> [value2 ...]`. Available types: {names}.\n"
+                    f"Example: `!copypasta tag @User`, `!copypasta activity digging`, `!copypasta song a song`.\n"
+                    f"Types with more than one `{{placeholder}}` need one value per placeholder, in order "
+                    f"(see `!copypasta show <type>`).",
+                    f"用法：`!copypasta <類型> <值1> [值2 ...]`。可用類型：{names}。\n"
+                    f"示例：`!copypasta tag @User`、`!copypasta activity digging`、`!copypasta song a song`。\n"
+                    f"若該類型的模板有多於一個 `{{佔位符}}`，需依序提供對應數量的值"
+                    f"（見 `!copypasta show <類型>`）。"))
             else:
                 await ctx.send(t(language,
                     "No copypasta types exist yet. An admin can create one with `!copypasta create <type>`.",
@@ -97,14 +106,14 @@ class CopypastaCog(commands.Cog, name="copypasta"):
 
         type_id = self._resolve_type(type)
 
-        if text is None:
+        if not values:
             await ctx.send(t(language,
-                f"Missing argument: `text`. Usage: `!copypasta {type} <text>`.",
-                f"缺少參數：`文字`。用法：`!copypasta {type} <文字>`。"))
+                f"Missing argument: at least one value. Usage: `!copypasta {type} <value1> [value2 ...]`.",
+                f"缺少參數：至少需要一個值。用法：`!copypasta {type} <值1> [值2 ...]`。"))
             return
 
         key = (ctx.guild.id, type_id)
-        index, rendered = self.manager.pick(type_id, text, avoid_index=self._last_used.get(key))
+        index, rendered = self.manager.pick(type_id, values, avoid_index=self._last_used.get(key))
         self._last_used[key] = index
         await ctx.send(rendered)
 
@@ -122,7 +131,9 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             enabled = s.get("enabled", True)
             status = t(language, "✅ enabled", "✅ 已啟用") if enabled else t(language, "❌ disabled", "❌ 已停用")
             count = len(s.get("templates", []))
-            embed.add_field(name=type_id, value=f"{status} | {count} template(s)", inline=False)
+            placeholders = s.get("placeholders") or ["text"]
+            needed = " ".join(f"{{{name}}}" for name in placeholders)
+            embed.add_field(name=type_id, value=f"{status} | {count} template(s) | {needed}", inline=False)
         embed.set_footer(text=t(language,
             "Use `!copypasta show <type>` to see the templates in a type.",
             "使用 `!copypasta show <類型>` 查看該類型中的模板。"))
@@ -140,11 +151,16 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             return
 
         lines = [f"`{i}`: {tmpl}" for i, tmpl in enumerate(templates)]
+        placeholders = s.get("placeholders") or ["text"]
+        needed = " ".join(f"{{{name}}}" for name in placeholders)
         embed = discord.Embed(
             title=t(language, f"Copypasta Type: {type_id}", f"迷因文本類型：{type_id}"),
             description="\n".join(lines),
             color=discord.Color.blue()
         )
+        embed.set_footer(text=t(language,
+            f"Usage: !copypasta {type_id} <value for {needed}>",
+            f"用法：!copypasta {type_id} <對應 {needed} 的值>"))
         await ctx.send(embed=embed)
 
     @copypasta.command(name="create")
