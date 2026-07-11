@@ -98,6 +98,16 @@ COMMAND_LIST = [
                   "chinese": "- 返回一個隨機的十六進制格式顏色（例如，#FF5733）並在嵌入中顯示預覽。\n- 顏色通過隨機選擇紅、綠、藍通道的值生成。"}
     },
     {
+        "name": "copypasta",
+        "description": {"english": "Posts a random copypasta from a chosen type's template pool.",
+                         "chinese": "從所選類型的模板池中發送一則隨機迷因文本。"},
+        "usage": "`!copypasta <type> <text>` (alias: `!cp`)",
+        "arguments": {"english": "**type**: Which pool to pick from - `tag` (aliases: `name`, `person`, `mention`, `user`), `activity` (aliases: `thing`, `action`, `verb`), or `song` (aliases: `music`, `tune`), or any custom type an admin created.\n**text**: The word, name, mention, activity, or song title to slot into the template.\n- Example: `!copypasta tag @User`, `!copypasta activity digging`, `!copypasta song a song`.",
+                      "chinese": "**類型**：要從哪個池中選取 - `tag`（別名：`name`、`person`、`mention`、`user`）、`activity`（別名：`thing`、`action`、`verb`）或 `song`（別名：`music`、`tune`），或管理員建立的自訂類型。\n**文字**：要填入模板的詞語、名稱、標註、活動或歌曲名稱。\n- 示例：`!copypasta tag @User`、`!copypasta activity digging`、`!copypasta song a song`。"},
+        "notes": {"english": "- Each type keeps its own separate pool of templates, so a tagging line can never get mixed up with a song line or vice versa.\n- The bot avoids repeating the exact same template twice in a row for the same type on the same server.\n- Admins can manage pools live: `!copypasta list`, `show <type>`, `create <type>`, `delete <type>`, `enable/disable <type>`, `add <type> <template with {text}>`, `remove <type> <index>`.",
+                  "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list`、`show <類型>`、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
+    },
+    {
         "name": "setperms",
         "description": {"english": "Grants permissions to a specific role in a specific channel (Admin only).",
                          "chinese": "在特定頻道中為特定角色授予權限（僅限管理員）。"},

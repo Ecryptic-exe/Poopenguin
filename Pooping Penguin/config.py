@@ -12,9 +12,11 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 SETTINGS_FILE = os.path.join(DATA_DIR, "vote_settings.json")
 VOTES_FILE = os.path.join(DATA_DIR, "votes.json")
 KEYWORDS_FILE = os.path.join(DATA_DIR, "keyword_sets.json")
+COPYPASTA_FILE = os.path.join(DATA_DIR, "copypasta_sets.json")
 
 DEFAULT_SETTINGS = {"required_votes": 3, "admin_only": False, "language": {}, "autoreact": {}}
 DEFAULT_KEYWORDS = {"sets": {}}
+DEFAULT_COPYPASTA = {"types": {}}
 
 
 def _load(path, default):
@@ -52,3 +54,11 @@ def load_keywords():
 
 def save_keywords(data):
     _save(KEYWORDS_FILE, data)
+
+
+def load_copypasta():
+    return _load(COPYPASTA_FILE, DEFAULT_COPYPASTA)
+
+
+def save_copypasta(data):
+    _save(COPYPASTA_FILE, data)
