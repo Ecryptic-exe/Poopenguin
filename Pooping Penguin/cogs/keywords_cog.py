@@ -156,6 +156,96 @@ class KeywordMenu(discord.ui.View):
         self.stop()
 
 
+class KeywordShowMenu(discord.ui.View):
+    """Shows one keyword set's full detail, with its responses paginated
+    5 at a time (flip buttons only appear if there's more than one page,
+    so a set with few responses doesn't show useless buttons)."""
+
+    RESPONSE_PAGE_SIZE = 5
+
+    def __init__(self, ctx, set_id: str, s: dict, language: str, timeout: int = 180):
+        super().__init__(timeout=timeout)
+        self.ctx = ctx
+        self.set_id = set_id
+        self.s = s
+        self.language = language
+        self.responses = s.get("responses", [])
+        self.current_page = 0
+
+        self.previous_button.label = t(language, "Previous", "上一頁")
+        self.next_button.label = t(language, "Next", "下一頁")
+        self.close_button.label = t(language, "Close", "關閉")
+
+        if self._total_pages() <= 1:
+            self.remove_item(self.previous_button)
+            self.remove_item(self.next_button)
+
+    def _total_pages(self):
+        return max(1, math.ceil(len(self.responses) / self.RESPONSE_PAGE_SIZE))
+
+    def get_embed(self):
+        total_pages = self._total_pages()
+        self.current_page = max(0, min(self.current_page, total_pages - 1))
+        start = self.current_page * self.RESPONSE_PAGE_SIZE
+        page_responses = self.responses[start:start + self.RESPONSE_PAGE_SIZE]
+
+        embed = discord.Embed(
+            title=t(self.language, f"Keyword Set: {self.set_id}", f"關鍵詞組：{self.set_id}"),
+            color=discord.Color.blue()
+        )
+        embed.add_field(
+            name=t(self.language, "Status", "狀態"),
+            value=t(self.language, "Enabled", "已啟用") if self.s.get("enabled", True)
+            else t(self.language, "Disabled", "已停用"),
+            inline=False
+        )
+        keywords = self.s.get("keywords", [])
+        embed.add_field(
+            name=t(self.language, "Keywords", "關鍵詞"),
+            value=", ".join(f"`{k}`" for k in keywords) if keywords else t(self.language, "(none)", "（無）"),
+            inline=False
+        )
+        if page_responses:
+            responses_value = "\n".join(
+                f"[{start + i}] {r[:80]}{'…' if len(r) > 80 else ''}" for i, r in enumerate(page_responses)
+            )
+        else:
+            responses_value = t(self.language, "(none)", "（無）")
+        embed.add_field(
+            name=t(self.language, "Responses", "回應"),
+            value=responses_value,
+            inline=False
+        )
+        embed.set_footer(text=t(self.language,
+            f"Response page {self.current_page + 1}/{total_pages} | {len(self.responses)} response(s) total.",
+            f"回應第 {self.current_page + 1}/{total_pages} 頁 | 共 {len(self.responses)} 個回應。"))
+        return embed
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.ctx.author.id:
+            await interaction.response.send_message(
+                t(self.language, "This isn't your menu to control.", "這不是您可以操作的選單。"),
+                ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(style=discord.ButtonStyle.grey, row=0)
+    async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.current_page = (self.current_page - 1) % self._total_pages()
+        await interaction.response.edit_message(embed=self.get_embed(), view=self)
+
+    @discord.ui.button(style=discord.ButtonStyle.grey, row=0)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.current_page = (self.current_page + 1) % self._total_pages()
+        await interaction.response.edit_message(embed=self.get_embed(), view=self)
+
+    @discord.ui.button(style=discord.ButtonStyle.red, row=0)
+    async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.edit_message(
+            content=t(self.language, "Keyword menu closed.", "關鍵詞選單已關閉。"), embed=None, view=None)
+        self.stop()
+
+
 class KeywordsCog(commands.Cog, name="keywords"):
     def __init__(self, bot):
         self.bot = bot
@@ -168,6 +258,11 @@ class KeywordsCog(commands.Cog, name="keywords"):
         # Administrator-only, and only usable in a server (not DMs), since
         # ctx.guild is needed for language lookup and permission checks.
         return ctx.guild is not None and ctx.author.guild_permissions.administrator
+        # Usable by anyone, but only in a server (not DMs), since ctx.guild
+        # is needed for language lookup. Admin permission is now enforced
+        # per-command below, only on subcommands that change data - `list`
+        # and `show` are read-only and open to everyone.
+        return ctx.guild is not None
 
     async def cog_command_error(self, ctx, error):
         language = self._lang(ctx) if ctx.guild else "english"
@@ -262,6 +357,19 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(embed=embed)
 
     @keyword.command(name="create")
+    @keyword.command(name="show", aliases=["info"])
+    async def keyword_show(self, ctx, set_id: str):
+        """Shows the keywords and responses for one set (alias: `!keyword info <id>`).
+
+        Responses are paginated 5 at a time, with Previous/Next buttons
+        that only appear when there's more than one page."""
+        language = self._lang(ctx)
+        s = self.manager.get_set(set_id)
+        menu = KeywordShowMenu(ctx, set_id, s, language)
+        await ctx.send(embed=menu.get_embed(), view=menu)
+
+    @keyword.command(name="create")
+    @commands.has_permissions(administrator=True)
     async def keyword_create(self, ctx, set_id: str):
         """Creates a new, empty keyword set."""
         language = self._lang(ctx)
@@ -273,6 +381,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"使用 `!keyword addresponse {set_id} <內容>` 新增回應。"))
 
     @keyword.command(name="delete")
+    @commands.has_permissions(administrator=True)
     async def keyword_delete(self, ctx, set_id: str):
         """Deletes a keyword set entirely."""
         language = self._lang(ctx)
@@ -280,6 +389,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Deleted keyword set `{set_id}`.", f"已刪除關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="enable")
+    @commands.has_permissions(administrator=True)
     async def keyword_enable(self, ctx, set_id: str):
         """Enables a keyword set so it starts matching messages again."""
         language = self._lang(ctx)
@@ -287,6 +397,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Enabled keyword set `{set_id}`.", f"已啟用關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="disable")
+    @commands.has_permissions(administrator=True)
     async def keyword_disable(self, ctx, set_id: str):
         """Disables a keyword set without deleting it."""
         language = self._lang(ctx)
@@ -294,6 +405,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Disabled keyword set `{set_id}`.", f"已停用關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="addkeyword")
+    @commands.has_permissions(administrator=True)
     async def keyword_addkeyword(self, ctx, set_id: str, *, keyword: str):
         """Adds a trigger keyword to a set."""
         language = self._lang(ctx)
@@ -303,6 +415,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將觸發詞 `{keyword}` 加入 `{set_id}`。"))
 
     @keyword.command(name="removekeyword")
+    @commands.has_permissions(administrator=True)
     async def keyword_removekeyword(self, ctx, set_id: str, *, keyword: str):
         """Removes a trigger keyword from a set."""
         language = self._lang(ctx)
@@ -312,6 +425,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將觸發詞 `{keyword}` 從 `{set_id}` 移除。"))
 
     @keyword.command(name="addresponse")
+    @commands.has_permissions(administrator=True)
     async def keyword_addresponse(self, ctx, set_id: str, *, response: str):
         """Adds a candidate response text to a set."""
         language = self._lang(ctx)
@@ -323,6 +437,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將回應 #{index} 加入 `{set_id}`。"))
 
     @keyword.command(name="removeresponse")
+    @commands.has_permissions(administrator=True)
     async def keyword_removeresponse(self, ctx, set_id: str, index: int):
         """Removes a response by its index (see `!keyword show <id>`)."""
         language = self._lang(ctx)
