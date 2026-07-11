@@ -3,6 +3,11 @@
 that the bot scans every message against (see keyword_manager.py and
 messages_cog.py for the matching side).
 
+This is the new feature: previously, adding/removing/editing a keyword
+trigger meant editing copypasta.py and vto.py directly and redeploying
+the bot. Now it's data-driven and can be managed live with these
+commands.
+
 All commands here require administrator permission in the guild they're
 run from. The keyword sets themselves are global (shared across every
 server the bot is in, see keyword_manager.py docstring), so this is a
@@ -250,6 +255,9 @@ class KeywordsCog(commands.Cog, name="keywords"):
         return get_guild_language(load_settings(), ctx.guild.id)
 
     async def cog_check(self, ctx):
+        # Administrator-only, and only usable in a server (not DMs), since
+        # ctx.guild is needed for language lookup and permission checks.
+        return ctx.guild is not None and ctx.author.guild_permissions.administrator
         # Usable by anyone, but only in a server (not DMs), since ctx.guild
         # is needed for language lookup. Admin permission is now enforced
         # per-command below, only on subcommands that change data - `list`
@@ -311,6 +319,44 @@ class KeywordsCog(commands.Cog, name="keywords"):
             ]
         await ctx.send(embed=menu.get_embed(), view=menu)
 
+    @keyword.command(name="show")
+    async def keyword_show(self, ctx, set_id: str):
+        """Shows the keywords and responses for one set."""
+        language = self._lang(ctx)
+        s = self.manager.get_set(set_id)
+
+        embed = discord.Embed(
+            title=f"Keyword Set: {set_id}" if language == "english" else f"關鍵詞組：{set_id}",
+            color=discord.Color.blue()
+        )
+        embed.add_field(
+            name="Status" if language == "english" else "狀態",
+            value=("Enabled" if s.get("enabled", True) else "Disabled") if language == "english"
+            else ("已啟用" if s.get("enabled", True) else "已停用"),
+            inline=False
+        )
+        keywords = s.get("keywords", [])
+        embed.add_field(
+            name="Keywords" if language == "english" else "關鍵詞",
+            value=", ".join(f"`{k}`" for k in keywords) if keywords else
+            t(language, "(none)", "（無）"),
+            inline=False
+        )
+        responses = s.get("responses", [])
+        if responses:
+            preview = "\n".join(
+                f"[{i}] {r[:80]}{'…' if len(r) > 80 else ''}" for i, r in enumerate(responses)
+            )
+        else:
+            preview = t(language, "(none)", "（無）")
+        embed.add_field(
+            name="Responses" if language == "english" else "回應",
+            value=preview,
+            inline=False
+        )
+        await ctx.send(embed=embed)
+
+    @keyword.command(name="create")
     @keyword.command(name="show", aliases=["info"])
     async def keyword_show(self, ctx, set_id: str):
         """Shows the keywords and responses for one set (alias: `!keyword info <id>`).

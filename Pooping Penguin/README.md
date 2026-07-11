@@ -1,3 +1,5 @@
+# vto bot
+
 ## Layout
 
 ```
@@ -34,6 +36,10 @@ cp key.py.example key.py   # then paste your bot token in
 python bot.py
 ```
 
+`data/keyword_sets.json` is already seeded with everything the old hardcoded
+`on_message()` chain in `vto.py` used to match, so behaviour is unchanged out
+of the box.
+
 ## Managing keyword sets
 
 Keyword sets are **global** — shared across every server the bot is in,
@@ -56,3 +62,20 @@ require Administrator permission in the server they're run from.
 A message matches a set if any of its keywords appear as a case-insensitive
 substring. If several sets match, one is picked at random; then a random
 response from that set is sent.
+
+## What changed from the original vto.py
+
+- Split the single ~1000-line file into cogs by responsibility (see layout
+  above) instead of one giant `on_message()` + flat list of `@bot.command()`.
+- Centralised the `"X" if language == 'english' else "Y"` pattern into
+  `i18n.t()`.
+- Replaced the hardcoded keyword/copypasta `if/elif` chain with data-driven
+  keyword sets (`data/keyword_sets.json`) manageable at runtime via
+  `!keyword`, instead of requiring a code change + redeploy.
+- Fixed a small bug in the help menu: the Previous/Next/Close button labels
+  used to be decided once at class-definition time from whatever the
+  *default* guild's language was, so every server saw the same button
+  language regardless of their own `!lang` setting. They're now set
+  per-instance from the language actually passed in.
+- Everything else (vote flow, autoreact, repeat-echo, permissions model)
+  is behaviourally the same as before.
