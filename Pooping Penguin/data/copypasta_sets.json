@@ -6,13 +6,13 @@
         "Everyone in the server agrees: {text} is the GOAT.",
         "Breaking news: {text} just did something incredible.",
         "{text}, we need to talk. (jk, you're great)",
-        "Scientists have confirmed {text} is built different."
+        "Scientists have confirmed {text} is built different.",
+        "insert {text}"
       ],
       "enabled": true
     },
     "activity": {
       "templates": [
-        "I think {text} is stupid",
         "Nobody: Absolutely nobody: Me, doing {text} at 3am:",
         "{text}? couldn't be me",
         "You ever just think about how {text} is objectively the best thing ever?",
@@ -28,6 +28,13 @@
         "If you haven't heard \"{text}\" yet, what are you even doing",
         "\"{text}\" should be the national anthem tbh"
       ],
+      "enabled": true
+    },
+    "pplact": {
+      "templates": [
+        "{people}‘s {act} is cool"
+      ],
+      "placeholders": ["people", "act"],
       "enabled": true
     }
   }
