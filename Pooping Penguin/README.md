@@ -1,7 +1,6 @@
 # Poop Pengin (vto bot)
 
-A Discord bot originally written as a single ~1000-line `vto.py`, now
-split into cogs by responsibility. Every user-facing command works both
+Every user-facing command works both
 as a `!`-prefixed text command and as a `/` slash command (see
 [`COMMANDS.md`](COMMANDS.md) for the full list and the couple of
 exceptions).
@@ -126,38 +125,6 @@ template's `{placeholder}`s. Three seed types ship out of the box: `tag`,
 !copypasta remove <type> <index>          # remove by index (see `show`)   (admin only)
 ```
 
-The bot avoids repeating the exact same template twice in a row for the
-same type on the same server. Every management subcommand above also
-works as `/copypasta ...`; posting a copypasta itself is `!copypasta` /
-`!cp` only (no `/copypasta use`) — see [`COMMANDS.md`](COMMANDS.md) for
-why, and `GAPS.md` if you want to add a slash equivalent back.
-
-## What changed from the original vto.py
-
-- Split the single ~1000-line file into cogs by responsibility (see
-  layout above) instead of one giant `on_message()` + flat list of
-  `@bot.command()`.
-- Centralised the `"X" if language == 'english' else "Y"` pattern into
-  `i18n.t()`.
-- Replaced the hardcoded keyword/copypasta `if/elif` chains with
-  data-driven sets (`data/keyword_sets.json`, `data/copypasta_sets.json`)
-  manageable at runtime via `!keyword` / `!copypasta`, instead of
-  requiring a code change + redeploy.
-- Converted every command to `commands.hybrid_command` /
-  `commands.hybrid_group`, so each one works as both `!command` and
-  `/command` from a single implementation. See
-  [`COMMANDS.md`](COMMANDS.md) for the full list and the two exceptions.
-- Fixed a small bug in the help menu: the Previous/Next/Close button
-  labels used to be decided once at class-definition time from whatever
-  the *default* guild's language was, so every server saw the same
-  button language regardless of their own `!lang` setting. They're now
-  set per-instance from the language actually passed in.
-- Moved slash-command syncing into `setup_hook()` (runs exactly once per
-  process) instead of `on_ready` (which fires again on every reconnect),
-  and made the dev-guild sync path clean up stale global registrations
-  so commands can't end up duplicated in Discord's `/` picker.
-- Everything else (vote flow, autoreact, repeat-echo, permissions model)
-  is behaviourally the same as before.
 
 ## Further reading
 
