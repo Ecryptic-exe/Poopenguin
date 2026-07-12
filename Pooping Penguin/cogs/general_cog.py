@@ -1,12 +1,23 @@
 """
 Small standalone "for fun" commands that don't belong anywhere else:
-!ask, !pick, !rng, !rcg.
+!ask, !pick, !rng, !rcg / /ask, /pick, /rng, /rcg.
 
 These were plain bot.command() functions at the bottom of the old
 vto.py. Behaviour is unchanged - only the language branching was
 routed through i18n.t() to cut down on repetition.
+
+Converted to commands.hybrid_command so each one is usable both as a
+"!" text command and a "/" slash command from a single implementation.
+
+`pick` used to take `*choices` (any number of positional args), which
+discord's slash commands don't support (slash options are a fixed
+list, not open-ended). It's now a single `choices` string that's
+split the same way the old *args parsing did (shlex-aware, so
+`!pick "New York" "Los Angeles"` still treats each quoted phrase as
+one choice, for both ! and /).
 """
 import random
+import shlex
 
 import discord
 from discord.ext import commands
@@ -22,7 +33,10 @@ class GeneralCog(commands.Cog, name="general"):
     def _lang(self, ctx):
         return get_guild_language(load_settings(), ctx.guild.id)
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="ask",
+        description="Asks a question and receives a response based on a random success rate.")
+    @discord.app_commands.describe(question="The question you want answered")
     async def ask(self, ctx, *, question: str):
         """Asks a question and receives a response based on a random success rate."""
         language = self._lang(ctx)
@@ -47,18 +61,40 @@ class GeneralCog(commands.Cog, name="general"):
 
         await ctx.send(response)
 
-    @commands.command()
-    async def pick(self, ctx, *choices):
+    @commands.hybrid_command(
+        name="pick",
+        description="Randomly selects one option from a list of provided choices.")
+    @discord.app_commands.describe(
+        choices="Choices to pick from, separated by spaces "
+                '(wrap multi-word choices in quotes, e.g. "New York" "Los Angeles")')
+    async def pick(self, ctx, *, choices: str = None):
         """Randomly selects one option from a list of provided choices."""
         language = self._lang(ctx)
         if not choices:
             await ctx.send(t(language, "Please provide at least one choice.", "請提供至少一個選項。"))
             return
 
-        choice = random.choice(choices)
+        try:
+            choice_list = shlex.split(choices)
+        except ValueError:
+            # Unbalanced quotes - fall back to a plain whitespace split
+            # rather than erroring out on the user.
+            choice_list = choices.split()
+
+        if not choice_list:
+            await ctx.send(t(language, "Please provide at least one choice.", "請提供至少一個選項。"))
+            return
+
+        choice = random.choice(choice_list)
         await ctx.send(t(language, f"I picked: {choice}", f"我選擇了：{choice}"))
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="rng",
+        description="Generates a random number between a specified minimum and maximum.")
+    @discord.app_commands.describe(
+        min_val="Minimum value (default 1)",
+        max_val="Maximum value (default 100)",
+        type="'int' or 'float' (default int)")
     async def rng(self, ctx, min_val: str = "1", max_val: str = "100", type: str = "int"):
         """Generates a random number between a specified minimum and maximum."""
         language = self._lang(ctx)
@@ -87,7 +123,9 @@ class GeneralCog(commands.Cog, name="general"):
 
         await ctx.send(t(language, f"Random number: {result}", f"隨機數：{result}"))
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="rcg",
+        description="Generates a random color in hexadecimal format with a preview.")
     async def rcg(self, ctx):
         """Generates a random color in hexadecimal format with a preview."""
         language = self._lang(ctx)

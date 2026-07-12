@@ -1,12 +1,13 @@
 """
-!copypasta <type> <value1> [value2 ...] - posts a random copypasta from a
-chosen type's template pool, with each of that type's {placeholder} names
-swapped out for the values you pass in, matched positionally in the
-order the type's placeholders were first established (see
-copypasta_manager.py). Most types only have one placeholder (usually
-{text}), so most of the time it's just `!copypasta tag @User`. A type
-whose templates use more than one placeholder, e.g. `{people}'s {act} is cool`,
-needs that many values: `!copypasta thattype Alice baskeyball`.
+!copypasta <type> <value1> [value2 ...] / /copypasta use <type> <values>
+posts a random copypasta from a chosen type's template pool, with each
+of that type's {placeholder} names swapped out for the values you pass
+in, matched positionally in the order the type's placeholders were
+first established (see copypasta_manager.py). Most types only have one
+placeholder (usually {text}), so most of the time it's just
+`!copypasta tag @User`. A type whose templates use more than one
+placeholder, e.g. `{people}'s {act} is cool`, needs that many values:
+`!copypasta thattype Alice baskeyball`.
 
 Three seed types ship in data/copypasta_sets.json:
   tag       - "<@user/name> is handsome" style lines
@@ -23,8 +24,37 @@ fire twice back-to-back.
 Management subcommands (`!copypasta add/remove/create/delete/enable/
 disable/list/show`) let admins grow each pool live, the same way
 !keyword manages keyword sets - no redeploy needed to add more lines.
+
+--- Slash commands ---
+This is a commands.hybrid_group with no fallback:
+  - "!copypasta tag @User" keeps working exactly as before (the group
+    callback itself fires, same as always, when no subcommand name
+    matches).
+  - "/copypasta" cannot be invoked directly on Discord - a slash
+    command group can only ever run one of its named subcommands, it
+    has no callback of its own. Previously fallback="use" published
+    the group's own callback as a "/copypasta use" subcommand; that's
+    been removed on purpose, so posting a copypasta is now text-only
+    ("!copypasta tag @User" / "!cp tag @User"). See GAPS.md.
+  - The management subcommands (list/show/create/delete/enable/
+    disable/add/remove) are unaffected and show up as their own normal
+    slash subcommands, e.g. "/copypasta list", "/copypasta show".
+  - `type` now offers autocomplete (suggests existing type names only -
+    aliases still work if typed by hand, but aren't suggested, so the
+    dropdown doesn't show two entries for what's really one type).
+
+`values` used to be `*values` (any number of positional arguments),
+which slash commands can't do - Discord options are a fixed list, not
+open-ended. It's now a single `values` string, split on whitespace,
+exactly the number of times the type's placeholders need. This means
+an individual value can no longer contain a space (e.g. a two-word
+song title) - see GAPS.md for this trade-off and what filling that
+gap would look like.
 """
+from typing import List
+
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from config import load_settings
@@ -43,6 +73,9 @@ TYPE_ALIASES = {
 # (invoke_without_command dispatch checks these before falling through
 # to the "fire a copypasta" behaviour).
 RESERVED_NAMES = {"list", "show", "create", "delete", "enable", "disable", "add", "remove"}
+
+# Discord caps autocomplete results at 25 choices per field - see GAPS.md.
+AUTOCOMPLETE_LIMIT = 25
 
 
 class CopypastaCog(commands.Cog, name="copypasta"):
@@ -80,8 +113,29 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             return
         raise error
 
-    @commands.group(name="copypasta", aliases=["cp"], invoke_without_command=True)
-    async def copypasta(self, ctx, type: str = None, *values):
+    # -- autocomplete -----------------------------------------------------
+    async def type_autocomplete(
+        self, interaction: discord.Interaction, current: str
+    ) -> List[app_commands.Choice[str]]:
+        """Suggests existing copypasta type names that match what's typed
+        so far. Aliases from TYPE_ALIASES still work if typed by hand
+        (see _resolve_type), they're just not offered as suggestions,
+        since showing e.g. both "tag" and "name" for the same underlying
+        type is more confusing than helpful. Shared by every subcommand
+        below that takes a `type` argument."""
+        current = (current or "").lower()
+        types = self.manager.list_types()
+
+        matches = sorted(name for name in types if current in name.lower())
+        return [
+            app_commands.Choice(name=name, value=name)
+            for name in matches[:AUTOCOMPLETE_LIMIT]
+        ]
+
+    @commands.hybrid_group(name="copypasta", aliases=["cp"],
+                            invoke_without_command=True,
+                            description="Posts a random copypasta from a chosen type's template pool.")
+    async def copypasta(self, ctx: commands.Context, type: str = None, *, values: str = None):
         """Posts a random copypasta from a type's template pool."""
         language = self._lang(ctx)
 
@@ -105,19 +159,20 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             return
 
         type_id = self._resolve_type(type)
+        value_list = values.split() if values else []
 
-        if not values:
+        if not value_list:
             await ctx.send(t(language,
                 f"Missing argument: at least one value. Usage: `!copypasta {type} <value1> [value2 ...]`.",
                 f"缺少參數：至少需要一個值。用法：`!copypasta {type} <值1> [值2 ...]`。"))
             return
 
         key = (ctx.guild.id, type_id)
-        index, rendered = self.manager.pick(type_id, values, avoid_index=self._last_used.get(key))
+        index, rendered = self.manager.pick(type_id, value_list, avoid_index=self._last_used.get(key))
         self._last_used[key] = index
         await ctx.send(rendered)
 
-    @copypasta.command(name="list")
+    @copypasta.command(name="list", description="Lists all copypasta types and how many templates each has.")
     async def copypasta_list(self, ctx):
         """Lists all copypasta types and how many templates each has."""
         language = self._lang(ctx)
@@ -139,7 +194,9 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             "使用 `!copypasta show <類型>` 查看該類型中的模板。"))
         await ctx.send(embed=embed)
 
-    @copypasta.command(name="show", aliases=["info"])
+    @copypasta.command(name="show", aliases=["info"], description="Shows every template in one copypasta type.")
+    @app_commands.describe(type="Copypasta type to show")
+    @app_commands.autocomplete(type=type_autocomplete)
     async def copypasta_show(self, ctx, type: str):
         """Shows every template in one copypasta type."""
         language = self._lang(ctx)
@@ -163,7 +220,8 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             f"用法：!copypasta {type_id} <對應 {needed} 的值>"))
         await ctx.send(embed=embed)
 
-    @copypasta.command(name="create")
+    @copypasta.command(name="create", description="Creates a new, empty copypasta type.")
+    @app_commands.describe(type="Name for the new copypasta type")
     @commands.has_permissions(administrator=True)
     async def copypasta_create(self, ctx, type: str):
         """Creates a new, empty copypasta type."""
@@ -175,7 +233,9 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             f"`!copypasta add {type_id} <template with {{text}} in it>`.",
             f"已建立迷因文本類型 `{type_id}`。使用 `!copypasta add {type_id} <包含 {{text}} 的模板>` 新增模板。"))
 
-    @copypasta.command(name="delete")
+    @copypasta.command(name="delete", description="Deletes a copypasta type entirely.")
+    @app_commands.describe(type="Copypasta type to delete")
+    @app_commands.autocomplete(type=type_autocomplete)
     @commands.has_permissions(administrator=True)
     async def copypasta_delete(self, ctx, type: str):
         """Deletes a copypasta type entirely."""
@@ -184,7 +244,9 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         self.manager.delete_type(type_id)
         await ctx.send(t(language, f"Deleted copypasta type `{type_id}`.", f"已刪除迷因文本類型 `{type_id}`。"))
 
-    @copypasta.command(name="enable")
+    @copypasta.command(name="enable", description="Enables a copypasta type so !copypasta can pick it again.")
+    @app_commands.describe(type="Copypasta type to enable")
+    @app_commands.autocomplete(type=type_autocomplete)
     @commands.has_permissions(administrator=True)
     async def copypasta_enable(self, ctx, type: str):
         """Enables a copypasta type so !copypasta can pick it again."""
@@ -193,7 +255,9 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         self.manager.set_enabled(type_id, True)
         await ctx.send(t(language, f"Enabled copypasta type `{type_id}`.", f"已啟用迷因文本類型 `{type_id}`。"))
 
-    @copypasta.command(name="disable")
+    @copypasta.command(name="disable", description="Disables a copypasta type without deleting it.")
+    @app_commands.describe(type="Copypasta type to disable")
+    @app_commands.autocomplete(type=type_autocomplete)
     @commands.has_permissions(administrator=True)
     async def copypasta_disable(self, ctx, type: str):
         """Disables a copypasta type without deleting it."""
@@ -202,7 +266,11 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         self.manager.set_enabled(type_id, False)
         await ctx.send(t(language, f"Disabled copypasta type `{type_id}`.", f"已停用迷因文本類型 `{type_id}`。"))
 
-    @copypasta.command(name="add")
+    @copypasta.command(name="add", description="Adds a template to a type. Must contain a {text} placeholder.")
+    @app_commands.describe(
+        type="Copypasta type to add a template to",
+        template="Template text, containing at least one {placeholder}, e.g. '{text} is handsome'")
+    @app_commands.autocomplete(type=type_autocomplete)
     @commands.has_permissions(administrator=True)
     async def copypasta_add(self, ctx, type: str, *, template: str):
         """Adds a template to a type. Must contain a {text} placeholder."""
@@ -215,7 +283,11 @@ class CopypastaCog(commands.Cog, name="copypasta"):
             f"Added template #{index} to `{type_id}`.",
             f"已將模板 #{index} 加入 `{type_id}`。"))
 
-    @copypasta.command(name="remove")
+    @copypasta.command(name="remove", description="Removes a template by its index (see `!copypasta show <type>`).")
+    @app_commands.describe(
+        type="Copypasta type to remove a template from",
+        index="Index of the template to remove (see /copypasta show)")
+    @app_commands.autocomplete(type=type_autocomplete)
     @commands.has_permissions(administrator=True)
     async def copypasta_remove(self, ctx, type: str, index: int):
         """Removes a template by its index (see `!copypasta show <type>`)."""

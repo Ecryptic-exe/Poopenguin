@@ -1,13 +1,20 @@
 """
-Guild-configuration commands: !setperms (grant a role access to a
-channel), !autoreact (configure/disable per-channel auto-reactions),
-and !lang (toggle the guild's help/response language).
+Guild-configuration commands: !setperms/​/setperms (grant a role access
+to a channel), !autoreact/​/autoreact (configure/disable per-channel
+auto-reactions), and !lang/​/lang (toggle the guild's help/response
+language).
 
 These mirror their old on_message.py behaviour exactly, including the
 fact that !lang and !autoreact are NOT admin-restricted in the
 original bot (only !setperms is) - that's preserved here rather than
 "fixed", since tightening permissions wasn't asked for and could lock
 people out of features they're used to.
+
+Converted to commands.hybrid_command so the text and slash versions
+share one implementation. channel_id/role_id are kept as plain string
+IDs (rather than discord.TextChannel/discord.Role converters) so
+!setperms keeps accepting raw IDs exactly like before - see GAPS.md
+for the option of upgrading these to native slash channel/role pickers.
 """
 import discord
 from discord.ext import commands
@@ -23,7 +30,12 @@ class AdminCog(commands.Cog, name="admin"):
     def _lang(self, ctx):
         return get_guild_language(load_settings(), ctx.guild.id)
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="setperms",
+        description="Grants permissions to a specific role in a specific channel (Admin only).")
+    @discord.app_commands.describe(
+        channel_id="ID of the channel to grant access to",
+        role_id="ID of the role to grant access to")
     @commands.has_permissions(administrator=True)
     async def setperms(self, ctx, channel_id: str, role_id: str):
         """Grants permissions to a specific role in a specific channel (Admin only)."""
@@ -77,7 +89,12 @@ class AdminCog(commands.Cog, name="admin"):
         except Exception as e:
             await ctx.send(t(language, f"An error occurred: {str(e)}", f"發生錯誤：{str(e)}"))
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="autoreact",
+        description="Sets or disables auto-reactions for messages in this channel.")
+    @discord.app_commands.describe(
+        emoji="Emoji to auto-react with (omit to disable auto-reactions in this channel)",
+        user="Only auto-react to this user's messages (omit for everyone in the channel)")
     async def autoreact(self, ctx, emoji: str = None, user: discord.Member = None):
         """Sets an emoji to auto-react to messages from a specific user or all messages in the channel, or disables auto-reactions."""
         settings = load_settings()
@@ -127,7 +144,9 @@ class AdminCog(commands.Cog, name="admin"):
                     f"Auto-reactions were not enabled in {ctx.channel.mention}.",
                     f"{ctx.channel.mention} 中尚未啟用自動反應。"))
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="lang",
+        description="Toggles the language of the bot's help panel between English and Chinese.")
     async def lang(self, ctx):
         """Toggles the language of the bot's help panel between English and Chinese."""
         settings = load_settings()
