@@ -68,22 +68,3 @@ All `!keyword` subcommands require Administrator permission.
 | `!keyword removekeyword <id> <word>` | ✅ `/keyword removekeyword` | Removes a trigger keyword from a set. |
 | `!keyword addresponse <id> <text>` | ✅ `/keyword addresponse` | Adds a candidate response text to a set. |
 | `!keyword removeresponse <id> <index>` | ✅ `/keyword removeresponse` | Removes a response by its index. |
-
-## Notes: why `copypasta` and `keyword` don't have a bare `/` command
-
-Discord does not allow invoking a slash command *group* directly — only
-one of its named subcommands. `commands.hybrid_group` can bridge this gap
-with a `fallback="<name>"` param, which publishes the group's own
-callback as `/copypasta <name>` — but that's been left off on purpose for
-both groups here, so:
-
-- Posting a copypasta is `!copypasta <type> <values>` / `!cp <type> <values>` only.
-- The base `!keyword` (no subcommand) just prints the subcommand list and stays text-only too.
-
-If a slash equivalent is wanted later, add `fallback="use"` (or any word)
-back to the `@commands.hybrid_group(...)` decorator in the relevant cog,
-plus `@app_commands.describe(...)` / `@app_commands.autocomplete(...)` on
-the group's callback. One real trade-off if you do: slash options can't
-take an open-ended argument list, so a multi-word value (e.g. a two-word
-song title passed to `copypasta`) would need to become a single string
-split on whitespace — see `GAPS.md`.
