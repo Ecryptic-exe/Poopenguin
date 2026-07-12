@@ -42,6 +42,7 @@ INITIAL_EXTENSIONS = (
     "cogs.general_cog",
     "cogs.keywords_cog",
     "cogs.messages_cog",
+    "cogs.copypasta_cog",
 )
 
 STATUS_MESSAGES = [
