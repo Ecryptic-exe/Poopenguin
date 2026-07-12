@@ -5,8 +5,8 @@ swapped out for the values you pass in, matched positionally in the
 order the type's placeholders were first established (see
 copypasta_manager.py). Most types only have one placeholder (usually
 {text}), so most of the time it's just `!copypasta tag @User`. A type
-whose templates use more than one placeholder, e.g. `{people}的{act}很
-弱智`, needs that many values: `!copypasta thattype Alice 打籃球`.
+whose templates use more than one placeholder, e.g. `{people}'s {act} is cool`,
+needs that many values: `!copypasta thattype Alice baskeyball`.
 
 Three seed types ship in data/copypasta_sets.json:
   tag       - "<@user/name> is handsome" style lines
