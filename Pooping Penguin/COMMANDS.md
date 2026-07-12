@@ -35,7 +35,7 @@ slash equivalent (see *Notes*).
 
 | Command | Slash? | Description |
 |---|---|---|
-| `!copypasta <type> <values>` (alias `!cp`) | 🚫 text-only | Posts a random copypasta from a chosen type's template pool. No `/copypasta use` — see *Notes*. |
+| `!copypasta <type> <values>` (alias `!cp`) | 🚫 text-only | Posts a random copypasta from a chosen type's template pool. No `/copypasta use`. |
 | `!copypasta list` | ✅ `/copypasta list` | Lists all copypasta types and how many templates each has. |
 | `!copypasta show <type>` (alias `info`) | ✅ `/copypasta show` | Shows every template in one copypasta type. |
 | `!copypasta create <type>` | ✅ `/copypasta create` | Creates a new, empty copypasta type. **Admin only.** |
@@ -57,7 +57,7 @@ All `!keyword` subcommands require Administrator permission.
 
 | Command | Slash? | Description |
 |---|---|---|
-| `!keyword` | 🚫 text-only | Prints the subcommand list. No bare `/keyword` — see *Notes*. |
+| `!keyword` | 🚫 text-only | Prints the subcommand list. No bare `/keyword`. |
 | `!keyword list [search]` | ✅ `/keyword list` | Lists all keyword sets in a browsable, searchable menu. |
 | `!keyword show <id>` (alias `info`) | ✅ `/keyword show` | Shows the keywords and responses for one set. |
 | `!keyword create <id>` | ✅ `/keyword create` | Creates a new, empty keyword set. |
