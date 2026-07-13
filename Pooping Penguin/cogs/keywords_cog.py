@@ -13,10 +13,18 @@ run from. The keyword sets themselves are global (shared across every
 server the bot is in, see keyword_manager.py docstring), so this is a
 deliberately coarse permission check - anyone who can !keyword edit on
 one server is editing what every other server sees too.
+
+Converted to commands.hybrid_group / hybrid_command: every subcommand
+(list, show, create, delete, enable, disable, addkeyword, removekeyword,
+addresponse, removeresponse) runs from one implementation whether it's
+invoked as "!keyword <sub>" or "/keyword <sub>". The bare "!keyword"
+(no subcommand) usage text stays prefix-only, since Discord doesn't
+allow invoking a slash command group directly - see GAPS.md.
 """
 import math
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 from config import load_settings
@@ -279,7 +287,8 @@ class KeywordsCog(commands.Cog, name="keywords"):
             return
         raise error
 
-    @commands.group(name="keyword", invoke_without_command=True)
+    @commands.hybrid_group(name="keyword", invoke_without_command=True,
+                            description="Manage global keyword-triggered response sets.")
     async def keyword(self, ctx):
         """Manage global keyword-triggered response sets."""
         language = self._lang(ctx)
@@ -293,7 +302,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             "`removekeyword <id> <關鍵詞>`、`addresponse <id> <回應內容>`、`removeresponse <id> <索引>`。\n"
             "使用 `!help keyword` 查看完整說明。"))
 
-    @keyword.command(name="list")
+    @keyword.command(name="list", description="Lists all keyword sets in a browsable, searchable menu.")
     async def keyword_list(self, ctx, *, search: str = None):
         """Lists all keyword sets in a browsable, searchable menu.
 
@@ -316,7 +325,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             ]
         await ctx.send(embed=menu.get_embed(), view=menu)
 
-    @keyword.command(name="show", aliases=["info"])
+    @keyword.command(name="show", aliases=["info"], description="Shows the keywords and responses for one set.")
     async def keyword_show(self, ctx, set_id: str):
         """Shows the keywords and responses for one set (alias: `!keyword info <id>`).
 
@@ -327,7 +336,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         menu = KeywordShowMenu(ctx, set_id, s, language)
         await ctx.send(embed=menu.get_embed(), view=menu)
 
-    @keyword.command(name="create")
+    @keyword.command(name="create", description="Creates a new, empty keyword set.")
     @commands.has_permissions(administrator=True)
     async def keyword_create(self, ctx, set_id: str):
         """Creates a new, empty keyword set."""
@@ -339,7 +348,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已建立關鍵詞組 `{set_id}`。使用 `!keyword addkeyword {set_id} <關鍵詞>` 新增關鍵詞，"
             f"使用 `!keyword addresponse {set_id} <內容>` 新增回應。"))
 
-    @keyword.command(name="delete")
+    @keyword.command(name="delete", description="Deletes a keyword set entirely.")
     @commands.has_permissions(administrator=True)
     async def keyword_delete(self, ctx, set_id: str):
         """Deletes a keyword set entirely."""
@@ -347,7 +356,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         self.manager.delete_set(set_id)
         await ctx.send(t(language, f"Deleted keyword set `{set_id}`.", f"已刪除關鍵詞組 `{set_id}`。"))
 
-    @keyword.command(name="enable")
+    @keyword.command(name="enable", description="Enables a keyword set so it starts matching messages again.")
     @commands.has_permissions(administrator=True)
     async def keyword_enable(self, ctx, set_id: str):
         """Enables a keyword set so it starts matching messages again."""
@@ -355,7 +364,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         self.manager.set_enabled(set_id, True)
         await ctx.send(t(language, f"Enabled keyword set `{set_id}`.", f"已啟用關鍵詞組 `{set_id}`。"))
 
-    @keyword.command(name="disable")
+    @keyword.command(name="disable", description="Disables a keyword set without deleting it.")
     @commands.has_permissions(administrator=True)
     async def keyword_disable(self, ctx, set_id: str):
         """Disables a keyword set without deleting it."""
@@ -363,7 +372,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         self.manager.set_enabled(set_id, False)
         await ctx.send(t(language, f"Disabled keyword set `{set_id}`.", f"已停用關鍵詞組 `{set_id}`。"))
 
-    @keyword.command(name="addkeyword")
+    @keyword.command(name="addkeyword", description="Adds a trigger keyword to a set.")
     @commands.has_permissions(administrator=True)
     async def keyword_addkeyword(self, ctx, set_id: str, *, keyword: str):
         """Adds a trigger keyword to a set."""
@@ -373,7 +382,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"Added trigger `{keyword}` to `{set_id}`.",
             f"已將觸發詞 `{keyword}` 加入 `{set_id}`。"))
 
-    @keyword.command(name="removekeyword")
+    @keyword.command(name="removekeyword", description="Removes a trigger keyword from a set.")
     @commands.has_permissions(administrator=True)
     async def keyword_removekeyword(self, ctx, set_id: str, *, keyword: str):
         """Removes a trigger keyword from a set."""
@@ -383,7 +392,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"Removed trigger `{keyword}` from `{set_id}`.",
             f"已將觸發詞 `{keyword}` 從 `{set_id}` 移除。"))
 
-    @keyword.command(name="addresponse")
+    @keyword.command(name="addresponse", description="Adds a candidate response text to a set.")
     @commands.has_permissions(administrator=True)
     async def keyword_addresponse(self, ctx, set_id: str, *, response: str):
         """Adds a candidate response text to a set."""
@@ -395,7 +404,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"Added response #{index} to `{set_id}`.",
             f"已將回應 #{index} 加入 `{set_id}`。"))
 
-    @keyword.command(name="removeresponse")
+    @keyword.command(name="removeresponse", description="Removes a response by its index.")
     @commands.has_permissions(administrator=True)
     async def keyword_removeresponse(self, ctx, set_id: str, index: int):
         """Removes a response by its index (see `!keyword show <id>`)."""

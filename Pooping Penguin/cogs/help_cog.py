@@ -196,7 +196,10 @@ class HelpCog(commands.Cog, name="help"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="help",
+        description="Displays the user manual for the bot or specific command details.")
+    @discord.app_commands.describe(command="Get detailed help for one specific command (optional)")
     async def help(self, ctx, *, command: str = None):
         """Displays the user manual for the bot or specific command details."""
         language = get_guild_language(load_settings(), ctx.guild.id)

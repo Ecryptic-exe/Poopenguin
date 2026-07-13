@@ -1,8 +1,11 @@
 """
-Timeout voting: !vto starts a vote, users react with the vote emoji,
-on_reaction_add tallies votes and applies the timeout once threshold is
-reached. !setvote configures how many votes are required (or restricts
-voting to admins only).
+Timeout voting: !vto/​/vto starts a vote, users react with the vote
+emoji, on_reaction_add tallies votes and applies the timeout once
+threshold is reached. !setvote/​/setvote configures how many votes are
+required (or restricts voting to admins only).
+
+vto and setvote are now commands.hybrid_command, so "!vto @user 30m"
+and "/vto member:@user time_str:30m" run the exact same function.
 """
 import asyncio
 import re
@@ -48,7 +51,12 @@ class VoteCog(commands.Cog, name="vote"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="vto",
+        description="Initiates a vote to timeout a member from the server.")
+    @discord.app_commands.describe(
+        member="The member to vote on timing out",
+        time_str="Duration: e.g. 1d, 2h, 30m, 10s, or 'random' (default 5m)")
     async def vto(self, ctx, member: discord.Member, time_str: str = None):
         """Initiates a vote to timeout a member from the server."""
         settings = load_settings()
@@ -78,6 +86,9 @@ class VoteCog(commands.Cog, name="vote"):
         vote_message = await ctx.send(t(language,
             f"Vote to timeout {member.mention} for {duration_text}. React with {VOTE_EMOJI} to vote 'Yes'. {threshold_text}",
             f"投票暫停 {member.mention} {duration_text_cn}。 使用 {VOTE_EMOJI} 反應投票 '是'。 {threshold_text_cn}"))
+        # ctx.send() always returns a real discord.Message, whether this
+        # command was invoked with "!" or "/", so add_reaction works the
+        # same way either way.
         await vote_message.add_reaction(VOTE_EMOJI)
 
         vote_data = {
@@ -110,7 +121,10 @@ class VoteCog(commands.Cog, name="vote"):
                 del votes[key]
                 save_votes(votes)
 
-    @commands.command()
+    @commands.hybrid_command(
+        name="setvote",
+        description="Configures the timeout voting system (Admin only).")
+    @discord.app_commands.describe(arg="A number of required votes (e.g. 5), or 'admin' for admin-only voting")
     @commands.has_permissions(administrator=True)
     async def setvote(self, ctx, arg: str):
         """Configures the timeout voting system (Admin only)."""
