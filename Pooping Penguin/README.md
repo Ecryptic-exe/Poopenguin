@@ -113,16 +113,3 @@ Some types can optionally carry per-game terminology (`game_terms` in
 jargon (rating tiers, difficulty labels, clear-lamp terms, etc.) via
 `{{term_key}}` tokens in the template text - see the module docstring in
 `copypasta_manager.py` for the full shape.
-
-## What changed from the original single-file bot
-
-- Split one large file into cogs by responsibility (see layout above)
-  instead of one giant `on_message()` + flat list of `@bot.command()`.
-- Centralised the `"X" if language == 'english' else "Y"` pattern into
-  `i18n.t()`.
-- Replaced hardcoded keyword/copypasta `if/elif` chains with data-driven
-  sets (`data/keyword_sets.json`, `data/copypasta_sets.json`) manageable
-  at runtime via `!keyword`/`!copypasta`, instead of requiring a code
-  change + redeploy.
-- Every command converted to `commands.hybrid_command`/`hybrid_group` so
-  it works as both `!thing` and `/thing` from one implementation.
