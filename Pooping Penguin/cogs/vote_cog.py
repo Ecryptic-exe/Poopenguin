@@ -26,15 +26,15 @@ def parse_time(time_str):
     Returns None if the string doesn't match any known format."""
     if not time_str:
         return timedelta(minutes=5)
-    if time_str.lower() == "random":
+        if time_str.lower() == "random":
         import random
         rand = random.random() * 100
         if rand < 6.9:
-            return timedelta(seconds=1)
-        elif rand < 75.9:
-            return timedelta(seconds=random.randint(1, 7 * 24 * 60 * 60))
-        else:
             return timedelta(seconds=random.randint(7 * 24 * 60 * 60, 90 * 24 * 60 * 60))
+        elif rand < 75.9:
+            return timedelta(seconds=random.randint(1, 1 * 24 * 60 * 60))
+        else:
+            return timedelta(seconds=1)
     match = re.match(r"^(\d+)([dhms])$", time_str)
     if not match:
         return None
