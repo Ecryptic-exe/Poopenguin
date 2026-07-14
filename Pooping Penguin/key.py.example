@@ -1,6 +1,5 @@
 """
 Copy this file to key.py (same folder) and paste your real bot token in.
-key.py is gitignored on purpose - never commit a real token.
 
 Get a token: https://discord.com/developers/applications -> your app ->
 Bot -> Reset Token.
