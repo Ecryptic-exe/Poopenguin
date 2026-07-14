@@ -15,6 +15,10 @@ share one implementation. channel_id/role_id are kept as plain string
 IDs (rather than discord.TextChannel/discord.Role converters) so
 !setperms keeps accepting raw IDs exactly like before - see GAPS.md
 for the option of upgrading these to native slash channel/role pickers.
+
+Also adds `!sync` (bot owner only, prefix-only - see its docstring for
+why it's not a hybrid/slash command) for manually re-registering slash
+commands with Discord on demand, instead of only on bot startup.
 """
 import discord
 from discord.ext import commands
@@ -157,6 +161,98 @@ class AdminCog(commands.Cog, name="admin"):
         settings["language"][guild_id] = new_language
         save_settings(settings)
         await ctx.send(t(new_language, f"Language set to {new_language.capitalize()}.", "語言設置為中文。"))
+
+    @commands.command(name="sync", hidden=True)
+    @commands.is_owner()
+    async def sync(self, ctx, scope: str = "guild"):
+        """Manually re-registers slash ("/") commands with Discord (bot owner only).
+
+        Deliberately a plain !-only text command, NOT a hybrid/slash
+        command: it's the tool you reach for when slash commands
+        AREN'T showing up yet, so it can't depend on slash commands
+        already being synced to be reachable, and it's an
+        owner-maintenance tool rather than something regular server
+        admins need in the slash picker.
+
+        VTO.py already runs this once automatically in on_ready(), so
+        you normally won't need this - it's here for the times you add
+        or edit a command and don't want to wait for a bot restart:
+
+          !sync             - sync to *this* server only (instant)
+          !sync global      - sync everywhere the bot is (can take up
+                              to ~1h the first time Discord's cache
+                              picks it up)
+
+        Discord keeps global-registered and guild-registered commands
+        as entirely separate entries. If this bot has ever been synced
+        to BOTH scopes (e.g. `!sync global` was run at some point, and
+        `!sync`/`!sync guild` at another, possibly from an older code
+        version), every command that exists in both scopes shows up
+        TWICE in the "/" picker - and if the two syncs happened on
+        different code versions, the two copies can even show
+        different descriptions, or a command that's since been removed
+        from the code (like an old standalone subcommand that got
+        turned into a text-only alias) can keep lingering as a ghost
+        entry in whichever scope hasn't been re-synced since. Use these
+        to clean that up:
+
+          !sync clearguild  - wipes every command registered directly
+                              to *this* server, without touching global
+                              ones (instant). Follow with `!sync guild`
+                              (or `!sync`) to re-register the current
+                              set to this server only.
+          !sync clearglobal - wipes every globally-registered command,
+                              without touching this server's
+                              guild-scoped ones (can take up to ~1h to
+                              disappear from Discord's cache
+                              everywhere). Follow with `!sync global`
+                              to re-register the current set globally.
+        """
+        scope = scope.lower()
+        if scope not in ("guild", "global", "clearguild", "clearglobal"):
+            await ctx.send("Usage: `!sync [guild|global|clearguild|clearglobal]` (default: `guild`).")
+            return
+
+        try:
+            if scope == "guild":
+                if not ctx.guild:
+                    await ctx.send("`!sync guild` has to be run inside a server.")
+                    return
+                self.bot.tree.copy_global_to(guild=ctx.guild)
+                synced = await self.bot.tree.sync(guild=ctx.guild)
+                await ctx.send(f"Synced {len(synced)} slash command(s) to this server (should be instant).")
+            elif scope == "global":
+                synced = await self.bot.tree.sync()
+                await ctx.send(
+                    f"Synced {len(synced)} slash command(s) globally "
+                    f"(can take up to ~1h to appear everywhere the first time).")
+            elif scope == "clearguild":
+                if not ctx.guild:
+                    await ctx.send("`!sync clearguild` has to be run inside a server.")
+                    return
+                self.bot.tree.clear_commands(guild=ctx.guild)
+                await self.bot.tree.sync(guild=ctx.guild)
+                await ctx.send(
+                    "Cleared every command registered directly to this server "
+                    "(should be instant). If commands still show up twice here, "
+                    "the duplicates are coming from the global command list - "
+                    "try `!sync clearglobal` too, then `!sync global` to "
+                    "re-register the current set.")
+            else:  # clearglobal
+                self.bot.tree.clear_commands(guild=None)
+                await self.bot.tree.sync()
+                await ctx.send(
+                    "Cleared every globally-registered command (can take up "
+                    "to ~1h to disappear from Discord's cache everywhere). "
+                    "If this server still shows duplicates once that's "
+                    "propagated, they were guild-scoped here - try "
+                    "`!sync clearguild`, then `!sync guild` to re-register.")
+        except discord.Forbidden:
+            await ctx.send(
+                "Sync failed: I'm missing the `applications.commands` OAuth2 scope. "
+                "See GAPS.md - the bot needs to be re-invited with that scope checked.")
+        except discord.HTTPException as e:
+            await ctx.send(f"Sync failed: {e}")
 
 
 async def setup(bot):

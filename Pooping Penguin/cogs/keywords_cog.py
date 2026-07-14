@@ -15,7 +15,7 @@ deliberately coarse permission check - anyone who can !keyword edit on
 one server is editing what every other server sees too.
 
 Converted to commands.hybrid_group / hybrid_command: every subcommand
-(list, show, create, delete, enable, disable, addkeyword, removekeyword,
+(list, info, create, delete, enable, disable, addkeyword, removekeyword,
 addresponse, removeresponse) runs from one implementation whether it's
 invoked as "!keyword <sub>" or "/keyword <sub>". The bare "!keyword"
 (no subcommand) usage text stays prefix-only, since Discord doesn't
@@ -33,6 +33,38 @@ from keyword_manager import KeywordManager, KeywordError
 
 # How many keyword sets are shown per page in the `!keyword list` menu.
 KEYWORD_PAGE_SIZE = 5
+
+
+class KeywordJumpModal(discord.ui.Modal):
+    """Popup asking for a page number, used by the Jump button on both
+    KeywordMenu and KeywordShowMenu. Only needs `menu.current_page`,
+    `menu._total_pages()`, `menu.get_embed()` and `menu.language` on the
+    menu it's attached to, so one modal class covers both."""
+
+    def __init__(self, menu, language: str):
+        total = menu._total_pages()
+        super().__init__(title=t(language, "Jump to Page", "跳至頁面"))
+        self.menu = menu
+        self.total = total
+        self.page_input = discord.ui.TextInput(
+            label=t(language, f"Page number (1-{total})", f"頁碼（1-{total}）"),
+            placeholder="1",
+            required=True,
+            max_length=10,
+        )
+        self.add_item(self.page_input)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        language = self.menu.language
+        raw = self.page_input.value.strip()
+        if not raw.isdigit() or not (1 <= int(raw) <= self.total):
+            await interaction.response.send_message(
+                t(language, f"Please enter a page number between 1 and {self.total}.",
+                  f"請輸入介於 1 到 {self.total} 之間的頁碼。"),
+                ephemeral=True)
+            return
+        self.menu.current_page = int(raw) - 1
+        await interaction.response.edit_message(embed=self.menu.get_embed(), view=self.menu)
 
 
 class KeywordSearchModal(discord.ui.Modal):
@@ -70,6 +102,7 @@ class KeywordMenu(discord.ui.View):
 
         self.previous_button.label = t(language, "Previous", "上一頁")
         self.next_button.label = t(language, "Next", "下一頁")
+        self.jump_button.label = t(language, "🔢 Jump", "🔢 跳頁")
         self.search_button.label = t(language, "🔍 Search", "🔍 搜尋")
         self.clear_button.label = t(language, "Clear Search", "清除搜尋")
         self.close_button.label = t(language, "Close", "關閉")
@@ -113,9 +146,9 @@ class KeywordMenu(discord.ui.View):
 
         embed.set_footer(text=t(self.language,
             f"Page {self.current_page + 1}/{total_pages} | {len(self.filtered_items)} set(s) | "
-            f"Use `!keyword show <id>` for full details.",
+            f"Use `!keyword info <id>` for full details.",
             f"第 {self.current_page + 1}/{total_pages} 頁 | 共 {len(self.filtered_items)} 個關鍵詞組 | "
-            f"使用 `!keyword show <id>` 查看完整詳情。"))
+            f"使用 `!keyword info <id>` 查看完整詳情。"))
         return embed
 
     async def apply_search(self, interaction: discord.Interaction, term: str):
@@ -145,6 +178,10 @@ class KeywordMenu(discord.ui.View):
     async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.current_page = (self.current_page + 1) % self._total_pages()
         await interaction.response.edit_message(embed=self.get_embed(), view=self)
+
+    @discord.ui.button(style=discord.ButtonStyle.grey, row=0)
+    async def jump_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(KeywordJumpModal(self, self.language))
 
     @discord.ui.button(style=discord.ButtonStyle.blurple, row=1)
     async def search_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -182,11 +219,13 @@ class KeywordShowMenu(discord.ui.View):
 
         self.previous_button.label = t(language, "Previous", "上一頁")
         self.next_button.label = t(language, "Next", "下一頁")
+        self.jump_button.label = t(language, "🔢 Jump", "🔢 跳頁")
         self.close_button.label = t(language, "Close", "關閉")
 
         if self._total_pages() <= 1:
             self.remove_item(self.previous_button)
             self.remove_item(self.next_button)
+            self.remove_item(self.jump_button)
 
     def _total_pages(self):
         return max(1, math.ceil(len(self.responses) / self.RESPONSE_PAGE_SIZE))
@@ -247,6 +286,10 @@ class KeywordShowMenu(discord.ui.View):
         self.current_page = (self.current_page + 1) % self._total_pages()
         await interaction.response.edit_message(embed=self.get_embed(), view=self)
 
+    @discord.ui.button(style=discord.ButtonStyle.grey, row=0)
+    async def jump_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(KeywordJumpModal(self, self.language))
+
     @discord.ui.button(style=discord.ButtonStyle.red, row=0)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.edit_message(
@@ -293,11 +336,11 @@ class KeywordsCog(commands.Cog, name="keywords"):
         """Manage global keyword-triggered response sets."""
         language = self._lang(ctx)
         await ctx.send(t(language,
-            "Keyword set management. Subcommands: `list`, `show <id>`, `create <id>`, "
+            "Keyword set management. Subcommands: `list`, `info <id>`, `create <id>`, "
             "`delete <id>`, `enable <id>`, `disable <id>`, `addkeyword <id> <kw>`, "
             "`removekeyword <id> <kw>`, `addresponse <id> <text>`, `removeresponse <id> <index>`.\n"
             "Use `!help keyword` for full details.",
-            "關鍵詞組管理。子命令：`list`、`show <id>`、`create <id>`、`delete <id>`、"
+            "關鍵詞組管理。子命令：`list`、`info <id>`、`create <id>`、`delete <id>`、"
             "`enable <id>`、`disable <id>`、`addkeyword <id> <關鍵詞>`、"
             "`removekeyword <id> <關鍵詞>`、`addresponse <id> <回應內容>`、`removeresponse <id> <索引>`。\n"
             "使用 `!help keyword` 查看完整說明。"))
@@ -325,9 +368,9 @@ class KeywordsCog(commands.Cog, name="keywords"):
             ]
         await ctx.send(embed=menu.get_embed(), view=menu)
 
-    @keyword.command(name="show", aliases=["info"], description="Shows the keywords and responses for one set.")
-    async def keyword_show(self, ctx, set_id: str):
-        """Shows the keywords and responses for one set (alias: `!keyword info <id>`).
+    @keyword.command(name="info", aliases=["show"], description="Shows the keywords and responses for one set.")
+    async def keyword_info(self, ctx, set_id: str):
+        """Shows the keywords and responses for one set (alias: `!keyword show <id>`).
 
         Responses are paginated 5 at a time, with Previous/Next buttons
         that only appear when there's more than one page."""
@@ -407,7 +450,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
     @keyword.command(name="removeresponse", description="Removes a response by its index.")
     @commands.has_permissions(administrator=True)
     async def keyword_removeresponse(self, ctx, set_id: str, index: int):
-        """Removes a response by its index (see `!keyword show <id>`)."""
+        """Removes a response by its index (see `!keyword info <id>`)."""
         language = self._lang(ctx)
         self.manager.remove_response(set_id, index)
         await ctx.send(t(language,

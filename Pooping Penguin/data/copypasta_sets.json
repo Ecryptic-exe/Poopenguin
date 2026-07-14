@@ -1,41 +1,98 @@
 {
   "types": {
-    "tag": {
+    "compliment": {
+      "enabled": true,
+      "placeholders": ["text"],
       "templates": [
-        "{text} is handsome",
-        "Everyone in the server agrees: {text} is the GOAT.",
-        "Breaking news: {text} just did something incredible.",
-        "{text}, we need to talk. (jk, you're great)",
-        "Scientists have confirmed {text} is built different.",
-        "insert {text}"
-      ],
-      "enabled": true
+        "{text} really carried that last one. Respect.",
+        "Everyone in this server agrees: {text} is criminally underrated.",
+        "Breaking news: {text} just had the play of the match. Again."
+      ]
     },
-    "activity": {
+    "roast": {
+      "enabled": true,
+      "placeholders": ["text"],
       "templates": [
-        "Nobody: Absolutely nobody: Me, doing {text} at 3am:",
-        "{text}? couldn't be me",
-        "You ever just think about how {text} is objectively the best thing ever?",
-        "There's a 50/50 chance {text} ruins your day. Do it anyway."
-      ],
-      "enabled": true
+        "{text} said they'd carry and then went 0/10. Legendary.",
+        "We regret to inform you that {text} has once again missed the easy one."
+      ]
     },
-    "song": {
+    "duo": {
+      "enabled": true,
+      "placeholders": ["name", "act"],
       "templates": [
-        "\"{text}\" is a very good song everyone should listen to",
-        "\"{text}\" hits different at 2am, no cap",
-        "Rating \"{text}\" a solid 10/10, don't @ me",
-        "If you haven't heard \"{text}\" yet, what are you even doing",
-        "\"{text}\" should be the national anthem tbh"
-      ],
-      "enabled": true
+        "{name}'s {act} is genuinely the best I've seen this week.",
+        "PSA: {name} is now legally required to {act} every time we play."
+      ]
     },
-    "pplact": {
+    "rhythm_game_flex": {
+      "enabled": true,
+      "placeholders": ["place", "game", "name", "character"],
+      "game_terms": {
+        "chunithm": {
+          "display": "Chunithm",
+          "aliases": ["chuni"],
+          "top_tier": "R17",
+          "near_top_tier": "R15",
+          "hard_diff": "14+",
+          "mid_diff": "13",
+          "full_combo": "AJ",
+          "score_grade": "SSS+"
+        },
+        "maimaidx": {
+          "display": "maimaiDX",
+          "aliases": ["mai", "maimai"],
+          "top_tier": "16000",
+          "near_top_tier": "15000",
+          "hard_diff": "14+",
+          "mid_diff": "13",
+          "full_combo": "All Perfect",
+          "score_grade": "SSS+"
+        },
+        "sdvx": {
+          "display": "SDVX",
+          "aliases": [],
+          "top_tier": "Exceed Gear",
+          "near_top_tier": "Gates of Heaven",
+          "hard_diff": "19",
+          "mid_diff": "17",
+          "full_combo": "PUC",
+          "score_grade": "AAA+"
+        },
+        "wacca": {
+          "display": "WACCA",
+          "aliases": [],
+          "top_tier": "2500 Rating",
+          "near_top_tier": "2000 Rating",
+          "hard_diff": "13+",
+          "mid_diff": "12",
+          "full_combo": "All Perfect",
+          "score_grade": "Master"
+        },
+        "iidx": {
+          "display": "IIDX",
+          "aliases": [],
+          "top_tier": "Kaiden",
+          "near_top_tier": "Overjoy",
+          "hard_diff": "12",
+          "mid_diff": "10",
+          "full_combo": "FC",
+          "score_grade": "AAA"
+        },
+        "ongeki": {
+          "display": "Ongeki",
+          "aliases": [],
+          "top_tier": "R21",
+          "near_top_tier": "R19",
+          "hard_diff": "14+",
+          "mid_diff": "13",
+          "full_combo": "All Perfect",
+          "score_grade": "SSS+"
+        }
+      },
       "templates": [
-        "{people}‘s {act} is cool"
-      ],
-      "placeholders": ["people", "act"],
-      "enabled": true
+        "Late at night at {place}, everyone knows it's {name}'s cab. The moment they step up to the machine, whoever's grinding for {{top_tier}} quietly steps aside - nobody wants to be the reason {name} loses their combo. {name}'s reputation on {game} is well known: they won't even glance at a challenger who hasn't cleared a {{hard_diff}} with {{full_combo}}, let alone one still stuck at {{mid_diff}}. But when {name}'s in a good mood, they'll actually stop and coach the newer players on {character}, and that's how half the server ended up chasing {{score_grade}} in the first place."
+      ]
     }
   }
 }
