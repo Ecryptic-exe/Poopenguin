@@ -1,28 +1,12 @@
 {
   "sets": {
-    "greeting": {
-      "enabled": true,
-      "keywords": ["good morning", "gm"],
+    "example": {
+      "keywords": ["hello", "hi"],
       "responses": [
-        "Morning! Hope it's a good one.",
-        "gm! Coffee first or straight into it?"
-      ]
-    },
-    "gg": {
-      "enabled": true,
-      "keywords": ["gg", "good game"],
-      "responses": [
-        "gg, that was a close one.",
-        "gg! Same time tomorrow?"
-      ]
-    },
-    "thanks": {
-      "enabled": true,
-      "keywords": ["thank you", "thanks", "ty"],
-      "responses": [
-        "Anytime!",
-        "Don't mention it :)"
-      ]
+        "Hey there! 👋",
+        "Hello! Try `!keyword` to see how to manage these sets."
+      ],
+      "enabled": true
     }
   }
 }

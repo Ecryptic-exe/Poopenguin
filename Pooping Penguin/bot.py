@@ -1,7 +1,6 @@
 """
 Bot entry point.
 
-Everything that used to be one 1000-line vto.py is now:
   - config.py            settings/votes/keywords JSON persistence
   - i18n.py               t() / get_guild_language() translation helper
   - keyword_manager.py    engine behind the global keyword-triggered responses
@@ -77,6 +76,7 @@ INITIAL_EXTENSIONS = (
     "cogs.keywords_cog",
     "cogs.messages_cog",
     "cogs.copypasta_cog",
+    "cogs.gacha_cog",
 )
 
 STATUS_MESSAGES = [

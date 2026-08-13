@@ -108,6 +108,16 @@ COMMAND_LIST = [
                   "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list`、`show <類型>`、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
     },
     {
+        "name": "gacha",
+        "description": {"english": "Opens the free gacha pull menu (Single Pull / 10x Pull buttons).",
+                         "chinese": "開啟免費抽獎選單（單抽／十連抽按鈕）。"},
+        "usage": "`!gacha` (subcommands: `pull`, `stats`, `reset`, `pool`, `setfeatured`, `reload`)",
+        "arguments": {"english": "See `!gacha` with no subcommand (prefix only) to open the pull menu directly, or `!gacha pull` / `/gacha pull` for the slash-friendly equivalent - Discord doesn't allow invoking a slash command group directly, so `/gacha` alone isn't invokable.\n- `!gacha pull`: opens the Single Pull / 10x Pull button menu.\n- `!gacha stats`: shows your total pulls and every 2-star/3-star character you've obtained.\n- `!gacha reset`: wipes your own pull history/collection (asks for confirmation first).\n- `!gacha pool`: shows the current rates and character rosters.\n- `!gacha setfeatured <character>`: (Admin only) changes the rate-up character - the `character` argument autocompletes from the live 3-star roster when used as `/gacha setfeatured`.\n- `!gacha reload`: (Admin only) re-reads `data/gacha_pool.json` after a hand edit.",
+                      "chinese": "使用 `!gacha`（不帶子命令，僅限前綴指令）直接開啟抽獎選單，或使用 `!gacha pull` ／ `/gacha pull` 取得適用於斜線指令的相同功能 - Discord 不允許直接呼叫斜線指令群組，因此單獨的 `/gacha` 無法呼叫。\n- `!gacha pull`：開啟「單抽／十連抽」按鈕選單。\n- `!gacha stats`：顯示你的總抽數以及曾獲得的所有二星／三星角色。\n- `!gacha reset`：清空自己的抽獎紀錄與收藏（會先要求確認）。\n- `!gacha pool`：顯示目前的機率與角色名單。\n- `!gacha setfeatured <角色>`：（僅限管理員）更換定軌角色 - 以 `/gacha setfeatured` 使用時，`character` 參數會根據目前的三星名單自動建議選項。\n- `!gacha reload`：（僅限管理員）在手動編輯 `data/gacha_pool.json` 後重新載入。"},
+        "notes": {"english": "- Completely free - no cost to pull.\n- Rates: 3-star 1.6%, 2-star 8.4%, 1-star 90% (editable live, see `!gacha pool`).\n- Pity: guaranteed to get the featured (定軌) 3-star character within 200 pulls; changing the featured character mid-way does not reset anyone's pity count.\n- Each user's total pulls, pity counter, and collection are tracked independently.",
+                  "chinese": "- 完全免費 - 抽獎不消耗任何資源。\n- 機率：三星 1.6%、二星 8.4%、一星 90%（可即時編輯，見 `!gacha pool`）。\n- 保底：200 抽內保證獲得定軌三星角色；中途更換定軌角色不會重置任何人的保底計數。\n- 每位使用者的總抽數、保底計數與收藏皆獨立記錄。"}
+    },
+    {
         "name": "setperms",
         "description": {"english": "Grants permissions to a specific role in a specific channel (Admin only).",
                          "chinese": "在特定頻道中為特定角色授予權限（僅限管理員）。"},
@@ -222,10 +232,12 @@ class HelpCog(commands.Cog, name="help"):
                 value=t(language,
                     "**Keyword Responses**: Sends copypastas for specific keywords in messages (manage sets with `!keyword`).\n"
                     "**Repeat Detection**: Echoes a message if three different users send it consecutively.\n"
-                    "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once.",
+                    "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once.\n"
+                    "**Gacha**: Use `!gacha` for free single/10x pulls with pity. Check your collection with `!gacha stats`.",
                     "**關鍵詞回應**：對消息中的特定關鍵詞回應迷因文本（使用 `!keyword` 管理關鍵詞組）。\n"
                     "**重複檢測**：若三個不同用戶連續發送相同消息，則重複該消息。\n"
-                    "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。"),
+                    "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。\n"
+                    "**轉蛋抽獎**：使用 `!gacha` 進行免費單抽／十連抽，並附保底機制。使用 `!gachastats` 查看你的收藏。"),
                 inline=False
             )
             embed.add_field(
