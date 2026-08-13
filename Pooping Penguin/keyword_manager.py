@@ -14,21 +14,35 @@ Data shape (data/keyword_sets.json):
     "<set_id>": {
       "keywords": ["kw1", "kw2", ...],
       "responses": ["resp1", "resp2", ...],
-      "enabled": true
+      "enabled": true,
+      "trigger_rate": 100
     },
     ...
   }
 }
 
-Matching rule: a set matches a message if any of its keywords appear
-as a case-insensitive substring of the message. If multiple sets match,
-one is picked at random. A random response from the matched set is sent
-(reproducing the original "some groups had one response, some had a random
-pick of several" behaviour uniformly).
+`trigger_rate` is an integer percentage (0-100) giving the independent
+chance that THIS set fires once its keyword has matched a message.
+Defaults to 100 (always fires) for newly-created sets and for any set
+loaded from older data files that predates this field, so existing
+keyword sets keep behaving exactly as before unless someone lowers
+their rate.
+
+Matching rule: a set is a "candidate" if any of its keywords appear as
+a case-insensitive substring of the message. Each candidate then rolls
+independently against its own trigger_rate - a set with a 30% rate
+only actually fires on ~30% of the messages that contain its keyword,
+regardless of what any other set's rate is. If more than one candidate
+survives its roll, one of the survivors is picked at random (same as
+before). A random response from the chosen set is sent (reproducing
+the original "some groups had one response, some had a random pick of
+several" behaviour uniformly).
 """
 import random
 
 from config import load_keywords, save_keywords
+
+DEFAULT_TRIGGER_RATE = 100
 
 
 class KeywordError(Exception):
@@ -61,16 +75,25 @@ class KeywordManager:
         return s
 
     def find_match(self, content: str):
-        """Return (set_id, response) for the first message-matching set,
-        chosen at random among all sets that match, or None if no match."""
+        """Return (set_id, response) for a matching set, chosen at random
+        among the sets that both match by keyword AND survive their own
+        independent trigger_rate roll, or None if no set matches / rolls
+        through."""
         self._reload()
         content = content.lower()
-        matched = []
+        candidates = []
         for set_id, s in self._data["sets"].items():
             if not s.get("enabled", True):
                 continue
             if any(kw.lower() in content for kw in s.get("keywords", [])):
-                matched.append(set_id)
+                candidates.append(set_id)
+        if not candidates:
+            return None
+
+        matched = [
+            set_id for set_id in candidates
+            if random.uniform(0, 100) < self._data["sets"][set_id].get("trigger_rate", DEFAULT_TRIGGER_RATE)
+        ]
         if not matched:
             return None
         chosen_id = random.choice(matched)
@@ -84,7 +107,12 @@ class KeywordManager:
         self._reload()
         if set_id in self._data["sets"]:
             raise KeywordError(f"Keyword set '{set_id}' already exists.")
-        self._data["sets"][set_id] = {"keywords": [], "responses": [], "enabled": True}
+        self._data["sets"][set_id] = {
+            "keywords": [],
+            "responses": [],
+            "enabled": True,
+            "trigger_rate": DEFAULT_TRIGGER_RATE,
+        }
         self._save()
 
     def delete_set(self, set_id: str):
@@ -95,6 +123,15 @@ class KeywordManager:
     def set_enabled(self, set_id: str, enabled: bool):
         s = self.get_set(set_id)
         s["enabled"] = enabled
+        self._save()
+
+    def set_trigger_rate(self, set_id: str, rate: float):
+        """Set the independent per-message fire chance for a set, as a
+        percentage from 0 (never fires) to 100 (always fires)."""
+        s = self.get_set(set_id)
+        if rate < 0 or rate > 100:
+            raise KeywordError(f"Trigger rate must be between 0 and 100 (got {rate}).")
+        s["trigger_rate"] = rate
         self._save()
 
     def add_keyword(self, set_id: str, keyword: str):

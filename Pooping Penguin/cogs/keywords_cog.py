@@ -16,7 +16,7 @@ one server is editing what every other server sees too.
 
 Converted to commands.hybrid_group / hybrid_command: every subcommand
 (list, info, create, delete, enable, disable, addkeyword, removekeyword,
-addresponse, removeresponse) runs from one implementation whether it's
+addresponse, removeresponse, rate) runs from one implementation whether it's
 invoked as "!keyword <sub>" or "/keyword <sub>". The bare "!keyword"
 (no subcommand) usage text stays prefix-only, since Discord doesn't
 allow invoking a slash command group directly - see GAPS.md.
@@ -136,11 +136,12 @@ class KeywordMenu(discord.ui.View):
                     kw_preview += t(self.language, f" (+{len(keywords) - 8} more)", f"（還有 {len(keywords) - 8} 個）")
                 if not kw_preview:
                     kw_preview = t(self.language, "(no keywords)", "（無關鍵詞）")
+                rate = s.get("trigger_rate", 100)
                 embed.add_field(
                     name=set_id,
                     value=t(self.language,
-                        f"{status} | {len(keywords)} keywords, {len(s.get('responses', []))} responses\n{kw_preview}",
-                        f"{status} | {len(keywords)} 個關鍵詞，{len(s.get('responses', []))} 個回應\n{kw_preview}"),
+                        f"{status} | {rate}% trigger rate | {len(keywords)} keywords, {len(s.get('responses', []))} responses\n{kw_preview}",
+                        f"{status} | 觸發機率 {rate}% | {len(keywords)} 個關鍵詞，{len(s.get('responses', []))} 個回應\n{kw_preview}"),
                     inline=False
                 )
 
@@ -244,7 +245,12 @@ class KeywordShowMenu(discord.ui.View):
             name=t(self.language, "Status", "狀態"),
             value=t(self.language, "Enabled", "已啟用") if self.s.get("enabled", True)
             else t(self.language, "Disabled", "已停用"),
-            inline=False
+            inline=True
+        )
+        embed.add_field(
+            name=t(self.language, "Trigger Rate", "觸發機率"),
+            value=f"{self.s.get('trigger_rate', 100)}%",
+            inline=True
         )
         keywords = self.s.get("keywords", [])
         embed.add_field(
@@ -338,11 +344,13 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language,
             "Keyword set management. Subcommands: `list`, `info <id>`, `create <id>`, "
             "`delete <id>`, `enable <id>`, `disable <id>`, `addkeyword <id> <kw>`, "
-            "`removekeyword <id> <kw>`, `addresponse <id> <text>`, `removeresponse <id> <index>`.\n"
+            "`removekeyword <id> <kw>`, `addresponse <id> <text>`, `removeresponse <id> <index>`, "
+            "`rate <id> <0-100>`.\n"
             "Use `!help keyword` for full details.",
             "關鍵詞組管理。子命令：`list`、`info <id>`、`create <id>`、`delete <id>`、"
             "`enable <id>`、`disable <id>`、`addkeyword <id> <關鍵詞>`、"
-            "`removekeyword <id> <關鍵詞>`、`addresponse <id> <回應內容>`、`removeresponse <id> <索引>`。\n"
+            "`removekeyword <id> <關鍵詞>`、`addresponse <id> <回應內容>`、`removeresponse <id> <索引>`、"
+            "`rate <id> <0-100>`。\n"
             "使用 `!help keyword` 查看完整說明。"))
 
     @keyword.command(name="list", description="Lists all keyword sets in a browsable, searchable menu.")
@@ -456,6 +464,21 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language,
             f"Removed response #{index} from `{set_id}`.",
             f"已將回應 #{index} 從 `{set_id}` 移除。"))
+
+    @keyword.command(name="rate", description="Sets a set's independent trigger chance (0-100%).")
+    @commands.has_permissions(administrator=True)
+    async def keyword_rate(self, ctx, set_id: str, rate: float):
+        """Sets how often a set fires once its keyword matches a message.
+
+        `rate` is a percentage from 0 (never fires) to 100 (always fires,
+        the default for newly-created sets). Each keyword set rolls this
+        chance independently of every other set, so lowering one set's
+        rate doesn't affect how often any other set fires."""
+        language = self._lang(ctx)
+        self.manager.set_trigger_rate(set_id, rate)
+        await ctx.send(t(language,
+            f"Set trigger rate for `{set_id}` to {rate}%.",
+            f"已將 `{set_id}` 的觸發機率設為 {rate}%。"))
 
 
 async def setup(bot):
