@@ -50,6 +50,11 @@ python bot.py
 older version of this bot with only the `bot` OAuth2 scope, re-invite it with
 `applications.commands` too, or slash commands won't register.
 
+Get a token at https://discord.com/developers/applications -> your
+application -> Bot -> Reset Token. The bot needs the `bot` **and**
+`applications.commands` OAuth2 scopes when you generate its invite link,
+or slash commands won't register (see GAPS.md).
+
 For instant slash-command updates while developing, set a `DEV_GUILD_ID`
 environment variable to a server ID you control - `bot.py` will sync there
 instantly instead of waiting on a global sync (which can take up to an hour
