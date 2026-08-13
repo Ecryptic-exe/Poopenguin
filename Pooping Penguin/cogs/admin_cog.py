@@ -149,6 +149,52 @@ class AdminCog(commands.Cog, name="admin"):
                     f"{ctx.channel.mention} 中尚未啟用自動反應。"))
 
     @commands.hybrid_command(
+        name="autoban",
+        description="Bans anyone who sends a message in this channel (Admin only).")
+    @discord.app_commands.describe(
+        reason="Ban reason shown in the audit log (omit to disable autoban in this channel)",
+        delete_days="Days of that member's message history to delete on ban, 0-7 (default 0)")
+    @commands.has_permissions(administrator=True)
+    async def autoban(self, ctx, reason: str = None, delete_days: int = 0):
+        """Enables or disables auto-banning anyone who sends a message in this channel."""
+        settings = load_settings()
+        language = self._lang(ctx)
+        channel_id = str(ctx.channel.id)
+
+        if not ctx.guild.me.guild_permissions.ban_members:
+            await ctx.send(t(language,
+                "I don't have permission to ban members!",
+                "我沒有封鎖成員的權限！"))
+            return
+
+        settings["autoban"] = settings.get("autoban", {})
+
+        if reason:
+            if not 0 <= delete_days <= 7:
+                await ctx.send(t(language,
+                    "delete_days must be between 0 and 7.",
+                    "delete_days 必須介乎 0 至 7 之間。"))
+                return
+            settings["autoban"][channel_id] = {"reason": reason, "delete_days": delete_days}
+            save_settings(settings)
+            await ctx.send(t(language,
+                f"Autoban enabled in {ctx.channel.mention}: anyone who sends a message here "
+                f"will be immediately banned (reason: {reason}).",
+                f"已在 {ctx.channel.mention} 啟用自動封鎖：任何在此頻道發送訊息的人都會立即被封鎖"
+                f"（原因：{reason}）。"))
+        else:
+            if channel_id in settings["autoban"]:
+                del settings["autoban"][channel_id]
+                save_settings(settings)
+                await ctx.send(t(language,
+                    f"Autoban disabled in {ctx.channel.mention}.",
+                    f"已在 {ctx.channel.mention} 停用自動封鎖。"))
+            else:
+                await ctx.send(t(language,
+                    f"Autoban was not enabled in {ctx.channel.mention}.",
+                    f"{ctx.channel.mention} 尚未啟用自動封鎖。"))
+
+    @commands.hybrid_command(
         name="lang",
         description="Toggles the language of the bot's help panel between English and Chinese.")
     async def lang(self, ctx):

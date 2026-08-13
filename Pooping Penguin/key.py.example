@@ -1,7 +1,3 @@
-"""
-Copy this file to key.py (same folder) and paste your real bot token in.
-
-Get a token: https://discord.com/developers/applications -> your app ->
-Bot -> Reset Token.
-"""
+# Copy this file to key.py and paste your real Discord bot token below.
+# key.py is gitignored on purpose - never commit your real token.
 api = "your-bot-token-here"

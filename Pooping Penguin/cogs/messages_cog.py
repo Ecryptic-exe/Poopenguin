@@ -34,6 +34,47 @@ class MessagesCog(commands.Cog, name="messages"):
         # channel_id -> list[{'content': str, 'author': int}], most recent last
         self.recent_messages = {}
 
+    async def _handle_autoban(self, message) -> bool:
+        """Bans the author if this channel has autoban enabled.
+
+        Returns True if the message was handled (author banned / attempt
+        made) so on_message can stop processing that message any further -
+        there's no point auto-reacting to or keyword-matching a message
+        from someone who's being banned for having sent it.
+
+        Server admins are always exempt, even if a channel is
+        misconfigured - this is a safety net so a bad !autoban call can't
+        lock the people who'd need to fix it out of their own server.
+        """
+        settings = load_settings()
+        autoban = settings.get("autoban", {})
+        channel_id = str(message.channel.id)
+        if channel_id not in autoban:
+            return False
+
+        member = message.author
+        if isinstance(member, discord.Member) and member.guild_permissions.administrator:
+            return False
+
+        entry = autoban[channel_id]
+        reason = entry.get("reason", "Autoban: posted in a restricted channel")
+        delete_days = entry.get("delete_days", 0)
+
+        try:
+            await message.delete()
+        except (discord.Forbidden, discord.NotFound):
+            pass
+
+        try:
+            await message.guild.ban(
+                member, reason=reason, delete_message_seconds=delete_days * 86400)
+            print(f"[Autoban] Banned {member} ({member.id}) for posting in channel {channel_id}")
+        except discord.Forbidden:
+            print(f"[Autoban] Failed to ban {member} in channel {channel_id}: Missing permissions")
+        except discord.HTTPException as e:
+            print(f"[Autoban] Failed to ban {member} in channel {channel_id}: {e}")
+        return True
+
     async def _handle_autoreact(self, message):
         settings = load_settings()
         channel_id = str(message.channel.id)
@@ -129,6 +170,9 @@ class MessagesCog(commands.Cog, name="messages"):
         # L__________
 
         if message.author.bot:
+            return
+
+        if await self._handle_autoban(message):
             return
 
         await self._handle_autoreact(message)

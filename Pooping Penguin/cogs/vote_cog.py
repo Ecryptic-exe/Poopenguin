@@ -26,7 +26,7 @@ def parse_time(time_str):
     Returns None if the string doesn't match any known format."""
     if not time_str:
         return timedelta(minutes=5)
-        if time_str.lower() == "random":
+    if time_str.lower() == "random":
         import random
         rand = random.random() * 100
         if rand < 6.9:
