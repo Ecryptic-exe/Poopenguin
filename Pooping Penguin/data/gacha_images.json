@@ -1,0 +1,51 @@
+{
+  "ショウニペンギン": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/c1.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/c1.webp?_=20260701.190431"
+  },
+  "チュウニペンギン": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/cso7.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/cso7.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/サウンドパレード!!": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/ca8.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/ca8.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/メシア": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/cso8.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/cso8.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/ラブリーハート": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/a54.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/a54.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/コンダクター": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/cr54.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/cr54.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/8bit": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/p8.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/p8.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/ボクノリレイション": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm/illustration/p46.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm/thumbnail/p46.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/Re:Generation": {
+    "image": "https://chunithm.sega.jp/storage/chara/chunithm-x-verse/illustration/v_1_34.webp?_=20260701.190431",
+    "thumbnail": "https://chunithm.sega.jp/storage/chara/chunithm-x-verse/thumbnail/v_1_34.webp?_=20260701.190431"
+  },
+  "チュウニペンギン/10th Anniversary": {
+    "image": "https://chunithm.sega.jp/10th/_nuxt/chuni-penguin.6xOI8IBP.png",
+    "thumbnail": "https://chunithm.sega.jp/10th/_nuxt/chuni-penguin.6xOI8IBP.png"
+  },
+  "ショウニペンギン/10th Anniversary": {
+    "image": "https://chunithm.sega.jp/10th/_nuxt/map-icon.BU6qHA_S.pngv",
+    "thumbnail": "https://chunithm.sega.jp/10th/_nuxt/map-icon.BU6qHA_S.png"
+  },
+  "虹限スタチュウ": "https://chunithm.sega.jp/storage/play/system/nijigen.webp?_=20260701.190431",
+  "ペンギンスタチュウ": "https://chunithm.sega.jp/storage/play/system/penguin.webp?_=20260701.190431",
+  "ショウニスタチュウ": "https://chunithm.sega.jp/storage/play/system/shouni.webp?_=20260701.190431",
+  "ソウルオブスタチュウ": "https://chunithm.sega.jp/storage/play/system/soulof.webp?_=20260701.190431",
+  "CHUNITHM 10TH ANNIVERSARY": "https://chunithm.sega.jp/10th/_nuxt/logo.BZmsPNdQ.png"
+}

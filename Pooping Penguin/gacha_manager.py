@@ -16,6 +16,13 @@ hand-edited at any time without touching code (see config.py):
                           they've ever pulled. 1-star results aren't
                           tracked per-character.
 
+  data/gacha_images.json character -> artwork. Each entry is either a
+                          plain URL string (full artwork; thumbnails
+                          fall back to it) or a {"image", "thumbnail"}
+                          dict for characters that also have a separate
+                          smaller/cropped thumbnail on file - see
+                          get_image/get_thumbnail/set_thumbnail below.
+
 Personal target:
   Each user has their own `target` - a 3-star character THEY chose
   via GachaCog's `!gacha target`. Pity works toward that user's own
@@ -52,7 +59,11 @@ Pity rule:
 """
 import random
 
-from config import load_gacha_pool, save_gacha_pool, load_gacha_users, save_gacha_users
+from config import (
+    load_gacha_pool, save_gacha_pool,
+    load_gacha_users, save_gacha_users,
+    load_gacha_images, save_gacha_images,
+)
 
 PITY_LIMIT = 200
 RARITIES = ("three_star", "two_star", "one_star")
@@ -68,6 +79,7 @@ class GachaManager:
         self._pool = load_gacha_pool()
         self._users = load_gacha_users()
         self._users.setdefault("users", {})
+        self._images = load_gacha_images()
 
     # -- persistence -----------------------------------------------------
     def _save_pool(self):
@@ -76,6 +88,9 @@ class GachaManager:
     def _save_users(self):
         save_gacha_users(self._users)
 
+    def _save_images(self):
+        save_gacha_images(self._images)
+
     def _reload_pool(self):
         self._pool = load_gacha_pool()
 
@@ -83,11 +98,15 @@ class GachaManager:
         self._users = load_gacha_users()
         self._users.setdefault("users", {})
 
+    def _reload_images(self):
+        self._images = load_gacha_images()
+
     def reload_pool(self):
-        """Re-reads data/gacha_pool.json from disk. Lets an admin
-        hand-edit rates/rosters and have the running bot pick the
-        change up without a restart."""
+        """Re-reads data/gacha_pool.json AND data/gacha_images.json from
+        disk. Lets an admin hand-edit rates/rosters/artwork links and
+        have the running bot pick the change up without a restart."""
         self._reload_pool()
+        self._reload_images()
 
     # -- pool info ---------------------------------------------------------
     def get_pool(self):
@@ -104,6 +123,82 @@ class GachaManager:
             raise GachaError(f"'{character}' is not in the 3-star pool.")
         self._pool["featured"] = character
         self._save_pool()
+
+    # -- character artwork ---------------------------------------------
+    # Each entry in data/gacha_images.json is either the legacy plain
+    # URL string (full artwork only, thumbnail falls back to it) or a
+    # {"image": ..., "thumbnail": ...} dict for characters that also
+    # have a separate, smaller/cropped thumbnail on file. Both forms
+    # can be freely hand-mixed in the file - see _normalize_image_entry.
+    def _normalize_image_entry(self, entry):
+        if isinstance(entry, str):
+            return {"image": entry, "thumbnail": None}
+        if isinstance(entry, dict):
+            return {"image": entry.get("image"), "thumbnail": entry.get("thumbnail")}
+        return {"image": None, "thumbnail": None}
+
+    def get_image(self, character):
+        """Full-size artwork URL for a character, or None if nothing's
+        been set for them yet in data/gacha_images.json."""
+        self._reload_images()
+        entry = self._images.get(character)
+        return self._normalize_image_entry(entry)["image"] if entry else None
+
+    def get_thumbnail(self, character):
+        """Small thumbnail URL for a character. Falls back to the full
+        artwork URL if no separate thumbnail is on file, so existing
+        (plain-string) entries keep working with no edits needed."""
+        self._reload_images()
+        entry = self._images.get(character)
+        if not entry:
+            return None
+        norm = self._normalize_image_entry(entry)
+        return norm["thumbnail"] or norm["image"]
+
+    def set_image(self, character: str, url: str):
+        """Admin-only in practice (gated in the cog): points a character
+        at its full-artwork image URL. Doesn't require the character to
+        currently be in the pool, so artwork can be set up ahead of a
+        roster change. Preserves an existing thumbnail, if any."""
+        self._reload_images()
+        existing = self._normalize_image_entry(self._images.get(character, {}))
+        existing["image"] = url
+        # Keep the on-disk format minimal: plain string when there's no
+        # separate thumbnail, dict only once one is actually set.
+        self._images[character] = existing if existing["thumbnail"] else url
+        self._save_images()
+
+    def set_thumbnail(self, character: str, url: str):
+        """Admin-only in practice (gated in the cog): points a character
+        at a separate, smaller thumbnail URL - shown on pull results and
+        the collection view instead of the full artwork. Doesn't require
+        the character to have full artwork set first."""
+        self._reload_images()
+        existing = self._normalize_image_entry(self._images.get(character, {}))
+        existing["thumbnail"] = url
+        self._images[character] = existing
+        self._save_images()
+
+    def remove_image(self, character: str):
+        self._reload_images()
+        if character in self._images:
+            del self._images[character]
+            self._save_images()
+
+    def remove_thumbnail(self, character: str):
+        """Clears just the separate thumbnail, leaving full artwork (if
+        any) in place - future thumbnail lookups fall back to it."""
+        self._reload_images()
+        entry = self._images.get(character)
+        if not entry:
+            return
+        norm = self._normalize_image_entry(entry)
+        norm["thumbnail"] = None
+        if norm["image"]:
+            self._images[character] = norm["image"]
+        else:
+            del self._images[character]
+        self._save_images()
 
     # -- user records ------------------------------------------------------
     def _new_user(self):

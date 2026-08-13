@@ -15,6 +15,7 @@ KEYWORDS_FILE = os.path.join(DATA_DIR, "keyword_sets.json")
 COPYPASTA_FILE = os.path.join(DATA_DIR, "copypasta_sets.json")
 GACHA_POOL_FILE = os.path.join(DATA_DIR, "gacha_pool.json")
 GACHA_USERS_FILE = os.path.join(DATA_DIR, "gacha_users.json")
+GACHA_IMAGES_FILE = os.path.join(DATA_DIR, "gacha_images.json")
 
 DEFAULT_SETTINGS = {"required_votes": 3, "admin_only": False, "language": {}, "autoreact": {}}
 DEFAULT_KEYWORDS = {"sets": {}}
@@ -38,16 +39,33 @@ DEFAULT_GACHA_POOL = {
         "チュウニペンギン/ボクノリレイション",
         "チュウニペンギン/Re:Generation",
         "チュウニペンギン/10th Anniversary",
+        "ショウニペンギン/10th Anniversary",
     ],
     "two_star": [
+        "虹限スタチュウ",
         "ペンギンスタチュウ",
         "ショウニスタチュウ",
         "ソウルオブスタチュウ",
-        "虹限スタチュウ",
+        "CHUNITHM 10TH ANNIVERSARY"
     ],
     "one_star": ["💩"],
 }
 DEFAULT_GACHA_USERS = {"users": {}}
+
+# Maps character name (must match the exact roster string in gacha_pool.json)
+# -> a direct image URL. Hand-editable like gacha_pool.json - fill it in with
+# artwork links, then run `!gacha reload` to pick the changes up live. A
+# character with no entry here just won't show an image, everything else
+# still works normally.
+DEFAULT_GACHA_IMAGES = {}
+
+# DEBUG: prints once, when config.py is first imported, so you can confirm
+# the bot process is reading/writing the exact file you're checking on disk
+# (e.g. rules out a second copy of the project, or a container without a
+# persistent volume mounted for data/). Safe to delete once confirmed.
+print(f"[config.py] DATA_DIR resolved to: {DATA_DIR}")
+print(f"[config.py] COPYPASTA_FILE resolved to: {COPYPASTA_FILE}")
+print(f"[config.py] COPYPASTA_FILE exists on disk right now: {os.path.exists(COPYPASTA_FILE)}")
 
 def _load(path, default):
     if os.path.exists(path):
@@ -68,6 +86,10 @@ def _save(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    # DEBUG: confirms every write, with the absolute path and the size of
+    # what was actually written to disk. Safe to delete once confirmed.
+    size = os.path.getsize(path)
+    print(f"[config.py] wrote {size} bytes to: {os.path.abspath(path)}")
 
 def load_settings():
     return _load(SETTINGS_FILE, DEFAULT_SETTINGS)
@@ -109,3 +131,11 @@ def load_gacha_users():
 
 def save_gacha_users(data):
     _save(GACHA_USERS_FILE, data)
+
+
+def load_gacha_images():
+    return _load(GACHA_IMAGES_FILE, DEFAULT_GACHA_IMAGES)
+
+
+def save_gacha_images(data):
+    _save(GACHA_IMAGES_FILE, data)
