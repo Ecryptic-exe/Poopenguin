@@ -1,3 +1,8 @@
 # Copy this file to key.py and paste your real Discord bot token below.
 # key.py is gitignored on purpose - never commit your real token.
 api = "your-bot-token-here"
+
+# BionicGPT settings (used by cogs/ai_cog.py to reach your local
+# Qwen3 8B model through BionicGPT's OpenAI-compatible API)
+LM_STUDIO_BASE_URL = "http://localhost:1234/v1"
+MODEL_NAME = "qwen/qwen3-8b"
