@@ -1,6 +1,7 @@
 """
 AI chat cog - talks to a locally hosted model through BionicGPT's
 OpenAI-compatible API (/v1/chat/completions).
+
 """
 import logging
 
