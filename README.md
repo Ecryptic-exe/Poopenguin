@@ -62,6 +62,7 @@ penguin with an attitude problem.
 
 - Python 3.9+
 - [discord.py](https://pypi.org/project/discord.py/) 2.x
+- LM Studio (https://lmstudio.ai/)
 
 See `requirements.txt` for the full list, and the setup section below for
 getting it running.
