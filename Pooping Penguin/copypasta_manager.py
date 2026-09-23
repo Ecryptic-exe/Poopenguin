@@ -11,7 +11,7 @@ Data shape (data/copypasta_sets.json):
       "enabled": true
     },
     "<multi_placeholder_type_id>": {
-      "templates": ["{people}的{act}很弱智", "..."],
+      "templates": ["{people}'s {act} is cool", "..."],
       "placeholders": ["people", "act"],
       "enabled": true
     },
@@ -25,7 +25,7 @@ just the *union* of every placeholder name any template in that type has
 ever used - it grows automatically as templates using new names are
 added (see add_template()). Templates within a type do NOT have to share
 an identical placeholder set any more: one template can be `{text} is
-handsome` and another in the same type can be `{people}的{act}很弱智`.
+handsome` and another in the same type can be `{people}'s {act}is cool`.
 
 What actually gets filled in for a given render is always that specific
 template's OWN placeholders, extracted fresh from its text (see _fill()).
@@ -41,9 +41,9 @@ needed so the user can retry.
 
 For a classic single-blank type this just means each template's own
 placeholders end up being `["text"]` and behaves exactly like before:
-`!copypasta tag @User`. For a type like `{people}的{act}很弱智` it means
+`!copypasta tag @User`. For a type like `{people}'s {act} is cool` it means
 that template's own placeholders are `["people", "act"]` and usage becomes
-`!copypasta thattype Alice 打籃球` (values are matched to that template's
+`!copypasta thattype Alice basketball` (values are matched to that template's
 placeholder names positionally, in the order they first appear in its
 text).
 
