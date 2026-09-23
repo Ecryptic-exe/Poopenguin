@@ -1,23 +1,6 @@
 """
 AI chat cog - talks to a locally hosted model through BionicGPT's
 OpenAI-compatible API (/v1/chat/completions).
-
-BionicGPT sits in front of your local model (Qwen3 8B) and exposes it
-the same way OpenAI's API works, so this cog just does a plain HTTP
-POST with aiohttp (already a dependency of discord.py - no extra
-packages needed) rather than pulling in the `openai` SDK.
-
-Setup:
-  1. In BionicGPT, create an API key for the assistant/model you set
-     Qwen3 8B up under, and note the base URL of your BionicGPT
-     instance (e.g. http://localhost:7800 or wherever you're hosting
-     it).
-  2. Add the three settings below to key.py (see key.py.example):
-        bionic_api_key  = "bn_..."
-        bionic_base_url = "http://localhost:7800/v1"
-        bionic_model    = "qwen3-8b"   # the model name/alias as
-                                        # configured in BionicGPT
-  3. Add "cogs.ai_cog" to INITIAL_EXTENSIONS in bot.py.
 """
 import logging
 
