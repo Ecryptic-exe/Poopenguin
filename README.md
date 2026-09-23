@@ -41,6 +41,9 @@ Perfect for servers that thrive on spontaneous nonsense.
   Auto-react with an emoji of your choice in a specific channel — optionally
   restricted to a specific user.
 
+- **Chatbot System**
+  @Pengin and type your message and the penguin will reply you.
+
 **[ADMIN ONLY]**
 
 - **Channel Permission Recovery**
