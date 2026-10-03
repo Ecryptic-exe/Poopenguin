@@ -104,14 +104,21 @@ class MessagesCog(commands.Cog, name="messages"):
         if not (self.bot.user.mentioned_in(message) and not message.mention_everyone):
             return False
 
-        content = message.content.strip().lower()
+        raw_content = message.content.strip()
+        content = raw_content.lower()
         command = (
             content.replace(f"<@!{self.bot.user.id}>", "")
             .replace(f"<@{self.bot.user.id}>", "")
             .strip()
         )
+        # Same stripping as `command` above, but case-preserved - this is
+        # what actually gets sent to the AI model, not the lowercased version.
+        raw_prompt = (
+            raw_content.replace(f"<@!{self.bot.user.id}>", "")
+            .replace(f"<@{self.bot.user.id}>", "")
+            .strip()
+        )
         ctx = await self.bot.get_context(message)
-        language = get_guild_language(load_settings(), message.guild.id)
 
         if not command or command in ("poop penguin", "help"):
             await self.bot.get_command("help")(ctx)
@@ -120,7 +127,15 @@ class MessagesCog(commands.Cog, name="messages"):
         valid_commands = [c.name for c in self.bot.commands]
         if command in valid_commands:
             await self.bot.get_command("help")(ctx, command=command)
+            return True
+
+        # Anything else @-mentioned at the bot goes to the local AI model
+        # (see cogs/ai_cog.py) instead of a "no command found" error.
+        ai_cog = self.bot.get_cog("AICog")
+        if ai_cog:
+            await ai_cog.respond_to_mention(message, raw_prompt)
         else:
+            language = get_guild_language(load_settings(), message.guild.id)
             from i18n import t
             await message.channel.send(t(language,
                 f"No command named `{command}` found. Use `!help` to see all available commands.",

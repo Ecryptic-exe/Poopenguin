@@ -41,6 +41,9 @@ Perfect for servers that thrive on spontaneous nonsense.
   Auto-react with an emoji of your choice in a specific channel — optionally
   restricted to a specific user.
 
+- **Chatbot System**
+  @Pengin and type your message and the penguin will reply you.
+
 **[ADMIN ONLY]**
 
 - **Channel Permission Recovery**
@@ -62,6 +65,7 @@ penguin with an attitude problem.
 
 - Python 3.9+
 - [discord.py](https://pypi.org/project/discord.py/) 2.x
+- LM Studio (https://lmstudio.ai/)
 
 See `requirements.txt` for the full list, and the setup section below for
 getting it running.
