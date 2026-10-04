@@ -1,133 +1,89 @@
-# Discord Bot Template
+# Poop Penguin Bot
 
 A cog-based Discord bot (discord.py 2.x) with hybrid slash/prefix commands,
-ready to fork for a small community. Out of the box it includes vote-based
-timeout moderation, keyword-triggered responses, fill-in-the-blank
-"copypasta" templates, a gacha mini-game with pity, per-server
-English/Traditional Chinese text, and an optional local-AI chat cog.
-
-## Quick start
-
-```bash
-python -m venv venv && source venv/bin/activate    # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp key.py.example key.py        # then paste your bot token into key.py
-python bot.py
-```
-
-Requires Python 3.9+.
-
-**Discord Developer Portal checklist** (https://discord.com/developers/applications):
-
-1. Bot -> Reset Token, and put it in `key.py` (or the `DISCORD_TOKEN` env var).
-2. Bot -> Privileged Gateway Intents: enable **Message Content** and **Server Members**.
-3. OAuth2 -> URL Generator: tick **both** the `bot` and `applications.commands` scopes, then give the
-   bot the permissions you want (Moderate Members for `vto`, Ban Members for `autoban`,
-   Manage Channels for `setperms`, Add Reactions for `autoreact`).
-
-Slash commands are registered on startup. Global registration can take up to an hour the first
-time; for instant updates while developing, set `DEV_GUILD_ID` to a server you control.
-
-## Configuration
-
-All settings live in `settings.py`. Each can be set as an environment variable or in `key.py`.
-
-| Setting | Purpose | Default |
-|---|---|---|
-| `DISCORD_TOKEN` | Bot token (**required**) | - |
-| `BOT_NAME` | Name used in help text, AI persona, `@Bot help` | `Template Bot` |
-| `SUPPORT_CONTACT` | Shown in the `help` footer and status rotation (blank hides it) | blank |
-| `COMMAND_PREFIX` | Prefix for text commands | `!` |
-| `DEV_GUILD_ID` | Instant slash sync to one server | unset |
-| `LM_STUDIO_BASE_URL` / `MODEL_NAME` / `VISION_MODEL_NAME` | Local AI server (any OpenAI-compatible API) | LM Studio defaults |
-| `LOG_ALL_MESSAGES` | Print every message the bot sees (privacy-sensitive) | off |
-
-Also worth editing: `STATUS_MESSAGES` and `INITIAL_EXTENSIONS` in `bot.py`
-(comment out a cog to disable that feature, e.g. `cogs.ai_cog` if you don't run a local model).
+built for a small community. Includes vote-based moderation, keyword-triggered
+responses, copypasta templates, and a gacha mini-game.
 
 ## Layout
 
 ```
 .
-├── bot.py                  # entry point: builds the bot, loads cogs, syncs slash commands
-├── settings.py             # token + branding + optional settings (env vars / key.py)
-├── key.py.example          # copy to key.py (gitignored)
-├── config.py               # JSON load/save helpers and data/ file paths
-├── i18n.py                 # t(language, english, chinese) helper
-├── persona.py              # the AI chat personality: edit this to change who the bot is
-├── keyword_manager.py      # engine: keyword -> response sets
-├── copypasta_manager.py    # engine: template pools with {placeholders}
-├── gacha_manager.py        # engine: pulls, rates, pity, per-user records
+├── bot.py                  # entry point: builds the bot, loads cogs, runs it
+├── key.py                  # NOT included - copy key.py.example, add your token
+├── config.py                # JSON load/save helpers, file paths (all data
+│                             #   lives under data/, resolved relative to the
+│                             #   project so it works on any machine)
+├── i18n.py                  # t() + get_guild_language() translation helper
+├── keyword_manager.py       # engine behind global keyword-triggered responses
+├── copypasta_manager.py     # engine behind copypasta template generation
+├── gacha_manager.py         # gacha pull logic, rates, user records
+├── cleanup_settings.py      # one-off maintenance script for settings data
+├── requirements.txt
 ├── cogs/
-│   ├── help_cog.py         # help (paged manual; add new commands to COMMAND_LIST)
-│   ├── vote_cog.py         # vto, setvote
-│   ├── admin_cog.py        # setperms, autoreact, autoban, lang, sync (owner only)
-│   ├── general_cog.py      # ask, pick, rng, rcg
-│   ├── keywords_cog.py     # keyword ... manage keyword sets live (admin)
-│   ├── messages_cog.py     # on_message pipeline: autoban, autoreact, @mention, keywords, repeat-echo
-│   ├── copypasta_cog.py    # copypasta ... (alias: cp)
-│   ├── gacha_cog.py        # gacha ... interactive menu, pity target, artwork
-│   └── ai_cog.py           # chat, chatreset, and free-text @mentions -> local model
+│   ├── help_cog.py           # !help
+│   ├── vote_cog.py           # !vto, !setvote
+│   ├── admin_cog.py          # !setperms, !autoreact, !lang
+│   ├── general_cog.py        # !ask, !pick, !rng, !rcg
+│   ├── keywords_cog.py       # !keyword ... manage keyword sets live
+│   ├── messages_cog.py       # on_message pipeline: autoreact, mentions,
+│   │                          #   keyword matching, repeat-echo
+│   ├── copypasta_cog.py      # copypasta template commands
+│   └── gacha_cog.py          # gacha pull / roster / rate commands
 └── data/
-    ├── keyword_sets.json   # seeded with one example set
-    ├── copypasta_sets.json # seeded with three example types (tag, activity, song)
-    ├── gacha_pool.json     # example roster + rates; hand-editable
-    ├── gacha_images.json   # character -> artwork URLs (empty)
-    └── (generated at runtime: vote_settings.json, votes.json, gacha_users.json)
+    ├── keyword_sets.json     # seeded with a small example set
+    ├── copypasta_sets.json   # seeded with a small example template
+    ├── gacha_pool.json       # default gacha roster + rates (hand-editable)
+    ├── gacha_users.json      # generated at runtime
+    ├── vote_settings.json    # generated at runtime
+    └── votes.json            # generated at runtime
 ```
 
-Everything under `data/` is plain JSON and safe to hand-edit while the bot is offline.
-Keyword sets, copypasta pools and the gacha banner are **global** (shared by every server the
-bot is in). Settings such as language, autoreact and autoban are per-server/channel.
+## Setup
 
-## Commands
+```
+pip install -r requirements.txt
+cp key.py.example key.py   # then paste your bot token in
+python bot.py
+```
 
-| Command | What it does | Who |
-|---|---|---|
-| `help [command]` | Paged manual / per-command details (`@Bot` also opens it) | anyone |
-| `vto <@member> [time]` | Start a vote to time someone out (`1d`, `2h`, `30m`, `10s`, `random`; capped at Discord's 28-day limit) | anyone |
-| `setvote <n \| admin>` | Votes required, or admin-only voting | admin |
-| `setperms <channel_id> <role_id>` | Grant a role view/send access to a channel | admin |
-| `autoreact [emoji] [@user]` | React to every message in a channel (or one user's) | anyone |
-| `autoban [reason] [delete_days]` | Ban anyone who posts in this channel (honeypot); admins exempt | admin |
-| `lang` | Toggle the server between English and Traditional Chinese | anyone |
-| `ask`, `pick`, `rng`, `rcg` | Random fun commands | anyone |
-| `keyword ...` | Manage keyword sets (`list`, `info`, `create`, `delete`, `enable`, `disable`, `addkeyword`, `removekeyword`, `addresponse`, `removeresponse`, `rate`) | admin |
-| `copypasta <type> <values>` | Fill a random template from a type's pool; manage with `list/info/create/delete/enable/disable/add/remove` | anyone / admin |
-| `gacha` | Interactive pull menu; `target`, `browse`, `stats`, `reset`, `pool`; admin: `setfeatured`, `setimage`, `setthumbnail`, `removeimage`, `removethumbnail`, `reload` | anyone / admin |
-| `chat <prompt>`, `chatreset` | Talk to the local AI model; reset the channel's shared conversation | anyone |
-| `sync [guild\|global\|clearguild\|clearglobal]` | Re-register slash commands | bot owner |
+`key.py` is gitignored - never commit your real bot token. If you invited an
+older version of this bot with only the `bot` OAuth2 scope, re-invite it with
+`applications.commands` too, or slash commands won't register.
 
-All of these work as `!command` and `/command` except where Discord can't (a bare group such as
-`!gacha` or `!copypasta tag @User` is prefix-only; slash users use `/gacha pull`).
+Get a token at https://discord.com/developers/applications -> your
+application -> Bot -> Reset Token. The bot needs the `bot` **and**
+`applications.commands` OAuth2 scopes when you generate its invite link,
+or slash commands won't register (see GAPS.md).
 
-## Adding your own cog
+For instant slash-command updates while developing, set a `DEV_GUILD_ID`
+environment variable to a server ID you control - `bot.py` will sync there
+instantly instead of waiting on a global sync (which can take up to an hour
+to propagate).
 
-1. Create `cogs/my_cog.py`:
+## Data files
 
-   ```python
-   from discord.ext import commands
-   from config import load_settings
-   from i18n import t, get_guild_language
+Everything under `data/` is plain JSON and safe to hand-edit while the bot is
+offline. `data/keyword_sets.json` and `data/copypasta_sets.json` ship with
+minimal example content here - swap in your own community's sets, or manage
+them live with the `!keyword` and copypasta commands once the bot is running.
+`gacha_pool.json` defines the default gacha roster and pull rates and can be
+edited directly at any time.
 
-   class MyCog(commands.Cog, name="my"):
-       def __init__(self, bot):
-           self.bot = bot
+## Managing keyword sets
 
-       @commands.hybrid_command(name="hello", description="Say hello.")
-       async def hello(self, ctx):
-           language = get_guild_language(load_settings(), ctx.guild.id)
-           await ctx.send(t(language, "Hello!", "你好！"))
+Keyword sets are **global** - shared across every server the bot is in. All
+`!keyword` commands require Administrator permission in the server they're
+run from.
 
-   async def setup(bot):
-       await bot.add_cog(MyCog(bot))
-   ```
-
-2. Add `"cogs.my_cog"` to `INITIAL_EXTENSIONS` in `bot.py`.
-3. Add an entry to `COMMAND_LIST` in `cogs/help_cog.py` so it appears in `help`.
-
-## Notes
-
-- Never commit `key.py`. If a token ever leaks, reset it in the Developer Portal.
-- `autoban` is destructive by design: use it only in channels nobody legitimate should post in.
-- The AI cog needs a running OpenAI-compatible server; without one it replies with the friendly error from `persona.py`.
+```
+!keyword                                  # list subcommands
+!keyword list                             # list all sets + enabled status
+!keyword show <id>                        # see keywords + responses for one set
+!keyword create <id>                      # make a new empty set
+!keyword delete <id>                      # delete a set entirely
+!keyword enable <id> / disable <id>       # toggle without deleting
+!keyword addkeyword <id> <word>           # add a trigger word
+!keyword removekeyword <id> <word>        # remove a trigger word
+!keyword addresponse <id> <text>          # add a candidate response
+!keyword removeresponse <id> <index>      # remove by index (see `show`)
+```
