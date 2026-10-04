@@ -117,19 +117,19 @@ care - it is meant for honeypot channels.
 
 ## CHUNITHM rating charts
 
-`!rating` / `/rating` look up a CHUNITHM song and draw how players of different
+`!chunithm rating` / `/chunithm rating` look up a CHUNITHM song and draw how players of different
 ratings score on that chart, with a short numeric read-out ("personal spread",
-"relative specialization", "score-eating" ranges). `!song_search` /
-`/song_search` only search the song list.
+"relative specialization", "score-eating" ranges). `!chunithm song_search` /
+`/chunithm song_search` only search the song list.
 
 ```
-/rating song:<title or fragment> difficulty:MASTER detailed:False
-!rating "XL TECHNO" MASTER            # prefix: quote titles that contain spaces
-!song_search サファリ                  # up to 10 candidates + their difficulties
+/chunithm rating song:<title or fragment> difficulty:MASTER detailed:False
+!chunithm rating "XL TECHNO" MASTER            # prefix: quote titles that contain spaces
+!chunithm song_search サファリ                  # up to 10 candidates + their difficulties
 ```
 
 - If the text matches several songs, a dropdown appears (only the requester can
-  use it). `/rating` also autocompletes titles.
+  use it). `/chunithm rating` also autocompletes titles.
 - Nothing is fetched or drawn at startup, while searching, or in the
   background - only the one chart someone selected. Statistics come from the
   public Chunirec site, so some charts have no usable data; the bot says why.
@@ -155,7 +155,7 @@ prompts and errors follow `!lang`.
 
 The bundled Noto Sans CJK font is SIL OFL licensed (license in `assets/`).
 
-If `/rating` replies that the song has no usable data, that is the Chunirec
+If `/chunithm rating` replies that the song has no usable data, that is the Chunirec
 side (too few players), not a bot fault. `cache/` can be deleted any time to
 force fresh charts.
 
