@@ -78,6 +78,7 @@ INITIAL_EXTENSIONS = (
     "cogs.copypasta_cog",
     "cogs.gacha_cog",
     "cogs.rating_cog",
+    "cogs.chunithm_cog",
     "cogs.ai_cog",
 )
 
@@ -162,6 +163,10 @@ async def on_command_completion(ctx):
 async def on_command_error(ctx, error):
     # Logs errors/failures
     logger.error(f"Error executing !{ctx.command} for {ctx.author}: {error}")
+
+    # Tell the user when a required file is missing instead of failing silently
+    if isinstance(error, commands.MissingRequiredAttachment):
+        await ctx.send("Attach your `.json` export to the same message as the command.")
 # L__________
 
 async def main():

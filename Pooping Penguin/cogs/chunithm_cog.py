@@ -1,15 +1,25 @@
 """
-CHUNITHM score import: /score upload|me|song|pattern|suggest|delete (and !score ...).
+CHUNITHM command group: /chunithm <subcommand> (and !chunithm <subcommand>).
+
+  Your imported scores   upload | me | song | pattern | suggest | delete
+  Song charts            rating | song_search
 
 Users export their player data JSON (the chunithm-player-data_*.json file),
-attach it to /score upload, and the bot stores a compact copy keyed by their
+attach it to /chunithm upload, and the bot stores a compact copy keyed by their
 Discord user id in data/chunithm_scores.json.
 
-/score pattern and /score suggest also need data/chart_tags.json, built from the
-community chart sheet with tools/build_chart_tags.py (analysis: chart_analysis.py).
+/chunithm pattern and /chunithm suggest also need data/chart_tags.json, built
+from the community chart sheet with tools/build_chart_tags.py (analysis:
+chart_analysis.py).
 
 Only entries with score > 0 are kept (the export lists every chart, ~6400 rows,
 most of them unplayed). One record per user; re-uploading replaces it.
+
+The rating-chart engine lives in cogs/rating_cog.py (RatingCog). A cog can't
+own subcommands of a group that lives in another cog, so the two subcommands
+here (rating, song_search) are thin wrappers that hand off to RatingCog. If
+RatingCog failed to load (missing packages), they reply that the feature is
+unavailable instead of disappearing.
 Python 3.9 safe (no `X | Y` unions).
 """
 import json
@@ -19,11 +29,13 @@ import threading
 from typing import Literal, Optional
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 import chart_analysis
-from config import DATA_DIR, _load, _save
-from ratingbot.catalog import normalize   # stdlib only
+from config import DATA_DIR, _load, _save, load_settings
+from i18n import t, get_guild_language
+from ratingbot.catalog import DIFFICULTIES, normalize   # stdlib only
 
 logger = logging.getLogger("DiscordBot")
 
@@ -80,6 +92,13 @@ def _field(lines, limit=1000):
     return out.strip() or "—"
 
 
+def _lang_for(guild) -> str:
+    """Guild language ("english"/"chinese"); DMs and unknown guilds -> english."""
+    if guild is None:
+        return "english"
+    return get_guild_language(load_settings(), guild.id)
+
+
 def parse_export(raw: bytes) -> dict:
     """Validate a player-data export and return the compact record to store.
     Raises ValueError with a user-facing message on bad input."""
@@ -134,7 +153,7 @@ def parse_export(raw: bytes) -> dict:
     }
 
 
-class ScoreCog(commands.Cog):
+class ChunithmCog(commands.Cog, name="chunithm"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -169,12 +188,17 @@ class ScoreCog(commands.Cog):
             _save(SCORES_FILE, db)
 
     # -- commands ---------------------------------------------------------
-    @commands.hybrid_group(name="score", invoke_without_command=True,
-                           description="Your imported CHUNITHM scores")
-    async def score(self, ctx):
-        await ctx.send("Subcommands: `upload`, `me`, `song`, `pattern`, `suggest`, `delete`.")
+    @commands.hybrid_group(name="chunithm", invoke_without_command=True,
+                           description="CHUNITHM tools: song charts and your imported scores")
+    async def chunithm(self, ctx):
+        language = _lang_for(ctx.guild)
+        await ctx.send(t(language,
+            "Subcommands: `upload`, `me`, `song`, `pattern`, `suggest`, `delete` (your scores); "
+            "`rating`, `song_search` (song charts).",
+            "子指令：`upload`、`me`、`song`、`pattern`、`suggest`、`delete`（你的成績）；"
+            "`rating`、`song_search`（曲目圖表）。"))
 
-    @score.command(name="upload", description="Upload your CHUNITHM player-data JSON")
+    @chunithm.command(name="upload", description="Upload your CHUNITHM player-data JSON")
     async def upload(self, ctx, file: discord.Attachment):
         await ctx.defer(ephemeral=True)
         if not file.filename.lower().endswith(".json"):
@@ -192,11 +216,11 @@ class ScoreCog(commands.Cog):
                 record["name"], record["rating"], len(record["scores"])),
             ephemeral=True)
 
-    @score.command(name="me", description="Summary of your imported scores")
+    @chunithm.command(name="me", description="Summary of your imported scores")
     async def me(self, ctx):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/score upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
         sc = rec["scores"]
         sss = sum(1 for s in sc if s["score"] >= 1007500)
         ss = sum(1 for s in sc if s["score"] >= 1000000)
@@ -206,17 +230,17 @@ class ScoreCog(commands.Cog):
         e.add_field(name="Rating", value="{:.2f}".format(rec["rating"]))
         e.add_field(name="Level", value=str(rec["level"]))
         e.add_field(name="Played", value=str(len(sc)))
-        e.add_field(name="SSS / SS", value="{} / {}".format(sss, ss))
+        e.add_field(name="SSS+ / SS+", value="{} / {}".format(sss, ss))
         e.add_field(name="FC / AJ", value="{} / {}".format(fc, aj))
         e.set_footer(text="Last played {} · exported {}".format(
             rec["last_played"][:10], rec["exported_at"][:10]))
         await ctx.send(embed=e, ephemeral=True)
 
-    @score.command(name="song", description="Your scores on a song")
+    @chunithm.command(name="song", description="Your scores on a song")
     async def song(self, ctx, *, title: str):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/score upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
         q = normalize(title)
         hits = {}
         for s in rec["scores"]:
@@ -260,11 +284,11 @@ class ScoreCog(commands.Cog):
         return [discord.app_commands.Choice(name=t[:100], value=t[:100])
                 for t in (starts + contains)[:25]]
 
-    @score.command(name="pattern", description="Which note patterns you are strong/weak at")
+    @chunithm.command(name="pattern", description="Which note patterns you are strong/weak at")
     async def pattern(self, ctx, scope: Literal["all", "best", "rating"] = "all"):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/score upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
         table = load_chart_table()
         if table is None:
             return await ctx.send("Chart table missing. Run `tools/build_chart_tags.py`.",
@@ -286,11 +310,11 @@ class ScoreCog(commands.Cog):
                           "you choose what you play.".format(rep["min_n"]))
         await ctx.send(embed=e, ephemeral=True)
 
-    @score.command(name="suggest", description="Songs to push your rating / to practice")
+    @chunithm.command(name="suggest", description="Songs to push your rating / to practice")
     async def suggest(self, ctx):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/score upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
         table = load_chart_table()
         if table is None:
             return await ctx.send("Chart table missing. Run `tools/build_chart_tags.py`.",
@@ -326,13 +350,67 @@ class ScoreCog(commands.Cog):
         e.set_footer(text=foot)
         await ctx.send(embed=e, ephemeral=True)
 
-    @score.command(name="delete", description="Delete your stored scores")
+    @chunithm.command(name="delete", description="Delete your stored scores")
     async def delete(self, ctx):
         if self._get(ctx.author.id) is None:
             return await ctx.send("Nothing on file.", ephemeral=True)
         self._put(ctx.author.id, None)
         await ctx.send("Your score data was deleted.", ephemeral=True)
 
+    # -- song charts (engine in cogs/rating_cog.py) -------------------------
+    def _rating_cog(self):
+        """RatingCog, or None if it failed to load (missing packages/data)."""
+        return self.bot.get_cog("rating")
+
+    async def _rating_unavailable(self, ctx):
+        await ctx.send(t(_lang_for(ctx.guild),
+            "The CHUNITHM chart feature isn't available right now (its packages or data "
+            "failed to load; check the bot log).",
+            "CHUNITHM 圖表功能目前無法使用（套件或資料載入失敗；請查看機器人日誌）。"),
+            ephemeral=True)
+
+    async def cog_command_error(self, ctx, error):
+        # rating / song_search used to be their own commands with their own
+        # error handling (cooldown, ChartError, bad arguments); keep it.
+        if ctx.command is not None and ctx.command.name in ("rating", "song_search"):
+            rating = self._rating_cog()
+            if rating is not None:
+                await rating.handle_error(ctx, error)
+
+    @chunithm.command(
+        name="rating",
+        description="Look up a song and draw its player-population rating chart (only the chosen chart is processed).")
+    @app_commands.describe(
+        song="Song title or fragment (slash: pick from autocomplete)",
+        difficulty="Chart difficulty",
+        detailed="Full score and player range instead of the default SS-to-MAX focus")
+    @app_commands.choices(difficulty=[app_commands.Choice(name=d, value=d) for d in DIFFICULTIES])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def rating(self, ctx, song: str, difficulty: str = "MASTER", detailed: bool = False):
+        """Look up a song and draw its player-population rating chart."""
+        rating = self._rating_cog()
+        if rating is None:
+            return await self._rating_unavailable(ctx)
+        await rating.rating(ctx, song, difficulty, detailed)
+
+    @rating.autocomplete("song")
+    async def rating_song_autocomplete(self, interaction: discord.Interaction, current: str):
+        rating = self._rating_cog()
+        if rating is None:
+            return []
+        return await rating.song_autocomplete(interaction, current)
+
+    @chunithm.command(
+        name="song_search",
+        description="Search CHUNITHM songs and their available difficulties (no chart is generated).")
+    @app_commands.describe(query="Song title, alias or fragment")
+    async def song_search(self, ctx, *, query: str):
+        """Search CHUNITHM songs and their available difficulties."""
+        rating = self._rating_cog()
+        if rating is None:
+            return await self._rating_unavailable(ctx)
+        await rating.song_search(ctx, query)
+
 
 async def setup(bot):
-    await bot.add_cog(ScoreCog(bot))
+    await bot.add_cog(ChunithmCog(bot))

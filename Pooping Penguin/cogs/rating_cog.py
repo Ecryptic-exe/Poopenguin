@@ -1,6 +1,13 @@
 """
-CHUNITHM song search + player-population rating charts:
-!rating / /rating and !song_search / /song_search.
+CHUNITHM song search + player-population rating charts.
+
+The commands themselves are subcommands of the /chunithm group, which is
+defined in cogs/chunithm_cog.py: /chunithm rating and /chunithm song_search
+(and the !chunithm ... prefix versions). A cog can't own subcommands of a
+group that lives in another cog, so ChunithmCog's two subcommands are thin
+wrappers that call rating() / song_search() / song_autocomplete() /
+handle_error() below. This cog holds the engine, the service lifecycle and
+the Discord UI pieces; it has no commands of its own.
 
 This cog wraps the standalone chunithm-rating-bot engine (the `ratingbot/`
 package plus `engine/` and `assets/` at the project root) so it runs inside
@@ -8,7 +15,7 @@ this bot instead of as a second Discord client. The engine itself is
 unchanged; everything Discord-facing lives here.
 
 How a request flows
-  1. /rating song:<text> difficulty:<D>
+  1. /chunithm rating song:<text> difficulty:<D>
        - exactly one song matches the text  -> chart it straight away
        - several candidates                 -> dropdown, the requester picks
   2. ChartService (ratingbot/service.py) checks its 24h on-disk cache, and on a
@@ -20,10 +27,10 @@ How a request flows
 Python 3.9 note: this file deliberately avoids `X | Y` unions and other 3.10+
 syntax (the engine itself was verified on 3.9 too).
 
-Hybrid commands, same pattern as the other cogs. Prefix usage differs slightly
-from slash because "!" arguments are split on spaces: wrap multi-word song
-titles in quotes, e.g.  !rating "XL TECHNO" MASTER   (slash has no such limit,
-and offers autocomplete).
+Prefix usage differs slightly from slash because "!" arguments are split on
+spaces: wrap multi-word song titles in quotes, e.g.
+!chunithm rating "XL TECHNO" MASTER   (slash has no such limit, and offers
+autocomplete).
 """
 import importlib.util
 import logging
@@ -116,8 +123,8 @@ class SongChoiceView(discord.ui.View):
         if interaction.user.id != self.requester_id:
             await interaction.response.send_message(
                 t(self.language,
-                  "Please run your own /rating command to pick a song.",
-                  "請使用自己的 /rating 指令選曲。"),
+                  "Please run your own /chunithm rating command to pick a song.",
+                  "請使用自己的 /chunithm rating 指令選曲。"),
                 ephemeral=True)
             return False
         return True
@@ -186,7 +193,8 @@ class RatingCog(commands.Cog, name="rating"):
     def _lang(self, ctx) -> str:
         return _lang_for(ctx.guild)
 
-    async def cog_command_error(self, ctx, error):
+    async def handle_error(self, ctx, error):
+        """Called by ChunithmCog.cog_command_error for rating / song_search."""
         language = self._lang(ctx)
         # Unwrap CommandInvokeError / HybridCommandError to the real cause.
         cause = getattr(error, "original", None) or error.__cause__ or error
@@ -200,9 +208,9 @@ class RatingCog(commands.Cog, name="rating"):
             return
         if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument)):
             await ctx.send(t(language,
-                f"Invalid arguments. Use `!help {ctx.command.name}` for usage "
+                "Invalid arguments. Use `!help chunithm` for usage "
                 "(wrap multi-word song titles in quotes).",
-                f"參數無效。使用 `!help {ctx.command.name}` 查看用法（曲名含空格時請加引號）。"),
+                "參數無效。使用 `!help chunithm` 查看用法（曲名含空格時請加引號）。"),
                 ephemeral=True)
             return
         logger.error("rating: %s failed for %s: %r", ctx.command, ctx.author, cause,
@@ -212,7 +220,7 @@ class RatingCog(commands.Cog, name="rating"):
             "指令處理失敗；請稍後再試。"), ephemeral=True)
 
     # -- autocomplete -----------------------------------------------------
-    async def _song_autocomplete(
+    async def song_autocomplete(
         self, interaction: discord.Interaction, current: str
     ) -> List[app_commands.Choice[str]]:
         difficulty = getattr(interaction.namespace, "difficulty", None) or "MASTER"
@@ -224,16 +232,7 @@ class RatingCog(commands.Cog, name="rating"):
         return [app_commands.Choice(name=r["song"].title[:100], value="id:" + r["song"].song_id)
                 for r in rows]
 
-    # -- /rating ------------------------------------------------------------
-    @commands.hybrid_command(
-        name="rating",
-        description="Look up a song and draw its player-population rating chart (only the chosen chart is processed).")
-    @app_commands.describe(
-        song="Song title or fragment (slash: pick from autocomplete)",
-        difficulty="Chart difficulty",
-        detailed="Full score and player range instead of the default SS-to-MAX focus")
-    @app_commands.choices(difficulty=[app_commands.Choice(name=d, value=d) for d in DIFFICULTIES])
-    @commands.cooldown(1, 5, commands.BucketType.user)
+    # -- /chunithm rating ---------------------------------------------------
     async def rating(self, ctx, song: str, difficulty: str = "MASTER", detailed: bool = False):
         """Look up a song and draw its player-population rating chart."""
         language = self._lang(ctx)
@@ -243,9 +242,9 @@ class RatingCog(commands.Cog, name="rating"):
         except ValueError:
             await ctx.send(t(language,
                 f"Unknown difficulty `{difficulty}`. Use one of: {', '.join(DIFFICULTIES)}.\n"
-                'Wrap multi-word titles in quotes, e.g. `!rating "XL TECHNO" MASTER`.',
+                'Wrap multi-word titles in quotes, e.g. `!chunithm rating "XL TECHNO" MASTER`.',
                 f"未知的難度 `{difficulty}`。可用：{', '.join(DIFFICULTIES)}。\n"
-                '曲名含空格時請加上引號，例如 `!rating "XL TECHNO" MASTER`。'),
+                '曲名含空格時請加上引號，例如 `!chunithm rating "XL TECHNO" MASTER`。'),
                 ephemeral=True)
             return
 
@@ -288,16 +287,8 @@ class RatingCog(commands.Cog, name="rating"):
         finally:
             file.close()
 
-    @rating.autocomplete("song")
-    async def rating_song_autocomplete(self, interaction: discord.Interaction, current: str):
-        return await self._song_autocomplete(interaction, current)
-
-    # -- /song_search -------------------------------------------------------
-    @commands.hybrid_command(
-        name="song_search",
-        description="Search CHUNITHM songs and their available difficulties (no chart is generated).")
-    @app_commands.describe(query="Song title, alias or fragment")
-    async def song_search(self, ctx, *, query: str):
+    # -- /chunithm song_search ----------------------------------------------
+    async def song_search(self, ctx, query: str):
         """Search CHUNITHM songs and their available difficulties."""
         language = self._lang(ctx)
         rows = self.catalog.search(query, limit=10)
