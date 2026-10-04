@@ -3,10 +3,8 @@
 that the bot scans every message against (see keyword_manager.py and
 messages_cog.py for the matching side).
 
-This is the new feature: previously, adding/removing/editing a keyword
-trigger meant editing copypasta.py and vto.py directly and redeploying
-the bot. Now it's data-driven and can be managed live with these
-commands.
+Keyword sets are data-driven: they can be added, edited and removed live
+with these commands, with no code change or redeploy.
 
 All commands here require administrator permission in the guild they're
 run from. The keyword sets themselves are global (shared across every
@@ -19,7 +17,7 @@ Converted to commands.hybrid_group / hybrid_command: every subcommand
 addresponse, removeresponse, rate) runs from one implementation whether it's
 invoked as "!keyword <sub>" or "/keyword <sub>". The bare "!keyword"
 (no subcommand) usage text stays prefix-only, since Discord doesn't
-allow invoking a slash command group directly - see GAPS.md.
+allow invoking a slash command group directly.
 """
 import math
 

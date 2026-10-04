@@ -17,13 +17,19 @@ from discord.ext import commands
 from config import load_settings, save_settings, load_votes, save_votes
 from i18n import t, get_guild_language
 
-VOTE_EMOJI = "🖕"
+VOTE_EMOJI = "✅"  # change this and the help text in help_cog.py together
 VOTE_WINDOW_SECONDS = 180  # 3 minutes
+MAX_TIMEOUT = timedelta(days=28)  # Discord rejects member timeouts longer than 28 days
 
 
 def parse_time(time_str):
     """Parses '1d' / '2h' / '30m' / '10s' / 'random' into a timedelta.
     Returns None if the string doesn't match any known format."""
+    duration = _parse_time_raw(time_str)
+    return min(duration, MAX_TIMEOUT) if duration else duration
+
+
+def _parse_time_raw(time_str):
     if not time_str:
         return timedelta(minutes=5)
     if time_str.lower() == "random":
@@ -33,6 +39,8 @@ def parse_time(time_str):
             return timedelta(seconds=random.randint(7 * 24 * 60 * 60, 90 * 24 * 60 * 60))
         elif rand < 75.9:
             return timedelta(seconds=random.randint(1, 1 * 24 * 60 * 60))
+        elif rand < 98.9:
+            return timedelta(seconds=random.randint(90 * 24 * 60 * 60, 360 * 24 * 60 * 60))  # more than 1 week?
         else:
             return timedelta(seconds=1)
     match = re.match(r"^(\d+)([dhms])$", time_str)

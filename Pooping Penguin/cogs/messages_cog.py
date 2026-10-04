@@ -1,7 +1,7 @@
 """
-Everything that used to live inside the single giant on_message() in
-vto.py, split into named steps:
+The bot's on_message pipeline, split into named steps:
 
+  0. autoban (admin-configured honeypot channels)
   1. auto-react to messages in configured channels
   2. bot-mention -> show help
   3. process !commands
@@ -21,6 +21,7 @@ from discord.ext import commands
 from config import load_settings, save_settings
 from i18n import get_guild_language
 from keyword_manager import KeywordManager
+from settings import BOT_NAME, LOG_ALL_MESSAGES
 
 # How many identical consecutive messages (from different authors) in a
 # channel triggers the bot to repeat it back.
@@ -120,7 +121,11 @@ class MessagesCog(commands.Cog, name="messages"):
         )
         ctx = await self.bot.get_context(message)
 
-        if not command or command in ("poop penguin", "help"):
+        # A mention with only an image attached (no text) goes to the AI
+        # (vision) instead of showing help.
+        has_image = any(
+            (a.content_type or "").startswith("image/") for a in message.attachments)
+        if (not command and not has_image) or command in (BOT_NAME.lower(), "help"):
             await self.bot.get_command("help")(ctx)
             return True
 
@@ -177,12 +182,14 @@ class MessagesCog(commands.Cog, name="messages"):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # DEBUG CHANNEL LOG, Comment out this section if not needed
-        # This will log EVERY message the bot sees across all servers and channels, even from other bots.
-        guild_name = message.guild.name if message.guild else "Direct Message"
-        print(
-            f"[Channel Activity] Server: '{guild_name}' | Channel: #{message.channel} ({message.channel.id}) | Author: {message.author} -> Sent: '{message.content}'")
-        # L__________
+        # Optional debug log of every message the bot sees (all servers, all
+        # channels, even other bots). Off by default - enable it with
+        # LOG_ALL_MESSAGES=true (see settings.py).
+        if LOG_ALL_MESSAGES:
+            guild_name = message.guild.name if message.guild else "Direct Message"
+            print(f"[Channel Activity] Server: '{guild_name}' | Channel: #{message.channel} "
+                  f"({message.channel.id}) | Author: {message.author} -> Sent: '{message.content}'")
+
 
         if message.author.bot:
             return

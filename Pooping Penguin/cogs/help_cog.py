@@ -3,18 +3,16 @@
 for one specific command.
 
 This is a straight port of the HelpMenu/help() code that used to sit
-at the bottom of vto.py, with one real bug fix: the Previous/Next/Close
-button labels used to be decided once, at class-definition time, from
-whatever the *default* guild's language happened to be - so every
-server's help menu showed buttons in the same language regardless of
-their own !lang setting. Labels are now set per-instance in __init__
-based on the language passed in, which is what the rest of the code
-already assumed was happening.
+Button labels are set per-instance in HelpMenu.__init__ from the guild's
+language, so each server sees its own !lang setting.
+
+To document a new command, add an entry to COMMAND_LIST below.
 """
 import discord
 from discord.ext import commands
 
 from config import load_settings
+from settings import SUPPORT_CONTACT
 from i18n import t, get_guild_language
 
 # (name, description_en, description_zh, usage, args_en, args_zh, notes_en, notes_zh)
@@ -36,8 +34,8 @@ COMMAND_LIST = [
         "usage": "`!vto <@member> [time]`",
         "arguments": {"english": "**member**: The user to timeout (must be mentioned, e.g., `@User`).\n**time_str**: (Optional) Duration of the timeout (e.g., `1d`, `2h`, `30m`, `10s`, or `random`). Defaults to 5 minutes if omitted.\n- Formats: `1d` (days), `2h` (hours), `30m` (minutes), `10s` (seconds), or `random` (random duration from 1 second to 90 days).\n- Example: `!vto @User 30m`, `!vto @User random`.",
                       "chinese": "**成員**：要暫停的用戶（必須提及，例如，`@User`）。\n**時間**：（可選）暫停的持續時間（例如，`1d`、`2h`、`30m`、`10s` 或 `random`）。如果省略，默認為 5 分鐘。\n- 格式：`1d`（天）、`2h`（小時）、`30m`（分鐘）、`10s`（秒）或 `random`（1 秒到 90 天的隨機時長）。\n- 示例：`!vto @User 30m`、`!vto @User random`。"},
-        "notes": {"english": "- Users vote by reacting with 🖕 to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.\n- Multiple vote sessions can run concurrently.",
-                  "chinese": "- 用戶通過對投票消息反應 🖕 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。\n- 可同時進行多個投票會話。"}
+        "notes": {"english": "- Users vote by reacting with ✅ to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.\n- Multiple vote sessions can run concurrently.",
+                  "chinese": "- 用戶通過對投票消息反應 ✅ 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。\n- 可同時進行多個投票會話。"}
     },
     {
         "name": "setvote",
@@ -104,18 +102,8 @@ COMMAND_LIST = [
         "usage": "`!copypasta <type> <text>` (alias: `!cp`)",
         "arguments": {"english": "**type**: Which pool to pick from - `tag` (aliases: `name`, `person`, `mention`, `user`), `activity` (aliases: `thing`, `action`, `verb`), or `song` (aliases: `music`, `tune`), or any custom type an admin created.\n**text**: The word, name, mention, activity, or song title to slot into the template.\n- Example: `!copypasta tag @User`, `!copypasta activity digging`, `!copypasta song a song`.",
                       "chinese": "**類型**：要從哪個池中選取 - `tag`（別名：`name`、`person`、`mention`、`user`）、`activity`（別名：`thing`、`action`、`verb`）或 `song`（別名：`music`、`tune`），或管理員建立的自訂類型。\n**文字**：要填入模板的詞語、名稱、標註、活動或歌曲名稱。\n- 示例：`!copypasta tag @User`、`!copypasta activity digging`、`!copypasta song a song`。"},
-        "notes": {"english": "- Each type keeps its own separate pool of templates, so a tagging line can never get mixed up with a song line or vice versa.\n- The bot avoids repeating the exact same template twice in a row for the same type on the same server.\n- Admins can manage pools live: `!copypasta list`, `show <type>`, `create <type>`, `delete <type>`, `enable/disable <type>`, `add <type> <template with {text}>`, `remove <type> <index>`.",
-                  "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list`、`show <類型>`、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
-    },
-    {
-        "name": "gacha",
-        "description": {"english": "Opens the free gacha pull menu (Single Pull / 10x Pull buttons).",
-                         "chinese": "開啟免費抽獎選單（單抽／十連抽按鈕）。"},
-        "usage": "`!gacha` (subcommands: `pull`, `stats`, `reset`, `pool`, `setfeatured`, `reload`)",
-        "arguments": {"english": "See `!gacha` with no subcommand (prefix only) to open the pull menu directly, or `!gacha pull` / `/gacha pull` for the slash-friendly equivalent - Discord doesn't allow invoking a slash command group directly, so `/gacha` alone isn't invokable.\n- `!gacha pull`: opens the Single Pull / 10x Pull button menu.\n- `!gacha stats`: shows your total pulls and every 2-star/3-star character you've obtained.\n- `!gacha reset`: wipes your own pull history/collection (asks for confirmation first).\n- `!gacha pool`: shows the current rates and character rosters.\n- `!gacha setfeatured <character>`: (Admin only) changes the rate-up character - the `character` argument autocompletes from the live 3-star roster when used as `/gacha setfeatured`.\n- `!gacha reload`: (Admin only) re-reads `data/gacha_pool.json` after a hand edit.",
-                      "chinese": "使用 `!gacha`（不帶子命令，僅限前綴指令）直接開啟抽獎選單，或使用 `!gacha pull` ／ `/gacha pull` 取得適用於斜線指令的相同功能 - Discord 不允許直接呼叫斜線指令群組，因此單獨的 `/gacha` 無法呼叫。\n- `!gacha pull`：開啟「單抽／十連抽」按鈕選單。\n- `!gacha stats`：顯示你的總抽數以及曾獲得的所有二星／三星角色。\n- `!gacha reset`：清空自己的抽獎紀錄與收藏（會先要求確認）。\n- `!gacha pool`：顯示目前的機率與角色名單。\n- `!gacha setfeatured <角色>`：（僅限管理員）更換定軌角色 - 以 `/gacha setfeatured` 使用時，`character` 參數會根據目前的三星名單自動建議選項。\n- `!gacha reload`：（僅限管理員）在手動編輯 `data/gacha_pool.json` 後重新載入。"},
-        "notes": {"english": "- Completely free - no cost to pull.\n- Rates: 3-star 1.6%, 2-star 8.4%, 1-star 90% (editable live, see `!gacha pool`).\n- Pity: guaranteed to get the featured (定軌) 3-star character within 200 pulls; changing the featured character mid-way does not reset anyone's pity count.\n- Each user's total pulls, pity counter, and collection are tracked independently.",
-                  "chinese": "- 完全免費 - 抽獎不消耗任何資源。\n- 機率：三星 1.6%、二星 8.4%、一星 90%（可即時編輯，見 `!gacha pool`）。\n- 保底：200 抽內保證獲得定軌三星角色；中途更換定軌角色不會重置任何人的保底計數。\n- 每位使用者的總抽數、保底計數與收藏皆獨立記錄。"}
+        "notes": {"english": "- Each type keeps its own separate pool of templates, so a tagging line can never get mixed up with a song line or vice versa.\n- The bot avoids repeating the exact same template twice in a row for the same type on the same server.\n- Admins can manage pools live: `!copypasta list [search]` (opens a Previous/Next/Search/Close menu), `info <type>` (alias: `show`, paginated), `create <type>`, `delete <type>`, `enable/disable <type>`, `add <type> <template with {text}>`, `remove <type> <index>`.",
+                  "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list [搜尋詞]`（開啟含上一頁／下一頁／搜尋／關閉的選單）、`info <類型>`（別名：`show`，分頁顯示）、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
     },
     {
         "name": "setperms",
@@ -141,11 +129,50 @@ COMMAND_LIST = [
         "name": "keyword",
         "description": {"english": "Manages global keyword-triggered response sets (Admin only).",
                          "chinese": "管理全局關鍵詞觸發回應組（僅限管理員）。"},
-        "usage": "`!keyword <list|show|create|delete|enable|disable|addkeyword|removekeyword|addresponse|removeresponse|rate> ...`",
-        "arguments": {"english": "See `!keyword` with no arguments for the full subcommand list, or `!help <subcommand>`-style usage per subcommand isn't available - subcommands are documented in the `!keyword` group message itself.\n- `!keyword list [search]`: opens a Previous/Next/Search/Close button menu showing keyword sets a few at a time. Pass a search term to start filtered (e.g. `!keyword list cry`), or use the Search button in the menu to filter/change filter by set name or keyword any time.\n- `!keyword rate <id> <0-100>`: sets that set's independent trigger chance as a percentage. Defaults to 100% (always fires) for new sets.",
-                      "chinese": "使用 `!keyword`（不帶參數）查看完整子命令列表；子命令用法已在 `!keyword` 群組訊息中說明。\n- `!keyword list [搜尋詞]`：開啟含「上一頁／下一頁／搜尋／關閉」按鈕的選單，分頁顯示關鍵詞組。可直接帶搜尋詞開啟已篩選的畫面（例如 `!keyword list cry`），或隨時使用選單中的搜尋按鈕依組名或關鍵詞篩選。\n- `!keyword rate <id> <0-100>`：設定該關鍵詞組獨立的觸發機率（百分比）。新建立的組預設為 100%（必定觸發）。"},
-        "notes": {"english": "- Requires administrator permissions.\n- Keyword sets are global: shared across every server the bot is in.\n- Changes are saved persistently in `data/keyword_sets.json`.\n- `!keyword list` shows 5 sets per page; use `!keyword show <id>` for a set's full keyword/response detail.\n- Each keyword set has its own independent trigger rate (0-100%, default 100%); when multiple sets match a message, each rolls its own rate before one is picked to respond.",
-                  "chinese": "- 需要管理員權限。\n- 關鍵詞組是全局的：在機器人所在的每個伺服器間共享。\n- 更改將持久保存到 `data/keyword_sets.json`。\n- `!keyword list` 每頁顯示 5 個關鍵詞組；使用 `!keyword show <id>` 查看單一組的完整關鍵詞／回應詳情。\n- 每個關鍵詞組都有獨立的觸發機率（0-100%，預設 100%）；當多個組同時符合一則訊息時，每個組會各自擲骰判定是否觸發，再從中隨機選一個回應。"}
+        "usage": "`!keyword <list|info|create|delete|enable|disable|addkeyword|removekeyword|addresponse|removeresponse> ...`",
+        "arguments": {"english": "See `!keyword` with no arguments for the full subcommand list, or `!help <subcommand>`-style usage per subcommand isn't available - subcommands are documented in the `!keyword` group message itself.\n- `!keyword list [search]`: opens a Previous/Next/Search/Close button menu showing keyword sets a few at a time. Pass a search term to start filtered (e.g. `!keyword list cry`), or use the Search button in the menu to filter/change filter by set name or keyword any time.",
+                      "chinese": "使用 `!keyword`（不帶參數）查看完整子命令列表；子命令用法已在 `!keyword` 群組訊息中說明。\n- `!keyword list [搜尋詞]`：開啟含「上一頁／下一頁／搜尋／關閉」按鈕的選單，分頁顯示關鍵詞組。可直接帶搜尋詞開啟已篩選的畫面（例如 `!keyword list cry`），或隨時使用選單中的搜尋按鈕依組名或關鍵詞篩選。"},
+        "notes": {"english": "- Requires administrator permissions.\n- Keyword sets are global: shared across every server the bot is in.\n- Changes are saved persistently in `data/keyword_sets.json`.\n- `!keyword list` shows 5 sets per page; use `!keyword info <id>` (alias: `show`) for a set's full keyword/response detail.",
+                  "chinese": "- 需要管理員權限。\n- 關鍵詞組是全局的：在機器人所在的每個伺服器間共享。\n- 更改將持久保存到 `data/keyword_sets.json`。\n- `!keyword list` 每頁顯示 5 個關鍵詞組；使用 `!keyword info <id>`（別名：`show`）查看單一組的完整關鍵詞／回應詳情。"}
+    },
+    {
+        "name": "autoban",
+        "description": {"english": "Bans anyone who sends a message in this channel (Admin only).",
+                         "chinese": "封鎖任何在此頻道發送訊息的人（僅限管理員）。"},
+        "usage": "`!autoban [reason] [delete_days]`",
+        "arguments": {"english": "**reason**: (Optional) Ban reason shown in the audit log. If omitted, disables autoban in this channel.\n**delete_days**: (Optional) Days of the member's message history to delete, 0-7 (default 0).\n- Example: `!autoban \"Honeypot channel\" 1`, `!autoban` (disables)",
+                      "chinese": "**原因**：（可選）顯示於審核日誌的封鎖原因。如果省略，則停用此頻道的自動封鎖。\n**刪除天數**：（可選）刪除該成員過去訊息的天數，0-7（默認 0）。\n- 示例：`!autoban \"Honeypot channel\" 1`、`!autoban`（停用）"},
+        "notes": {"english": "- Requires administrator permissions; the bot needs `ban_members`.\n- Server administrators are always exempt.\n- Intended for honeypot channels that nobody legitimate should post in.",
+                  "chinese": "- 需要管理員權限；機器人需要 `ban_members` 權限。\n- 伺服器管理員永遠不受影響。\n- 適用於正常成員不應發言的陷阱頻道。"}
+    },
+    {
+        "name": "gacha",
+        "description": {"english": "Free gacha pulls with a personal pity target, collection record and artwork browsing.",
+                         "chinese": "免費轉蛋，附個人保底目標、收藏紀錄及圖片瀏覽。"},
+        "usage": "`!gacha` (opens the menu), `!gacha <pull|target|browse|stats|reset|pool>`",
+        "arguments": {"english": "**pull**: Opens the pull menu (single / 10x).\n**target [character]**: View or set your personal pity target.\n**browse**: Flip through the top-rarity roster.\n**stats**: Your pulls and collection.\n**reset**: Wipe your own record (asks to confirm).\n**pool**: Current rates and rosters.\n- Admin only: `setfeatured`, `setimage`, `removeimage`, `setthumbnail`, `removethumbnail`, `reload`.",
+                      "chinese": "**pull**：開啟轉蛋選單（單抽／十連）。\n**target [角色]**：查看或設定你的個人保底目標。\n**browse**：逐一瀏覽最高稀有度角色。\n**stats**：你的抽數與收藏。\n**reset**：清除你自己的紀錄（需確認）。\n**pool**：目前機率與角色池。\n- 僅限管理員：`setfeatured`、`setimage`、`removeimage`、`setthumbnail`、`removethumbnail`、`reload`。"},
+        "notes": {"english": "- Pity guarantees your chosen target by the 200th pull.\n- The roster and rates live in `data/gacha_pool.json` and can be hand-edited.",
+                  "chinese": "- 保底會在第 200 抽前確保抽到你選定的目標。\n- 角色池與機率存放於 `data/gacha_pool.json`，可手動編輯。"}
+    },
+    {
+        "name": "chat",
+        "description": {"english": "Talk to the local AI model (also works by @mentioning the bot).",
+                         "chinese": "與本地 AI 模型對話（也可以直接標註機器人）。"},
+        "usage": "`!chat <prompt>`, `/chat [image] <prompt>`, or `@Bot <message>`",
+        "arguments": {"english": "**prompt**: What you want to say.\n**image**: (Optional, slash command) An image for the model to look at.",
+                      "chinese": "**prompt**：你想說的內容。\n**image**：（可選，斜線指令）讓模型查看的圖片。"},
+        "notes": {"english": "- Each channel shares one conversation; it expires after 15 minutes of silence.\n- Requires a running OpenAI-compatible model server (see `settings.py`).",
+                  "chinese": "- 每個頻道共用一個對話；閒置 15 分鐘後過期。\n- 需要運行中的 OpenAI 相容模型伺服器（見 `settings.py`）。"}
+    },
+    {
+        "name": "chatreset",
+        "description": {"english": "Clears this channel's shared AI conversation.",
+                         "chinese": "清除此頻道共用的 AI 對話。"},
+        "usage": "`!chatreset`",
+        "arguments": {"english": "No arguments required.", "chinese": "無需參數。"},
+        "notes": {"english": "- Clears the conversation for everyone in the channel.",
+                  "chinese": "- 會為頻道內所有人清除對話。"}
     },
 ]
 
@@ -233,11 +260,11 @@ class HelpCog(commands.Cog, name="help"):
                     "**Keyword Responses**: Sends copypastas for specific keywords in messages (manage sets with `!keyword`).\n"
                     "**Repeat Detection**: Echoes a message if three different users send it consecutively.\n"
                     "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once.\n"
-                    "**Gacha**: Use `!gacha` for free single/10x pulls with pity. Check your collection with `!gacha stats`.",
+                    "**Gacha & AI**: `!gacha` for free pulls, `!chat` or an @mention to talk to the AI.",
                     "**關鍵詞回應**：對消息中的特定關鍵詞回應迷因文本（使用 `!keyword` 管理關鍵詞組）。\n"
                     "**重複檢測**：若三個不同用戶連續發送相同消息，則重複該消息。\n"
                     "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。\n"
-                    "**轉蛋抽獎**：使用 `!gacha` 進行免費單抽／十連抽，並附保底機制。使用 `!gachastats` 查看你的收藏。"),
+                    "**轉蛋與 AI**：`!gacha` 免費轉蛋，`!chat` 或標註機器人與 AI 對話。"),
                 inline=False
             )
             embed.add_field(
@@ -264,9 +291,12 @@ class HelpCog(commands.Cog, name="help"):
                     "使用下面的按鈕瀏覽各個命令的詳細信息。"),
                 inline=False
             )
-            embed.set_footer(text=t(language,
-                "Bot created for fun and moderation. Contact natherox through Discord for issues.",
-                "機器人為娛樂和管理而創建。如有問題，請於Discord聯繫natherox。"))
+            footer = t(language, "Bot created for fun and moderation.", "機器人為娛樂和管理而創建。")
+            if SUPPORT_CONTACT:
+                footer += t(language,
+                    f" Contact {SUPPORT_CONTACT} for issues.",
+                    f"如有問題，請聯繫 {SUPPORT_CONTACT}。")
+            embed.set_footer(text=footer)
 
             view = HelpMenu(ctx, COMMAND_LIST, language)
             await ctx.send(embed=embed, view=view)
