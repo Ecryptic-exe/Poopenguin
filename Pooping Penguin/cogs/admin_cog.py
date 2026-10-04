@@ -13,8 +13,8 @@ people out of features they're used to.
 Converted to commands.hybrid_command so the text and slash versions
 share one implementation. channel_id/role_id are kept as plain string
 IDs (rather than discord.TextChannel/discord.Role converters) so
-!setperms keeps accepting raw IDs exactly like before.
-(They could be upgraded to native slash channel/role pickers.)
+!setperms keeps accepting raw IDs exactly like before - see GAPS.md
+for the option of upgrading these to native slash channel/role pickers.
 
 Also adds `!sync` (bot owner only, prefix-only - see its docstring for
 why it's not a hybrid/slash command) for manually re-registering slash
@@ -220,7 +220,7 @@ class AdminCog(commands.Cog, name="admin"):
         owner-maintenance tool rather than something regular server
         admins need in the slash picker.
 
-        bot.py already syncs once automatically in setup_hook(), so
+        VTO.py already runs this once automatically in on_ready(), so
         you normally won't need this - it's here for the times you add
         or edit a command and don't want to wait for a bot restart:
 
@@ -296,7 +296,7 @@ class AdminCog(commands.Cog, name="admin"):
         except discord.Forbidden:
             await ctx.send(
                 "Sync failed: I'm missing the `applications.commands` OAuth2 scope. "
-                "The bot needs to be re-invited with that scope checked.")
+                "See GAPS.md - the bot needs to be re-invited with that scope checked.")
         except discord.HTTPException as e:
             await ctx.send(f"Sync failed: {e}")
 

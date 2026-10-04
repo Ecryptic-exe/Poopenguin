@@ -55,7 +55,7 @@ same GachaManager calls.
 `setfeatured`'s and `target`'s `character` arguments both have
 slash-command autocomplete (GachaCog._character_autocomplete) that
 suggests names from the live 3-star roster as you type, so nobody has
-to type an exact character name from memory or copy-paste it from
+to type an exact Japanese string from memory or copy-paste it from
 `!gacha pool`.
 
 Note on the bare `!gacha` invocation: invoke_without_command=True makes
@@ -90,7 +90,7 @@ MAX_EMBEDS_PER_MESSAGE = 10
 
 class GachaTargetSelect(discord.ui.Select):
     """Dropdown listing the live 3-star roster so a target can be picked
-    by clicking instead of typing out a name by hand. Lives
+    by clicking instead of typing out a Japanese string by hand. Lives
     inside GachaMenuView's target state; the option matching the user's
     current target (if any) comes pre-selected."""
 
@@ -715,7 +715,7 @@ class GachaCog(commands.Cog, name="gacha"):
         has_own_target = bool(self.manager.get_user_target(user_id))
 
         embed = discord.Embed(
-            title=t(language, "🎰 Gacha", "🎰 轉蛋"),
+            title=t(language, "🎰 Penguin Gacha", "🎰 企鵝轉蛋"),
             description=t(language,
                 "Pulling is free! Choose Single Pull or 10x Pull below.",
                 "抽獎完全免費！在下方選擇單抽或十連抽。"),

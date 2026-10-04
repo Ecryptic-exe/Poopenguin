@@ -2,7 +2,9 @@
 Small standalone "for fun" commands that don't belong anywhere else:
 !ask, !pick, !rng, !rcg / /ask, /pick, /rng, /rcg.
 
-Language branching goes through i18n.t().
+These were plain bot.command() functions at the bottom of the old
+vto.py. Behaviour is unchanged - only the language branching was
+routed through i18n.t() to cut down on repetition.
 
 Converted to commands.hybrid_command so each one is usable both as a
 "!" text command and a "/" slash command from a single implementation.

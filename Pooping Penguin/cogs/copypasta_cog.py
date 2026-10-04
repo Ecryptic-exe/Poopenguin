@@ -35,7 +35,7 @@ This is a commands.hybrid_group with no fallback:
     has no callback of its own. Previously fallback="use" published
     the group's own callback as a "/copypasta use" subcommand; that's
     been removed on purpose, so posting a copypasta is now text-only
-    ("!copypasta tag @User" / "!cp tag @User").
+    ("!copypasta tag @User" / "!cp tag @User"). See GAPS.md.
   - The management subcommands (list/info/create/delete/enable/
     disable/add/remove) are unaffected and show up as their own normal
     slash subcommands, e.g. "/copypasta list", "/copypasta info".
@@ -48,7 +48,8 @@ which slash commands can't do - Discord options are a fixed list, not
 open-ended. It's now a single `values` string, split on whitespace,
 exactly the number of times the type's placeholders need. This means
 an individual value can no longer contain a space (e.g. a two-word
-song title).
+song title) - see GAPS.md for this trade-off and what filling that
+gap would look like.
 """
 from typing import List
 
@@ -80,7 +81,7 @@ TYPE_ALIASES = {
 # to the "fire a copypasta" behaviour).
 RESERVED_NAMES = {"list", "info", "show", "create", "delete", "enable", "disable", "add", "remove"}
 
-# Discord caps autocomplete results at 25 choices per field.
+# Discord caps autocomplete results at 25 choices per field - see GAPS.md.
 AUTOCOMPLETE_LIMIT = 25
 
 

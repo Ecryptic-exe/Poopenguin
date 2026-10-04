@@ -3,16 +3,18 @@
 for one specific command.
 
 This is a straight port of the HelpMenu/help() code that used to sit
-Button labels are set per-instance in HelpMenu.__init__ from the guild's
-language, so each server sees its own !lang setting.
-
-To document a new command, add an entry to COMMAND_LIST below.
+at the bottom of vto.py, with one real bug fix: the Previous/Next/Close
+button labels used to be decided once, at class-definition time, from
+whatever the *default* guild's language happened to be - so every
+server's help menu showed buttons in the same language regardless of
+their own !lang setting. Labels are now set per-instance in __init__
+based on the language passed in, which is what the rest of the code
+already assumed was happening.
 """
 import discord
 from discord.ext import commands
 
 from config import load_settings
-from settings import SUPPORT_CONTACT
 from i18n import t, get_guild_language
 
 # (name, description_en, description_zh, usage, args_en, args_zh, notes_en, notes_zh)
@@ -34,8 +36,8 @@ COMMAND_LIST = [
         "usage": "`!vto <@member> [time]`",
         "arguments": {"english": "**member**: The user to timeout (must be mentioned, e.g., `@User`).\n**time_str**: (Optional) Duration of the timeout (e.g., `1d`, `2h`, `30m`, `10s`, or `random`). Defaults to 5 minutes if omitted.\n- Formats: `1d` (days), `2h` (hours), `30m` (minutes), `10s` (seconds), or `random` (random duration from 1 second to 90 days).\n- Example: `!vto @User 30m`, `!vto @User random`.",
                       "chinese": "**成員**：要暫停的用戶（必須提及，例如，`@User`）。\n**時間**：（可選）暫停的持續時間（例如，`1d`、`2h`、`30m`、`10s` 或 `random`）。如果省略，默認為 5 分鐘。\n- 格式：`1d`（天）、`2h`（小時）、`30m`（分鐘）、`10s`（秒）或 `random`（1 秒到 90 天的隨機時長）。\n- 示例：`!vto @User 30m`、`!vto @User random`。"},
-        "notes": {"english": "- Users vote by reacting with ✅ to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.\n- Multiple vote sessions can run concurrently.",
-                  "chinese": "- 用戶通過對投票消息反應 ✅ 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。\n- 可同時進行多個投票會話。"}
+        "notes": {"english": "- Users vote by reacting with 🖕 to the vote message.\n- Voting lasts 3 minutes.\n- The bot requires `moderate_members` permission to timeout users.\n- Voting can be configured via `!setvote` to require a specific number of votes or be admin-only.\n- Multiple vote sessions can run concurrently.",
+                  "chinese": "- 用戶通過對投票消息反應 🖕 進行投票。\n- 投票持續 3 分鐘。\n- 機器人需要 `moderate_members` 權限來暫停用戶。\n- 投票可通過 `!setvote` 配置為需要特定票數或僅限管理員。\n- 可同時進行多個投票會話。"}
     },
     {
         "name": "setvote",
@@ -135,45 +137,6 @@ COMMAND_LIST = [
         "notes": {"english": "- Requires administrator permissions.\n- Keyword sets are global: shared across every server the bot is in.\n- Changes are saved persistently in `data/keyword_sets.json`.\n- `!keyword list` shows 5 sets per page; use `!keyword info <id>` (alias: `show`) for a set's full keyword/response detail.",
                   "chinese": "- 需要管理員權限。\n- 關鍵詞組是全局的：在機器人所在的每個伺服器間共享。\n- 更改將持久保存到 `data/keyword_sets.json`。\n- `!keyword list` 每頁顯示 5 個關鍵詞組；使用 `!keyword info <id>`（別名：`show`）查看單一組的完整關鍵詞／回應詳情。"}
     },
-    {
-        "name": "autoban",
-        "description": {"english": "Bans anyone who sends a message in this channel (Admin only).",
-                         "chinese": "封鎖任何在此頻道發送訊息的人（僅限管理員）。"},
-        "usage": "`!autoban [reason] [delete_days]`",
-        "arguments": {"english": "**reason**: (Optional) Ban reason shown in the audit log. If omitted, disables autoban in this channel.\n**delete_days**: (Optional) Days of the member's message history to delete, 0-7 (default 0).\n- Example: `!autoban \"Honeypot channel\" 1`, `!autoban` (disables)",
-                      "chinese": "**原因**：（可選）顯示於審核日誌的封鎖原因。如果省略，則停用此頻道的自動封鎖。\n**刪除天數**：（可選）刪除該成員過去訊息的天數，0-7（默認 0）。\n- 示例：`!autoban \"Honeypot channel\" 1`、`!autoban`（停用）"},
-        "notes": {"english": "- Requires administrator permissions; the bot needs `ban_members`.\n- Server administrators are always exempt.\n- Intended for honeypot channels that nobody legitimate should post in.",
-                  "chinese": "- 需要管理員權限；機器人需要 `ban_members` 權限。\n- 伺服器管理員永遠不受影響。\n- 適用於正常成員不應發言的陷阱頻道。"}
-    },
-    {
-        "name": "gacha",
-        "description": {"english": "Free gacha pulls with a personal pity target, collection record and artwork browsing.",
-                         "chinese": "免費轉蛋，附個人保底目標、收藏紀錄及圖片瀏覽。"},
-        "usage": "`!gacha` (opens the menu), `!gacha <pull|target|browse|stats|reset|pool>`",
-        "arguments": {"english": "**pull**: Opens the pull menu (single / 10x).\n**target [character]**: View or set your personal pity target.\n**browse**: Flip through the top-rarity roster.\n**stats**: Your pulls and collection.\n**reset**: Wipe your own record (asks to confirm).\n**pool**: Current rates and rosters.\n- Admin only: `setfeatured`, `setimage`, `removeimage`, `setthumbnail`, `removethumbnail`, `reload`.",
-                      "chinese": "**pull**：開啟轉蛋選單（單抽／十連）。\n**target [角色]**：查看或設定你的個人保底目標。\n**browse**：逐一瀏覽最高稀有度角色。\n**stats**：你的抽數與收藏。\n**reset**：清除你自己的紀錄（需確認）。\n**pool**：目前機率與角色池。\n- 僅限管理員：`setfeatured`、`setimage`、`removeimage`、`setthumbnail`、`removethumbnail`、`reload`。"},
-        "notes": {"english": "- Pity guarantees your chosen target by the 200th pull.\n- The roster and rates live in `data/gacha_pool.json` and can be hand-edited.",
-                  "chinese": "- 保底會在第 200 抽前確保抽到你選定的目標。\n- 角色池與機率存放於 `data/gacha_pool.json`，可手動編輯。"}
-    },
-    {
-        "name": "chat",
-        "description": {"english": "Talk to the local AI model (also works by @mentioning the bot).",
-                         "chinese": "與本地 AI 模型對話（也可以直接標註機器人）。"},
-        "usage": "`!chat <prompt>`, `/chat [image] <prompt>`, or `@Bot <message>`",
-        "arguments": {"english": "**prompt**: What you want to say.\n**image**: (Optional, slash command) An image for the model to look at.",
-                      "chinese": "**prompt**：你想說的內容。\n**image**：（可選，斜線指令）讓模型查看的圖片。"},
-        "notes": {"english": "- Each channel shares one conversation; it expires after 15 minutes of silence.\n- Requires a running OpenAI-compatible model server (see `settings.py`).",
-                  "chinese": "- 每個頻道共用一個對話；閒置 15 分鐘後過期。\n- 需要運行中的 OpenAI 相容模型伺服器（見 `settings.py`）。"}
-    },
-    {
-        "name": "chatreset",
-        "description": {"english": "Clears this channel's shared AI conversation.",
-                         "chinese": "清除此頻道共用的 AI 對話。"},
-        "usage": "`!chatreset`",
-        "arguments": {"english": "No arguments required.", "chinese": "無需參數。"},
-        "notes": {"english": "- Clears the conversation for everyone in the channel.",
-                  "chinese": "- 會為頻道內所有人清除對話。"}
-    },
 ]
 
 
@@ -259,12 +222,10 @@ class HelpCog(commands.Cog, name="help"):
                 value=t(language,
                     "**Keyword Responses**: Sends copypastas for specific keywords in messages (manage sets with `!keyword`).\n"
                     "**Repeat Detection**: Echoes a message if three different users send it consecutively.\n"
-                    "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once.\n"
-                    "**Gacha & AI**: `!gacha` for free pulls, `!chat` or an @mention to talk to the AI.",
+                    "**Timeout Voting**: Use `!vto` to vote for timing out a member. Configurable via `!setvote`. Supports multiple votes at once.",
                     "**關鍵詞回應**：對消息中的特定關鍵詞回應迷因文本（使用 `!keyword` 管理關鍵詞組）。\n"
                     "**重複檢測**：若三個不同用戶連續發送相同消息，則重複該消息。\n"
-                    "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。\n"
-                    "**轉蛋與 AI**：`!gacha` 免費轉蛋，`!chat` 或標註機器人與 AI 對話。"),
+                    "**暫停投票**：使用 `!vto` 投票暫停成員。可通過 `!setvote` 配置。支持同時多個投票。"),
                 inline=False
             )
             embed.add_field(
@@ -291,12 +252,9 @@ class HelpCog(commands.Cog, name="help"):
                     "使用下面的按鈕瀏覽各個命令的詳細信息。"),
                 inline=False
             )
-            footer = t(language, "Bot created for fun and moderation.", "機器人為娛樂和管理而創建。")
-            if SUPPORT_CONTACT:
-                footer += t(language,
-                    f" Contact {SUPPORT_CONTACT} for issues.",
-                    f"如有問題，請聯繫 {SUPPORT_CONTACT}。")
-            embed.set_footer(text=footer)
+            embed.set_footer(text=t(language,
+                "Bot created for fun and moderation. Contact natherox through Discord for issues.",
+                "機器人為娛樂和管理而創建。如有問題，請於Discord聯繫natherox。"))
 
             view = HelpMenu(ctx, COMMAND_LIST, language)
             await ctx.send(embed=embed, view=view)
