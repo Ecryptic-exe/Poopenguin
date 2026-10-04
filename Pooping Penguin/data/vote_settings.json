@@ -1,14 +1,7 @@
 {
   "required_votes": 3,
   "admin_only": false,
-  "language": {
-    "708903492374233158": "english"
-  },
+  "language": {},
   "autoreact": {},
-  "autoban": {
-    "1526976714431926312": {
-      "reason": "Autoban",
-      "delete_days": 0
-    }
-  }
+  "autoban": {}
 }
