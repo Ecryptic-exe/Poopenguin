@@ -1,0 +1,54 @@
+{
+  "copied_from": "local v2 numerical pipeline",
+  "runtime_requires_v2": false,
+  "files": [
+    {
+      "file": "analyze_chunirec_numeric.py",
+      "source": "v2/analyze_chunirec_numeric.py",
+      "upstream_sha256": "4b1aac6898cdbb86b6ea5255258ce8c0687c61bb6811e72f2af0ac19f6b21afb"
+    },
+    {
+      "file": "compare_chunirec_rating_reference.py",
+      "source": "v2/compare_chunirec_rating_reference.py",
+      "upstream_sha256": "2cbf457b04ff561cf9d545641816e900d03573ef9ea3601576a74a1bb617244a"
+    },
+    {
+      "file": "plot_b10_quantiles.py",
+      "source": "v2/plot_b10_quantiles.py",
+      "upstream_sha256": "6dc39106f4de67999ddb5ab0dc2e6baa3428a500e92a6cc06e0f16146cd17d13"
+    },
+    {
+      "file": "population_band_numeric.py",
+      "source": "v2/population_band_numeric.py",
+      "upstream_sha256": "1d5a168a6e2997e50ec50d5cdea09899d49c7f53f499dc6a501465382725af01"
+    },
+    {
+      "file": "numeric_plot_focus.py",
+      "source": "v2/numeric_plot_focus.py",
+      "upstream_sha256": "61438178b55cdaedf3deeaf61bea2a3a27afdd0f53da53ab8cab5a44521a8e70"
+    },
+    {
+      "file": "plot_single_numeric_preview.py",
+      "source": "v2/plot_single_numeric_preview.py",
+      "upstream_sha256": "9703dfe30a0ac7cdd6d2b5871fd883cf11a89633e9944878d290133bbe65db8d"
+    },
+    {
+      "file": "collect_chunirec_rating_table.py",
+      "source": "v2/collect_chunirec_rating_table.py",
+      "upstream_sha256": "8e23367a715c94db70676b11d6f30f91ca67ec7dcd64d303fd1f40dab94cdd31"
+    }
+  ],
+  "adaptations": [
+    "standalone output path and return value",
+    "bundled CJK font",
+    "default SS-to-MAX and constant +1.00-to-+2.15 display limits",
+    "optional complete view; full source groups and numerical outputs unchanged",
+    "compact curve/axes/legend rendering",
+    "hidden P40-P60 band using the existing fitted group model",
+    "deterministic raw-data numeric signals and bounded-interval summaries",
+    "validate group sample size and mean/count compatibility before estimation; preserve excluded groups and break trend/judgment segments",
+    "fixed XL TECHNO and Moon MASTER anchors: independent two-level personal spread and relative-specialization proxies",
+    "eating judgments in Rating units with default zero margin, including piecewise Wiki score conversion"
+  ],
+  "population_model_changed": false
+}
