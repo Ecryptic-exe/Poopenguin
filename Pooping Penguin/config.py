@@ -21,34 +21,24 @@ DEFAULT_SETTINGS = {"required_votes": 3, "admin_only": False, "language": {}, "a
 DEFAULT_KEYWORDS = {"sets": {}}
 DEFAULT_COPYPASTA = {"types": {}}
 
-# Default gacha pool - only used if data/gacha_pool.json doesn't exist yet
-# (first run). Once created, the file on disk is the source of truth and
-# can be hand-edited at any time (rates, "featured" rate-up character,
-# and the three/two/one-star rosters) - see gacha_manager.py.
+# Default gacha pool - only used if data/gacha_pool.json doesn't exist.
+# Once that file exists it is the source of truth and can be hand-edited at
+# any time (rates, "featured" rate-up character, and the three/two/one-star
+# rosters) - see gacha_manager.py. The template ships its own copy of it.
 DEFAULT_GACHA_POOL = {
     "rates": {"three_star": 1.6, "two_star": 8.4, "one_star": 90.0},
-    "featured": "ショウニペンギン",
+    "featured": "Golden Dragon",
     "three_star": [
-        "ショウニペンギン",
-        "チュウニペンギン",
-        "チュウニペンギン/サウンドパレード!!",
-        "チュウニペンギン/メシア",
-        "チュウニペンギン/ラブリーハート",
-        "チュウニペンギン/コンダクター",
-        "チュウニペンギン/8bit",
-        "チュウニペンギン/ボクノリレイション",
-        "チュウニペンギン/Re:Generation",
-        "チュウニペンギン/10th Anniversary",
-        "ショウニペンギン/10th Anniversary",
+        "Golden Dragon",
+        "Silver Phoenix",
+        "Crystal Unicorn",
     ],
     "two_star": [
-        "虹限スタチュウ",
-        "ペンギンスタチュウ",
-        "ショウニスタチュウ",
-        "ソウルオブスタチュウ",
-        "CHUNITHM 10TH ANNIVERSARY"
+        "Bronze Knight",
+        "Forest Archer",
+        "Storm Mage",
     ],
-    "one_star": ["💩"],
+    "one_star": ["Pebble"],
 }
 DEFAULT_GACHA_USERS = {"users": {}}
 
@@ -59,13 +49,6 @@ DEFAULT_GACHA_USERS = {"users": {}}
 # still works normally.
 DEFAULT_GACHA_IMAGES = {}
 
-# DEBUG: prints once, when config.py is first imported, so you can confirm
-# the bot process is reading/writing the exact file you're checking on disk
-# (e.g. rules out a second copy of the project, or a container without a
-# persistent volume mounted for data/). Safe to delete once confirmed.
-print(f"[config.py] DATA_DIR resolved to: {DATA_DIR}")
-print(f"[config.py] COPYPASTA_FILE resolved to: {COPYPASTA_FILE}")
-print(f"[config.py] COPYPASTA_FILE exists on disk right now: {os.path.exists(COPYPASTA_FILE)}")
 
 def _load(path, default):
     if os.path.exists(path):
@@ -86,10 +69,6 @@ def _save(path, data):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    # DEBUG: confirms every write, with the absolute path and the size of
-    # what was actually written to disk. Safe to delete once confirmed.
-    size = os.path.getsize(path)
-    print(f"[config.py] wrote {size} bytes to: {os.path.abspath(path)}")
 
 def load_settings():
     return _load(SETTINGS_FILE, DEFAULT_SETTINGS)
