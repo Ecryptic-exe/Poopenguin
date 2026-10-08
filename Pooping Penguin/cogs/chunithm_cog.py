@@ -25,14 +25,18 @@ Python 3.9 safe (no `X | Y` unions).
 import json
 import logging
 import os
+import re
 import threading
+from datetime import datetime, timedelta, timezone
 from typing import Literal, Optional
 
 import discord
+from bs4 import BeautifulSoup
 from discord import app_commands
 from discord.ext import commands
 
 import chart_analysis
+import chunithm_net_session as net
 from config import DATA_DIR, _load, _save, load_settings
 from i18n import t, get_guild_language
 from ratingbot.catalog import DIFFICULTIES, normalize   # stdlib only
@@ -153,6 +157,100 @@ def parse_export(raw: bytes) -> dict:
     }
 
 
+# -- CHUNITHM-NET sync: scrape the logged-in session into the same record shape ----
+# Selectors follow chuni-penguin's parser (adapters/chunithm_net/parser.py).
+NET_DIFFICULTIES = ("Basic", "Advanced", "Expert", "Master", "Ultima")
+_JST = timezone(timedelta(hours=9))
+
+
+def _last_part(text: str) -> str:
+    return text.split("_")[-1].split(".")[0]
+
+
+def parse_net_player(html: str) -> dict:
+    """name / level / rating / last_played from /mobile/home/playerData."""
+    soup = BeautifulSoup(html, "html.parser")
+    name_el = soup.select_one(".player_name_in")
+    lv_el = soup.select_one(".player_lv")
+    digits = soup.select(".player_rating_num_block img")
+    if name_el is None or lv_el is None or not digits:
+        raise ValueError("Couldn't read your player data page.")
+    rating = ""
+    for img in digits:
+        d = _last_part(img.get("src", ""))
+        rating += "." if d == "comma" else d[1]
+    last = ""
+    last_el = soup.select_one(".player_lastplaydate_text")
+    if last_el is not None:
+        try:
+            last = datetime.strptime(last_el.get_text(strip=True), "%Y/%m/%d %H:%M") \
+                .replace(tzinfo=_JST).isoformat()
+        except ValueError:
+            pass
+    return {"name": name_el.get_text(strip=True),
+            "level": int(lv_el.get_text(strip=True).replace(",", "")),
+            "rating": float(rating),
+            "last_played": last}
+
+
+def parse_net_music_list(html: str) -> list:
+    """Played charts from a musicGenre/send<Diff> or ratingDetail page."""
+    soup = BeautifulSoup(html, "html.parser")
+    out = []
+    for form in soup.select("form"):
+        box = form.select_one(".w388.musiclist_box")
+        score_el = form.select_one(".play_musicdata_highscore .text_b")
+        idx_el = form.select_one("input[name=idx]")
+        title_el = form.select_one(".music_title, .musiclist_worldsend_title")
+        if box is None or score_el is None or idx_el is None or title_el is None:
+            continue
+        diff = _last_part(" ".join(box.get("class", [])))
+        if diff == "ultimate":
+            diff = "ultima"
+        if diff not in ("basic", "advanced", "expert", "master", "ultima"):
+            continue                      # World's End etc.
+        try:
+            score = int(score_el.get_text(strip=True).replace(",", ""))
+            idx = int(idx_el.get("value"))
+        except (TypeError, ValueError):
+            continue
+        if score <= 0:
+            continue
+        icons = form.select_one(".play_musicdata_icon")
+        has = (lambda frag: icons is not None and icons.select_one(
+            "img[src*={}]".format(frag)) is not None)
+        aj = has("alljustice")            # also matches alljusticecritical
+        chain = 1 if has("fullchain2") else (2 if has("fullchain") else 0)
+        out.append({"title": title_el.get_text(strip=True),
+                    "difficulty": diff.capitalize(),
+                    "score": score,
+                    "fc": aj or has("fullcombo"),
+                    "aj": aj,
+                    "chain": chain,
+                    "idx": idx})
+    return out
+
+
+def parse_net_rating_slots(html: str) -> list:
+    """(idx, Difficulty) in B30/N20 order from a ratingDetail page."""
+    return [(r["idx"], r["difficulty"]) for r in parse_net_music_list(html)]
+
+
+def build_net_record(player: dict, scores: list, best_keys: list, new_keys: list) -> dict:
+    by_key = {(s["idx"], s["difficulty"]): s for s in scores}
+    return {
+        "name": player["name"],
+        "rating": player["rating"],
+        "level": player["level"],
+        "last_played": player["last_played"],
+        "exported_at": datetime.now(_JST).isoformat(timespec="seconds"),
+        "app_version": "chunithm-net sync",
+        "best": [by_key[k] for k in best_keys if k in by_key],
+        "new": [by_key[k] for k in new_keys if k in by_key],
+        "scores": scores,
+    }
+
+
 class ChunithmCog(commands.Cog, name="chunithm"):
     def __init__(self, bot):
         self.bot = bot
@@ -194,9 +292,9 @@ class ChunithmCog(commands.Cog, name="chunithm"):
         language = _lang_for(ctx.guild)
         await ctx.send(t(language,
             "Subcommands: `upload`, `me`, `song`, `pattern`, `suggest`, `delete` (your scores); "
-            "`rating`, `song_search` (song charts).",
+            "`rating`, `song_search` (song charts); `login`, `logout`, `token`, `sync` (CHUNITHM-NET).",
             "子指令：`upload`、`me`、`song`、`pattern`、`suggest`、`delete`（你的成績）；"
-            "`rating`、`song_search`（曲目圖表）。"))
+            "`rating`、`song_search`（曲目圖表）；`login`、`logout`、`token`、`sync`（CHUNITHM-NET）。"))
 
     @chunithm.command(name="upload", description="Upload your CHUNITHM player-data JSON")
     async def upload(self, ctx, file: discord.Attachment):
@@ -220,7 +318,7 @@ class ChunithmCog(commands.Cog, name="chunithm"):
     async def me(self, ctx):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm sync` (after `/chunithm login`) or `/chunithm upload`.", ephemeral=True)
         sc = rec["scores"]
         sss = sum(1 for s in sc if s["score"] >= 1007500)
         ss = sum(1 for s in sc if s["score"] >= 1000000)
@@ -240,7 +338,7 @@ class ChunithmCog(commands.Cog, name="chunithm"):
     async def song(self, ctx, *, title: str):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm sync` (after `/chunithm login`) or `/chunithm upload`.", ephemeral=True)
         q = normalize(title)
         hits = {}
         for s in rec["scores"]:
@@ -288,7 +386,7 @@ class ChunithmCog(commands.Cog, name="chunithm"):
     async def pattern(self, ctx, scope: Literal["all", "best", "rating"] = "all"):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm sync` (after `/chunithm login`) or `/chunithm upload`.", ephemeral=True)
         table = load_chart_table()
         if table is None:
             return await ctx.send("Chart table missing. Run `tools/build_chart_tags.py`.",
@@ -314,7 +412,7 @@ class ChunithmCog(commands.Cog, name="chunithm"):
     async def suggest(self, ctx):
         rec = self._get(ctx.author.id)
         if not rec:
-            return await ctx.send("Nothing on file. Use `/chunithm upload`.", ephemeral=True)
+            return await ctx.send("Nothing on file. Use `/chunithm sync` (after `/chunithm login`) or `/chunithm upload`.", ephemeral=True)
         table = load_chart_table()
         if table is None:
             return await ctx.send("Chart table missing. Run `tools/build_chart_tags.py`.",
@@ -410,6 +508,92 @@ class ChunithmCog(commands.Cog, name="chunithm"):
         if rating is None:
             return await self._rating_unavailable(ctx)
         await rating.song_search(ctx, query)
+
+    # -- CHUNITHM-NET login (logic in cogs/login_cog.py) --------------------
+    def _login_cog(self):
+        """LoginCog, or None if it failed to load."""
+        return self.bot.get_cog("login")
+
+    async def _login_unavailable(self, ctx):
+        await ctx.send(t(_lang_for(ctx.guild),
+            "The login feature isn't available right now (it failed to load; check the bot log).",
+            "登入功能目前無法使用（載入失敗；請查看機器人日誌）。"), ephemeral=True)
+
+    @chunithm.command(
+        name="login",
+        description="Link your CHUNITHM-NET account (a cookie session is saved).")
+    @app_commands.describe(clal="Only if you already have a token; leave empty to get instructions")
+    async def login(self, ctx, clal: Optional[str] = None):
+        """Link your CHUNITHM-NET account. Use it in my DMs or as /chunithm login."""
+        cog = self._login_cog()
+        if cog is None:
+            return await self._login_unavailable(ctx)
+        await cog.login(ctx, clal)
+
+    @chunithm.command(name="logout", description="Remove your saved CHUNITHM-NET login")
+    @app_commands.describe(invalidate="Also sign out of CHUNITHM-NET so the token stops working")
+    async def logout(self, ctx, invalidate: bool = False):
+        cog = self._login_cog()
+        if cog is None:
+            return await self._login_unavailable(ctx)
+        await cog.logout(ctx, invalidate)
+
+    @chunithm.command(name="token", description="Show your saved CHUNITHM-NET token (private)")
+    async def token(self, ctx):
+        cog = self._login_cog()
+        if cog is None:
+            return await self._login_unavailable(ctx)
+        await cog.token(ctx)
+
+    @chunithm.command(name="sync", description="Import your scores straight from CHUNITHM-NET")
+    async def sync(self, ctx):
+        """Fetch your scores with your saved CHUNITHM-NET login (replaces any upload)."""
+        language = _lang_for(ctx.guild)
+        login = self._login_cog()
+        if login is None:
+            return await self._login_unavailable(ctx)
+        from cogs.login_cog import NotLoggedIn
+        await ctx.defer(ephemeral=True)
+        status = await ctx.send(t(language,
+            "Fetching your scores from CHUNITHM-NET… this takes a minute.",
+            "正在從 CHUNITHM-NET 取得你的成績…需要約一分鐘。"), ephemeral=True)
+        try:
+            async with login.session(ctx.author.id) as client:
+                async def get(path):
+                    return (await client.request("GET", path)).text
+
+                player = parse_net_player(await get("/mobile/home/playerData"))
+                best_keys = parse_net_rating_slots(
+                    await get("/mobile/home/playerData/ratingDetailBest/"))
+                new_keys = parse_net_rating_slots(
+                    await get("/mobile/home/playerData/ratingDetailRecent/"))
+                token = None
+                for c in net.load_jar(client.lwp_cookie_jar):
+                    if c.name == "_t" and c.domain.lstrip(".") == net.NET_HOST:
+                        token = c.value
+                if token is None:
+                    raise net.SessionError("CHUNITHM-NET session token missing; try again.")
+                scores = []
+                for diff in NET_DIFFICULTIES:
+                    resp = await client.request(
+                        "POST", "/mobile/record/musicGenre/send" + diff,
+                        data={"genre": "99", "token": token})
+                    scores.extend(parse_net_music_list(resp.text))
+        except NotLoggedIn:
+            return await ctx.send(t(language,
+                "You're not logged in. Use `/chunithm login` first.",
+                "你尚未登入，請先使用 `/chunithm login`。"), ephemeral=True)
+        except (net.SessionError, ValueError) as e:
+            return await ctx.send("Sync failed: {}".format(e), ephemeral=True)
+        if not scores:
+            return await ctx.send("CHUNITHM-NET returned no played charts.", ephemeral=True)
+        record = build_net_record(player, scores, best_keys, new_keys)
+        record["uploaded_by"] = ctx.author.id
+        self._put(ctx.author.id, record)
+        await ctx.send(t(language,
+            "Synced **{}** — rating {:.2f}, {} played charts. Try `/chunithm me`.",
+            "已同步 **{}** — Rating {:.2f}，共 {} 張已遊玩譜面。可使用 `/chunithm me`。").format(
+                record["name"], record["rating"], len(scores)), ephemeral=True)
 
 
 async def setup(bot):

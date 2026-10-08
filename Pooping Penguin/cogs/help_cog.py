@@ -109,13 +109,19 @@ COMMAND_LIST = [
     },
     {
         "name": "chunithm",
-        "description": {"english": "CHUNITHM tools: draw a song's player-population rating chart, search songs, and analyse your own imported scores.",
-                         "chinese": "CHUNITHM 工具：產生曲目的玩家分布圖、搜尋曲目，並分析你匯入的個人成績。"},
-        "usage": "`/chunithm <subcommand>` or `!chunithm <subcommand>`. Scores: `upload` `me` `song` `pattern` `suggest` `delete`. Charts: `rating` `song_search`. (`/` recommended)",
-        "arguments": {"english": "**rating** `<song> [difficulty] [detailed]`: Draws a song's player-population chart (one chart per request). Wrap multi-word titles in quotes with `!`, e.g. `!chunithm rating \"XL TECHNO\" MASTER` (`/` has autocomplete and needs no quotes). `difficulty` is `BASIC`, `ADVANCED`, `EXPERT`, `MASTER` (default) or `ULTIMA`; `detailed:true` shows the full score and player range instead of the SS-to-MAX focus.\n**song_search** `<query>`: Searches the song list (title, alias or fragment) and shows up to 10 candidates with their difficulties and an `id:` you can pass to `rating`. Never fetches statistics.\n**upload** `<file>`: Attach your `chunithm-player-data_*.json` export.\n**me**: Rating, level, played charts, SSS+/SS+/FC/AJ counts.\n**song** `<title>`: Your scores on a song (`/` autocompletes from your played songs).\n**pattern** `[all|best|rating]`: Strong and weak note patterns over all played 14+ charts, Best 30, or Best 30 + New 20.\n**suggest**: Songs to push your rating (your strong patterns) and to practice (your weak patterns).\n**delete**: Remove your stored data.\n- Examples: `/chunithm rating song:... difficulty:MASTER`, `!chunithm song_search サファリ`, `/chunithm pattern scope:best`",
-                      "chinese": "**rating** `<曲名> [難度] [詳細]`：產生曲目的玩家分布圖（每次一張）。使用 `!` 時，含空格的曲名請加引號，例如 `!chunithm rating \"XL TECHNO\" MASTER`（`/` 版本有自動完成，無需引號）。難度可選 `BASIC`、`ADVANCED`、`EXPERT`、`MASTER`（預設）或 `ULTIMA`；`detailed:true` 顯示完整分數與玩家範圍，預設為 SS 至 MAX 的聚焦視圖。\n**song_search** `<關鍵字>`：搜尋曲目清單（曲名、別名或片段），最多顯示 10 個候選曲目、難度，以及可用於 `rating` 的 `id:`。不會抓取統計資料。\n**upload** `<檔案>`：附上你的 `chunithm-player-data_*.json` 匯出檔。\n**me**：Rating、等級、已遊玩譜面數、SSS+/SS+/FC/AJ 數量。\n**song** `<曲名>`：你在某首曲目的成績（`/` 版本會從你玩過的曲目自動完成）。\n**pattern** `[all|best|rating]`：依所有已玩 14+ 譜面、Best 30 或 Best 30 + New 20，分析擅長與不擅長的配置。\n**suggest**：推薦推分曲（你擅長的配置）與練習曲（你不擅長的配置）。\n**delete**：刪除你已儲存的資料。\n- 示例：`/chunithm rating song:... difficulty:MASTER`、`!chunithm song_search サファリ`、`/chunithm pattern scope:best`"},
-        "notes": {"english": "- Score replies with `/` are only visible to you; with `!` they are public and an attached file stays in the channel, so use `/chunithm upload`.\n- Re-uploading replaces your old data; only played charts are stored.\n- `pattern` and `suggest` use the community chart sheet (14+ charts only); charts missing from it are ignored.\n- Skill values are relative to your own level and aim scores are estimates.\n- Suggestions also read the sheet's notes (error tolerance, personal difference, not-for-push).\n- `rating` and `song_search` search offline and rank by relevance; only the chart you pick is processed.",
-                  "chinese": "- 使用 `/` 時成績相關回覆只有你看得到；使用 `!` 時回覆是公開的，附件也會留在頻道中，所以請用 `/chunithm upload`。\n- 重新上傳會取代舊資料；只儲存已遊玩的譜面。\n- `pattern` 與 `suggest` 使用社群譜面表（僅限 14+ 譜面）；表中沒有的譜面會被忽略。\n- 實力數值是相對於你自己的水平，目標分數為估算值。\n- 推薦也會參考譜面表的說明（容錯、個人差、不適合推分）。\n- `rating` 與 `song_search` 離線搜尋並依相關度排序；只會處理你選擇的那張圖表。"}
+        "page": "1/2",
+        "description": {"english": "CHUNITHM tools (1/2): song charts and your imported scores. Account linking and import are on page 2.", "chinese": "CHUNITHM 工具（1/2）：曲目圖表與你的個人成績。帳號連結與匯入在第 2 頁。"},
+        "usage": "`/chunithm <subcommand>` or `!chunithm <subcommand>`. Charts: `rating` `song_search`. Your scores: `me` `song` `pattern` `suggest` `delete`. (`/` recommended)",
+        "arguments": {"english": "**rating** `<song> [difficulty] [detailed]`: Draws a song's player-population chart (one chart per request). Wrap multi-word titles in quotes with `!`, e.g. `!chunithm rating \"XL TECHNO\" MASTER` (`/` has autocomplete and needs no quotes). `difficulty` is `BASIC`, `ADVANCED`, `EXPERT`, `MASTER` (default) or `ULTIMA`; `detailed:true` shows the full score and player range instead of the SS-to-MAX focus.\n**song_search** `<query>`: Searches the song list (title, alias or fragment) and shows up to 10 candidates with their difficulties and an `id:` you can pass to `rating`. Never fetches statistics.\n**me**: Rating, level, played charts, SSS+/SS+/FC/AJ counts.\n**song** `<title>`: Your scores on a song (`/` autocompletes from your played songs).\n**pattern** `[all|best|rating]`: Strong and weak note patterns over all played 14+ charts, Best 30, or Best 30 + New 20.\n**suggest**: Songs to push your rating (your strong patterns) and to practice (your weak patterns).\n**delete**: Remove your stored scores.\n- Examples: `/chunithm rating song:... difficulty:MASTER`, `!chunithm song_search サファリ`, `/chunithm pattern scope:best`", "chinese": "**rating** `<曲名> [難度] [詳細]`：產生曲目的玩家分布圖（每次一張）。使用 `!` 時，含空格的曲名請加引號，例如 `!chunithm rating \"XL TECHNO\" MASTER`（`/` 版本有自動完成，無需引號）。難度可選 `BASIC`、`ADVANCED`、`EXPERT`、`MASTER`（預設）或 `ULTIMA`；`detailed:true` 顯示完整分數與玩家範圍，預設為 SS 至 MAX 的聚焦視圖。\n**song_search** `<關鍵字>`：搜尋曲目清單（曲名、別名或片段），最多顯示 10 個候選曲目、難度，以及可用於 `rating` 的 `id:`。不會抓取統計資料。\n**me**：Rating、等級、已遊玩譜面數、SSS+/SS+/FC/AJ 數量。\n**song** `<曲名>`：你在某首曲目的成績（`/` 版本會從你玩過的曲目自動完成）。\n**pattern** `[all|best|rating]`：依所有已玩 14+ 譜面、Best 30 或 Best 30 + New 20，分析擅長與不擅長的配置。\n**suggest**：推薦推分曲（你擅長的配置）與練習曲（你不擅長的配置）。\n**delete**：刪除你已儲存的成績。\n- 示例：`/chunithm rating song:... difficulty:MASTER`、`!chunithm song_search サファリ`、`/chunithm pattern scope:best`"},
+        "notes": {"english": "- Score commands need your scores first: run `sync` or `upload` (page 2).\n- Score replies with `/` are only visible to you; with `!` they are public.\n- `pattern` and `suggest` use the community chart sheet (14+ charts only); charts missing from it are ignored.\n- Skill values are relative to your own level and aim scores are estimates.\n- Suggestions also read the sheet's notes (error tolerance, personal difference, not-for-push).\n- `rating` and `song_search` search offline and rank by relevance; only the chart you pick is processed.", "chinese": "- 成績相關指令需要先有你的成績：請先執行 `sync` 或 `upload`（第 2 頁）。\n- 使用 `/` 時成績相關回覆只有你看得到；使用 `!` 時回覆是公開的。\n- `pattern` 與 `suggest` 使用社群譜面表（僅限 14+ 譜面）；表中沒有的譜面會被忽略。\n- 實力數值是相對於你自己的水平，目標分數為估算值。\n- 推薦也會參考譜面表的說明（容錯、個人差、不適合推分）。\n- `rating` 與 `song_search` 離線搜尋並依相關度排序；只會處理你選擇的那張圖表。"}
+    },
+    {
+        "name": "chunithm",
+        "page": "2/2",
+        "description": {"english": "CHUNITHM tools (2/2): link your CHUNITHM-NET account and import your scores.", "chinese": "CHUNITHM 工具（2/2）：連結你的 CHUNITHM-NET 帳號並匯入成績。"},
+        "usage": "`/chunithm <subcommand>` or `!chunithm <subcommand>`. Import: `login` `sync` `upload`. Account: `logout` `token`. (`/` recommended)",
+        "arguments": {"english": "**login** `[clal]`: Link your CHUNITHM-NET account. Run it with no argument to get step-by-step instructions (bookmarklet, or a SEGA ID button), or pass a token you already have (DMs / `/` only).\n**sync**: Fetches your profile, Best 30 / New 20 and all played charts from CHUNITHM-NET using your saved login (takes about a minute). Requires `login` first.\n**upload** `<file>`: Alternative to `sync`: attach your `chunithm-player-data_*.json` export.\n**logout** `[invalidate]`: Delete your saved login; `invalidate:true` also signs out of CHUNITHM-NET so the token stops working.\n**token**: Shows your saved token (`/` or DMs only; keep it private).\n- Typical flow: `!chunithm login` (in DMs) → `!chunithm sync` → `!chunithm me`", "chinese": "**login** `[clal]`：連結你的 CHUNITHM-NET 帳號。不帶參數會顯示逐步說明（書籤小工具或 SEGA ID 按鈕），也可傳入你已有的令牌（僅限私訊 / `/`）。\n**sync**：使用你已儲存的登入，從 CHUNITHM-NET 取得個人資料、Best 30 / New 20 與所有已遊玩譜面（約需一分鐘）。需要先執行 `login`。\n**upload** `<檔案>`：`sync` 的替代方式：附上你的 `chunithm-player-data_*.json` 匯出檔。\n**logout** `[invalidate]`：刪除你已儲存的登入；`invalidate:true` 也會登出 CHUNITHM-NET，使令牌失效。\n**token**：顯示你已儲存的令牌（僅限 `/` 或私訊；請勿外流）。\n- 常見流程：`!chunithm login`（在私訊中）→ `!chunithm sync` → `!chunithm me`"},
+        "notes": {"english": "- `sync` and `upload` each replace your previously stored scores; only played charts are kept.\n- With `!` an attached upload file stays in the channel, so prefer `/chunithm upload`.\n- `login` stores a CHUNITHM-NET session cookie, not your password. If you paste a token in a server channel the bot deletes the message and continues in your DMs; revoke it with `logout invalidate:true`.\n- If `sync` says your login expired, run `login` again.", "chinese": "- `sync` 與 `upload` 都會取代你先前儲存的成績；只保留已遊玩的譜面。\n- 使用 `!` 時，附件上傳的檔案會留在頻道中，因此建議使用 `/chunithm upload`。\n- `login` 儲存的是 CHUNITHM-NET 的工作階段 cookie，而不是你的密碼。若你在伺服器頻道貼出令牌，機器人會刪除訊息並改在私訊繼續；可用 `logout invalidate:true` 撤銷。\n- 若 `sync` 提示登入已過期，請重新執行 `login`。"}
     },
     {
         "name": "feed",
@@ -190,6 +196,42 @@ COMMAND_LIST = [
 ]
 
 
+def _add_field(embed, name, value, limit=1024):
+    """Add a field, splitting at line breaks when it exceeds Discord's 1024-char limit."""
+    chunks, cur = [], ""
+    for line in value.split("\n"):
+        while len(line) > limit:                      # a single over-long line
+            if cur:
+                chunks.append(cur)
+                cur = ""
+            chunks.append(line[:limit])
+            line = line[limit:]
+        if cur and len(cur) + 1 + len(line) > limit:
+            chunks.append(cur)
+            cur = line
+        else:
+            cur = line if not cur else cur + "\n" + line
+    chunks.append(cur)
+    for i, chunk in enumerate(chunks):
+        embed.add_field(name=name if i == 0 else "\u200b", value=chunk or "\u200b", inline=False)
+
+
+def command_embed(command, language, footer):
+    """The detail embed for one COMMAND_LIST entry (multi-page commands show their page)."""
+    suffix = " ({})".format(command["page"]) if command.get("page") else ""
+    name = command["name"]
+    embed = discord.Embed(
+        title=t(language, f"Command: !{name}{suffix}", f"命令：!{name}{suffix}"),
+        description=command["description"][language],
+        color=discord.Color.blue()
+    )
+    _add_field(embed, t(language, "🔹 Usage", "🔹 使用方法"), command["usage"])
+    _add_field(embed, t(language, "🔹 Arguments", "🔹 參數"), command["arguments"][language])
+    _add_field(embed, t(language, "🔹 Notes", "🔹 注意事項"), command["notes"][language])
+    embed.set_footer(text=footer)
+    return embed
+
+
 class HelpMenu(discord.ui.View):
     def __init__(self, ctx, command_list, language, timeout=180):
         super().__init__(timeout=timeout)
@@ -206,18 +248,9 @@ class HelpMenu(discord.ui.View):
 
     def get_embed(self):
         command = self.command_list[self.current_page]
-        embed = discord.Embed(
-            title=t(self.language, f"Command: !{command['name']}", f"命令：!{command['name']}"),
-            description=command["description"][self.language],
-            color=discord.Color.blue()
-        )
-        embed.add_field(name=t(self.language, "🔹 Usage", "🔹 使用方法"), value=command["usage"], inline=False)
-        embed.add_field(name=t(self.language, "🔹 Arguments", "🔹 參數"), value=command["arguments"][self.language], inline=False)
-        embed.add_field(name=t(self.language, "🔹 Notes", "🔹 注意事項"), value=command["notes"][self.language], inline=False)
-        embed.set_footer(text=t(self.language,
+        return command_embed(command, self.language, t(self.language,
             f"Page {self.current_page + 1}/{len(self.command_list)} | Use !help for the full user manual.",
             f"第 {self.current_page + 1}/{len(self.command_list)} 頁 | 使用 !help 獲取完整的使用手冊。"))
-        return embed
 
     @discord.ui.button(style=discord.ButtonStyle.grey)
     async def previous_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -287,7 +320,7 @@ class HelpCog(commands.Cog, name="help"):
                     "**Random Color**: `!rcg` creates a hex color with a preview.\n"
                     "**Permissions**: `!setperms` grants channel access (admin only).\n"
                     "**Auto-Reactions**: `!autoreact` sets emoji reactions for messages.\n"
-                    "**CHUNITHM**: `/chunithm rating` draws a song's player-population chart; `/chunithm song_search` finds songs; `/chunithm upload` imports your player data and `/chunithm pattern` / `/chunithm suggest` analyse it.\n"
+                    "**CHUNITHM**: `/chunithm rating` draws a song's player-population chart; `/chunithm song_search` finds songs; `/chunithm sync` imports your scores from CHUNITHM-NET (or `/chunithm upload` a file) and `/chunithm pattern` / `/chunithm suggest` analyse it; `/chunithm login` links your CHUNITHM-NET account.\n"
                     "**Feed Tracker**: `/feed add` tracks a Bluesky account and posts its new posts to a channel; `/feed list`, `/feed remove` and `/feed check` manage it (admin only).\n"
                     "**AI Chat**: `!chat` or @mention the bot to talk to the local AI model; `!chatreset` clears it.",
                     "**隨機回應**：`!ask` 根據隨機成功率回應。\n"
@@ -296,7 +329,7 @@ class HelpCog(commands.Cog, name="help"):
                     "**隨機顏色**：`!rcg` 生成十六進制顏色並預覽。\n"
                     "**權限**：`!setperms` 授予頻道權限（僅限管理員）。\n"
                     "**自動反應**：`!autoreact` 為消息設置表情反應。\n"
-                    "**CHUNITHM**：`/chunithm rating` 產生曲目的玩家分布圖；`/chunithm song_search` 搜尋曲目；`/chunithm upload` 匯入玩家資料，`/chunithm pattern` 與 `/chunithm suggest` 進行分析。\n"
+                    "**CHUNITHM**：`/chunithm rating` 產生曲目的玩家分布圖；`/chunithm song_search` 搜尋曲目；`/chunithm sync` 從 CHUNITHM-NET 匯入成績（或用 `/chunithm upload` 上傳檔案），`/chunithm pattern` 與 `/chunithm suggest` 進行分析；`/chunithm login` 連結你的 CHUNITHM-NET 帳號。\n"
                     "**動態追蹤**：`/feed add` 追蹤 Bluesky 帳號並將新貼文發送到頻道；`/feed list`、`/feed remove`、`/feed check` 用於管理（僅限管理員）。\n"
                      "**AI 對話**：使用 `!chat` 或提及機器人與本地 AI 模型對話；`!chatreset` 清除對話。"),
                 inline=False
@@ -319,18 +352,13 @@ class HelpCog(commands.Cog, name="help"):
         command = (command.lower().lstrip("!/").split() or [""])[0]   # "chunithm rating" -> "chunithm"
         # rating / song_search / score used to be their own top-level commands
         command = {"rating": "chunithm", "song_search": "chunithm", "score": "chunithm"}.get(command, command)
-        selected = next((cmd for cmd in COMMAND_LIST if cmd["name"] == command), None)
-        if selected:
-            embed = discord.Embed(
-                title=t(language, f"Command: !{command}", f"命令：!{command}"),
-                description=selected["description"][language],
-                color=discord.Color.blue()
-            )
-            embed.add_field(name=t(language, "🔹 Usage", "🔹 使用方法"), value=selected["usage"], inline=False)
-            embed.add_field(name=t(language, "🔹 Arguments", "🔹 參數"), value=selected["arguments"][language], inline=False)
-            embed.add_field(name=t(language, "🔹 Notes", "🔹 注意事項"), value=selected["notes"][language], inline=False)
-            embed.set_footer(text=t(language, "Use !help for the full user manual.", "使用 !help 獲取完整的使用手冊。"))
-            await ctx.send(embed=embed)
+        matches = [cmd for cmd in COMMAND_LIST if cmd["name"] == command]
+        if len(matches) > 1:                      # multi-page command: Previous/Next menu
+            view = HelpMenu(ctx, matches, language)
+            await ctx.send(embed=view.get_embed(), view=view)
+        elif matches:
+            await ctx.send(embed=command_embed(matches[0], language,
+                t(language, "Use !help for the full user manual.", "使用 !help 獲取完整的使用手冊。")))
         else:
             embed = discord.Embed(
                 title=t(language, "Error", "錯誤"),

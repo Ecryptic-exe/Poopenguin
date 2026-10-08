@@ -147,6 +147,9 @@ class MessagesCog(commands.Cog, name="messages"):
         return True
 
     async def _handle_keywords(self, message):
+        # Keyword responses are server-only; stay silent in DMs.
+        if message.guild is None:
+            return
         content = message.content.strip()
         if not content:
             return
