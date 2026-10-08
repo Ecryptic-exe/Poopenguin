@@ -108,6 +108,56 @@ COMMAND_LIST = [
                   "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list [搜尋詞]`（開啟含上一頁／下一頁／搜尋／關閉的選單）、`info <類型>`（別名：`show`，分頁顯示）、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
     },
     {
+        "name": "chunithm",
+        "description": {"english": "CHUNITHM tools: draw a song's player-population rating chart, search songs, and analyse your own imported scores.",
+                         "chinese": "CHUNITHM 工具：產生曲目的玩家分布圖、搜尋曲目，並分析你匯入的個人成績。"},
+        "usage": "`/chunithm <subcommand>` or `!chunithm <subcommand>`. Scores: `upload` `me` `song` `pattern` `suggest` `delete`. Charts: `rating` `song_search`. (`/` recommended)",
+        "arguments": {"english": "**rating** `<song> [difficulty] [detailed]`: Draws a song's player-population chart (one chart per request). Wrap multi-word titles in quotes with `!`, e.g. `!chunithm rating \"XL TECHNO\" MASTER` (`/` has autocomplete and needs no quotes). `difficulty` is `BASIC`, `ADVANCED`, `EXPERT`, `MASTER` (default) or `ULTIMA`; `detailed:true` shows the full score and player range instead of the SS-to-MAX focus.\n**song_search** `<query>`: Searches the song list (title, alias or fragment) and shows up to 10 candidates with their difficulties and an `id:` you can pass to `rating`. Never fetches statistics.\n**upload** `<file>`: Attach your `chunithm-player-data_*.json` export.\n**me**: Rating, level, played charts, SSS+/SS+/FC/AJ counts.\n**song** `<title>`: Your scores on a song (`/` autocompletes from your played songs).\n**pattern** `[all|best|rating]`: Strong and weak note patterns over all played 14+ charts, Best 30, or Best 30 + New 20.\n**suggest**: Songs to push your rating (your strong patterns) and to practice (your weak patterns).\n**delete**: Remove your stored data.\n- Examples: `/chunithm rating song:... difficulty:MASTER`, `!chunithm song_search サファリ`, `/chunithm pattern scope:best`",
+                      "chinese": "**rating** `<曲名> [難度] [詳細]`：產生曲目的玩家分布圖（每次一張）。使用 `!` 時，含空格的曲名請加引號，例如 `!chunithm rating \"XL TECHNO\" MASTER`（`/` 版本有自動完成，無需引號）。難度可選 `BASIC`、`ADVANCED`、`EXPERT`、`MASTER`（預設）或 `ULTIMA`；`detailed:true` 顯示完整分數與玩家範圍，預設為 SS 至 MAX 的聚焦視圖。\n**song_search** `<關鍵字>`：搜尋曲目清單（曲名、別名或片段），最多顯示 10 個候選曲目、難度，以及可用於 `rating` 的 `id:`。不會抓取統計資料。\n**upload** `<檔案>`：附上你的 `chunithm-player-data_*.json` 匯出檔。\n**me**：Rating、等級、已遊玩譜面數、SSS+/SS+/FC/AJ 數量。\n**song** `<曲名>`：你在某首曲目的成績（`/` 版本會從你玩過的曲目自動完成）。\n**pattern** `[all|best|rating]`：依所有已玩 14+ 譜面、Best 30 或 Best 30 + New 20，分析擅長與不擅長的配置。\n**suggest**：推薦推分曲（你擅長的配置）與練習曲（你不擅長的配置）。\n**delete**：刪除你已儲存的資料。\n- 示例：`/chunithm rating song:... difficulty:MASTER`、`!chunithm song_search サファリ`、`/chunithm pattern scope:best`"},
+        "notes": {"english": "- Score replies with `/` are only visible to you; with `!` they are public and an attached file stays in the channel, so use `/chunithm upload`.\n- Re-uploading replaces your old data; only played charts are stored.\n- `pattern` and `suggest` use the community chart sheet (14+ charts only); charts missing from it are ignored.\n- Skill values are relative to your own level and aim scores are estimates.\n- Suggestions also read the sheet's notes (error tolerance, personal difference, not-for-push).\n- `rating` and `song_search` search offline and rank by relevance; only the chart you pick is processed.",
+                  "chinese": "- 使用 `/` 時成績相關回覆只有你看得到；使用 `!` 時回覆是公開的，附件也會留在頻道中，所以請用 `/chunithm upload`。\n- 重新上傳會取代舊資料；只儲存已遊玩的譜面。\n- `pattern` 與 `suggest` 使用社群譜面表（僅限 14+ 譜面）；表中沒有的譜面會被忽略。\n- 實力數值是相對於你自己的水平，目標分數為估算值。\n- 推薦也會參考譜面表的說明（容錯、個人差、不適合推分）。\n- `rating` 與 `song_search` 離線搜尋並依相關度排序；只會處理你選擇的那張圖表。"}
+    },
+    {
+        "name": "feed",
+        "description": {"english": "Tracks social media accounts and posts their new posts to a channel. Currently supports Bluesky.",
+                         "chinese": "追蹤社群媒體帳號，並將新貼文發送到指定頻道。目前支援 Bluesky。"},
+        "usage": "`/feed <subcommand>` or `!feed <subcommand>` (admin only). Subcommands: `add` `remove` `list` `check`. (`/` recommended)",
+        "arguments": {"english": "**add** `<account> [channel] [platform]`: Starts tracking an account. `account` is a profile URL or handle. `channel` is where posts go (defaults to the current channel; with `!` use a #mention, no ID needed; `/` gives a channel picker). `platform` defaults to `bluesky`.\n**remove** `<account>`: Stops tracking that account.\n**list**: Shows tracked accounts and their channels.\n**check**: Checks for new posts immediately.\n- Examples: `/feed add account:https://bsky.app/profile/performaien.bsky.social channel:#news`, `!feed add performaien.bsky.social #news`, `!feed remove performaien.bsky.social`",
+                      "chinese": "**add** `<帳號> [頻道] [平台]`：開始追蹤帳號。`帳號` 可以是個人檔案網址或帳號名稱。`頻道` 是貼文發送的位置（預設為目前頻道；使用 `!` 時直接標註 #頻道，不需要 ID；`/` 版本提供頻道選單）。`平台` 預設為 `bluesky`。\n**remove** `<帳號>`：停止追蹤該帳號。\n**list**：顯示已追蹤的帳號及其頻道。\n**check**：立即檢查是否有新貼文。\n- 示例：`/feed add account:https://bsky.app/profile/performaien.bsky.social channel:#news`、`!feed add performaien.bsky.social #news`、`!feed remove performaien.bsky.social`"},
+        "notes": {"english": "- Requires the Manage Server permission.\n- Checks every 5 minutes. Only posts made after you add the account are sent; old posts are not reposted.\n- Replies are skipped; reposts are included and labeled.\n- Replies to `list` and errors are only visible to you when using `/`.",
+                  "chinese": "- 需要「管理伺服器」權限。\n- 每 5 分鐘檢查一次。只會發送加入帳號之後的新貼文，不會重發舊貼文。\n- 回覆貼文會被略過；轉發貼文會包含並標示。\n- 使用 `/` 時，`list` 的回覆與錯誤訊息只有你看得到。"}
+    },
+    {
+        "name": "chat",
+        "description": {"english": "Talks to the bot's local AI model. Everyone in a channel shares one conversation.",
+                         "chinese": "與機器人的本地 AI 模型對話。同一頻道的所有人共用同一個對話。"},
+        "usage": "`!chat <message>` or `/chat` (or just @mention the bot)",
+        "arguments": {"english": "**message**: What you want to say to the AI.\n**image**: (Optional, slash only) An image to show it. With `!`, just attach the image to your message.\n- Example: `!chat what's a good rhythm game for beginners?`",
+                      "chinese": "**訊息**：你想對 AI 說的話。\n**圖片**：（可選，僅限斜線指令）要讓它看的圖片。使用 `!` 時，直接在訊息中附上圖片即可。\n- 示例：`!chat 有什麼適合新手的音樂遊戲？`"},
+        "notes": {"english": "- Each channel has its own conversation; channels never share context.\n- A conversation expires after 15 minutes of silence.\n- Replies can be slow because the model runs locally.\n- Use `!chatreset` to clear the channel's conversation.",
+                  "chinese": "- 每個頻道有自己的對話，頻道之間不會共用內容。\n- 對話在 15 分鐘無人發言後過期。\n- 由於模型在本機運行，回覆可能較慢。\n- 使用 `!chatreset` 清除該頻道的對話。"}
+    },
+    {
+        "name": "chatreset",
+        "description": {"english": "Clears this channel's shared AI conversation.",
+                         "chinese": "清除此頻道共用的 AI 對話。"},
+        "usage": "`!chatreset` or `/chatreset`",
+        "arguments": {"english": "No arguments required.\n- Example: `!chatreset`",
+                      "chinese": "無需參數。\n- 示例：`!chatreset`"},
+        "notes": {"english": "- Clears the conversation for everyone in the channel, not just you.",
+                  "chinese": "- 會為頻道內所有人清除對話，而不只是你自己。"}
+    },
+    {
+        "name": "autoban",
+        "description": {"english": "Bans anyone who sends a message in this channel (Admin only).",
+                         "chinese": "封鎖任何在此頻道發送訊息的人（僅限管理員）。"},
+        "usage": "`!autoban [reason] [delete_days]`",
+        "arguments": {"english": "**reason**: (Optional) Ban reason shown in the audit log. If omitted, disables autoban in this channel.\n**delete_days**: (Optional) Days of the member's message history to delete, 0-7 (default 0).\n- Example: `!autoban \"honeypot channel\" 1`, `!autoban` (disables it)",
+                      "chinese": "**原因**：（可選）顯示於審核日誌的封鎖原因。如果省略，則停用此頻道的自動封鎖。\n**delete_days**：（可選）要刪除該成員多少天內的訊息，0 至 7（預設 0）。\n- 示例：`!autoban \"honeypot channel\" 1`、`!autoban`（停用）"},
+        "notes": {"english": "- Requires Administrator permission.\n- The bot needs the `ban_members` permission.\n- Intended for honeypot channels; anyone who types there is banned immediately.",
+                  "chinese": "- 需要管理員權限。\n- 機器人需要 `ban_members` 權限。\n- 適用於誘捕頻道；任何在此發言的人都會立即被封鎖。"}
+    },
+    {
         "name": "setperms",
         "description": {"english": "Grants permissions to a specific role in a specific channel (Admin only).",
                          "chinese": "在特定頻道中為特定角色授予權限（僅限管理員）。"},
@@ -236,13 +286,19 @@ class HelpCog(commands.Cog, name="help"):
                     "**Random Number**: `!rng` generates a number in a range.\n"
                     "**Random Color**: `!rcg` creates a hex color with a preview.\n"
                     "**Permissions**: `!setperms` grants channel access (admin only).\n"
-                    "**Auto-Reactions**: `!autoreact` sets emoji reactions for messages.",
+                    "**Auto-Reactions**: `!autoreact` sets emoji reactions for messages.\n"
+                    "**CHUNITHM**: `/chunithm rating` draws a song's player-population chart; `/chunithm song_search` finds songs; `/chunithm upload` imports your player data and `/chunithm pattern` / `/chunithm suggest` analyse it.\n"
+                    "**Feed Tracker**: `/feed add` tracks a Bluesky account and posts its new posts to a channel; `/feed list`, `/feed remove` and `/feed check` manage it (admin only).\n"
+                    "**AI Chat**: `!chat` or @mention the bot to talk to the local AI model; `!chatreset` clears it.",
                     "**隨機回應**：`!ask` 根據隨機成功率回應。\n"
                     "**隨機選擇**：`!pick` 從選項列表中選一個。\n"
                     "**隨機數**：`!rng` 生成範圍內的數字。\n"
                     "**隨機顏色**：`!rcg` 生成十六進制顏色並預覽。\n"
                     "**權限**：`!setperms` 授予頻道權限（僅限管理員）。\n"
-                    "**自動反應**：`!autoreact` 為消息設置表情反應。"),
+                    "**自動反應**：`!autoreact` 為消息設置表情反應。\n"
+                    "**CHUNITHM**：`/chunithm rating` 產生曲目的玩家分布圖；`/chunithm song_search` 搜尋曲目；`/chunithm upload` 匯入玩家資料，`/chunithm pattern` 與 `/chunithm suggest` 進行分析。\n"
+                    "**動態追蹤**：`/feed add` 追蹤 Bluesky 帳號並將新貼文發送到頻道；`/feed list`、`/feed remove`、`/feed check` 用於管理（僅限管理員）。\n"
+                     "**AI 對話**：使用 `!chat` 或提及機器人與本地 AI 模型對話；`!chatreset` 清除對話。"),
                 inline=False
             )
             embed.add_field(
@@ -260,7 +316,9 @@ class HelpCog(commands.Cog, name="help"):
             await ctx.send(embed=embed, view=view)
             return
 
-        command = command.lower()
+        command = (command.lower().lstrip("!/").split() or [""])[0]   # "chunithm rating" -> "chunithm"
+        # rating / song_search / score used to be their own top-level commands
+        command = {"rating": "chunithm", "song_search": "chunithm", "score": "chunithm"}.get(command, command)
         selected = next((cmd for cmd in COMMAND_LIST if cmd["name"] == command), None)
         if selected:
             embed = discord.Embed(

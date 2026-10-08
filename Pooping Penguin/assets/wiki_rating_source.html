@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head prefix="og: https://ogp.me/ns# fb: https://ogp.me/ns/fb# article: https://ogp.me/ns/article#">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+    <script>
+    (function () {
+        var m = /(Android|iPhone|iPad)/.exec(navigator.userAgent)
+        if (m && m[1] !== 'iPhone') return
+        var meta = document.querySelector('meta[name="viewport"]')
+        if (!meta) return
+        meta.setAttribute('content', m
+            ? 'width=device-width,minimum-scale=1,initial-scale=1,user-scalable=no'
+            : 'width=980')
+    })()
+</script>
+
+    <meta name="description" content="SEGAのアーケード音楽ゲーム「CHUNITHM」のファンサイトです。">
+        <meta property="og:url" content="https://wikiwiki.jp/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="レーティング・OVER POWER - CHUNITHM【チュウニズム】攻略 Wiki*" />
+    <meta property="og:description" content="SEGAのアーケード音楽ゲーム「CHUNITHM」のファンサイトです。" />
+    <meta property="og:site_name" content="CHUNITHM【チュウニズム】攻略 Wiki*" />
+    <meta property="og:image" content="https://icon.wikiwiki.jp/symbolicon/chunithmwiki/ogCustomImage/8b256fb8bf32.png" />
+    <title>レーティング・OVER POWER - CHUNITHM【チュウニズム】攻略 Wiki*</title>
+
+    <link rel="alternate" href="/chunithmwiki/::cmd/mixirss" type="application/rss+xml" title="RSS" />
+        <link rel="icon" href="https://icon.wikiwiki.jp/symbolicon/chunithmwiki/favicon/c6c8ad0b51bc.png" />
+    <link rel="apple-touch-icon" href="https://icon.wikiwiki.jp/symbolicon/chunithmwiki/appleTouchIcon/553cb177b980.png" />
+    <link rel="manifest" href="https://icon.wikiwiki.jp/symbolicon/chunithmwiki/manifest.webmanifest">
+    <link rel="stylesheet" href="https://cdn.wikiwiki.jp/to/w/common/assets/dist/wikiwiki-dbc3538ca778dc7fcfbe.min.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.wikiwiki.jp/to/w/common/assets/dist/skin-default2-8c167ddc26af00508c8e.min.css" type="text/css">
+    
+    <script type="text/javascript" src="https://cdn.wikiwiki.jp/to/w/common/assets/dist/ad-1bf004520fc167abbea6.min.js"></script>
+    <script>
+    var wi_stay = (function () {
+        var wi_data_raw = localStorage.getItem('browsingStatistics');
+        var wi_data = wi_data_raw ? (JSON.parse(wi_data_raw) || {}) : {};
+        var stay = Number(wi_data.stay);
+        if (isNaN(stay)) {
+            stay = 0;
+        }
+        return stay;
+    })();
+    var wi_data_raw = localStorage.getItem('usageStatistics');
+    var wi_data =     wi_data_raw ? (JSON.parse(wi_data_raw) || {}) : {};
+    var wi_edit =     String(wi_data.edit || 0);
+    var wi_freeze =   String(wi_data.freeze || 0);
+    var wi_comment =  String(wi_data.comment || 0);
+    var wi_group = String(wi_data.group || "N");
+    var wi_smsAuth = wi_data.smsAuth || false;
+    var wi_hasPosted = wi_data.hasPosted || false;
+    var wi_agreement = String(wi_data.agreementStatus || "false");
+    if (document.referrer.length !== 0) {
+        var wi_uri = new URL(document.referrer);
+        var wi_referer = wi_uri.hostname;
+    } else {
+        var wi_referer = "unknown";
+    }
+
+    // Chromium系判定
+    function isChromium() {
+        var ua = navigator.userAgent;
+        // Edge, Opera, Chrome, Chromium, Brave など
+        return /\b(Chrome|Chromium|Edg|OPR|Brave)\b/.test(ua) && !/Silk|UCBrowser|SamsungBrowser|CriOS|FxiOS|OPiOS|EdgiOS/.test(ua);
+    }
+
+    var wi_ismobile;
+    var wi_device;
+    if (isChromium() && navigator.userAgentData) {
+        wi_ismobile = navigator.userAgentData.mobile;
+        if (wi_ismobile) {
+            if (navigator.userAgentData.platform === "Android") {
+                wi_device = "and";
+            } else {
+                wi_device = "ios";
+            }
+        } else {
+            wi_device = "pc";
+        }
+    } else {
+        wi_ismobile = !!navigator.userAgent.match(/iPhone|Android.+Mobile/);
+        if (navigator.userAgent.match(/Android.+Mobile/)) {
+            wi_device = "and";
+        } else if (navigator.userAgent.match(/iPhone/)) {
+            wi_device = "ios";
+        } else {
+            wi_device = "pc";
+        }
+    }
+
+    var wi_isportrait = window.matchMedia("(orientation: portrait)").matches;
+    var wi_isinbound = wi_referer.includes(window.location.hostname) ? false : true;
+    var wi_random100 = Math.floor(Math.random() * (100 - 1) + 1);
+    var wi_random110 = Math.floor(Math.random() * 10) + 1;
+    var wi_isread_yet = true;
+    var wi_location_hash = location.hash || false;
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3Y8FN9EFS7"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3Y8FN9EFS7', {
+        'content_group': 'chunithmwiki',
+        'user_properties': {
+            'user_group':     wi_group,
+            'user_agreement': wi_agreement,
+            'edit_count':     wi_edit,
+            'comment_count':  wi_comment,
+            'sms_auth':       String(wi_smsAuth)
+        }
+    });
+    gtag('config', 'G-TP0B31WSFE');
+
+</script>
+
+<script>
+    window.wikiFq = createWikiFq();
+</script>
+<script>
+    var wi_recref = recordReferrerDomain();
+</script>
+
+<script>
+const visitData_20241117 = (() => {
+const RESET_INTERVAL_MINUTES = 30;
+const now = Date.now();
+const resetIntervalMs = RESET_INTERVAL_MINUTES * 60 * 1000;
+const storageKey = "internalVisitData";
+let data = JSON.parse(localStorage.getItem(storageKey)) || { count: 0, lastVisit: now };
+if (now - data.lastVisit > resetIntervalMs) data = { count: 0, lastVisit: now };
+if (document.referrer && new URL(document.referrer).hostname === window.location.hostname) {
+data = { count: data.count + 1, lastVisit: now };
+localStorage.setItem(storageKey, JSON.stringify(data));
+}
+return data;
+})();
+
+const int_conditions = [
+wi_ismobile,
+wi_group === 'N',
+wi_agreement === 'false',
+!wi_isinbound,
+visitData_20241117.count === 1,
+];
+
+const int_conditions_pc = [
+    !wi_ismobile,
+    wi_group === 'N',
+    wi_agreement === 'false',
+    !wi_isinbound,
+    visitData_20241117.count === 1,
+];
+</script>
+<script>
+(function(){
+  const FLAG="fluxinst_pc";
+  const url=new URL(location.href);
+
+  if(url.searchParams.get(FLAG)==="1"){
+    url.searchParams.delete(FLAG);
+    history.replaceState(null,"",url.toString());
+    return;
+  }
+
+  if(
+    Array.isArray(int_conditions_pc) &&
+    int_conditions_pc.every(Boolean)
+  ){
+    url.searchParams.set(FLAG,"1");
+    location.href=url.toString();
+  }
+})();
+</script>
+
+
+<script>
+(function(){
+  const url=new URL(location.href);
+  const f=wi_device==="ios"?"iminst_ios":wi_device==="and"?"iminst_and":null;
+  if(!f)return;
+  if(url.searchParams.get(f)==="1"){
+    url.searchParams.delete(f);
+    history.replaceState(null,"",url.toString());
+    return;
+  }
+  if(Array.isArray(int_conditions)&&int_conditions.every(Boolean)){
+    url.searchParams.set(f,"1");
+    location.href=url.toString();
+  }
+})();
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KQ52VZ3');</script>
+<!-- End Google Tag Manager -->
+
+
+<script type="text/javascript">
+    window.pbjs = window.pbjs || {};
+    window.pbjs.que = window.pbjs.que || [];
+</script>
+<script async="async" src="https://flux-cdn.com/client/ukiuki/flux_wikiwiki_AS_TM_AT.min.js"></script>
+<script>
+window.googletag = window.googletag || {};
+window.googletag.cmd = window.googletag.cmd || [];
+</script>
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+<script>
+
+var wi_adslot_rectangle = [[300,250],[1,1]];
+var wi_adslot = [[300,250],[1,1]];
+if (document.documentElement.clientWidth > 406) {
+  wi_adslot_rectangle = [[300,250],[336,280],[1,1]];
+  wi_adslot = [[468,60],[300,250],[1,1]];
+}
+
+window.defineSlotFlux = [];
+if (wi_ismobile && wi_isportrait) {
+  defineSlotFlux.push({"slotID": "div-gpt-ad-1563441919648-0", "sizes": [[320, 100], [320, 50]], "slotName":"WIKIWIKI_SP_OVERLAY"});
+}
+    if (wi_isinbound && wi_ismobile && wi_group == "N" && wi_agreement === "false") {
+      defineSlotFlux.push({"slotID": "div-gpt-ad-1563430750445-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_SP_INBOUND"});
+    } else if (wi_isinbound && wi_group == "N" && wi_agreement === "false") {
+      defineSlotFlux.push({"slotID": "div-gpt-ad-1567409776345-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_INBOUND"});
+      defineSlotFlux.push({"slotID": "div-gpt-ad-1658802281376-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_INBOUND_RIGHT"});
+    }
+  if (wi_ismobile && !wi_isinbound) {
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1562925510696-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_SP_CAPTION"});
+  } else if (wi_group === 'N' && wi_agreement === 'false' && !wi_isinbound) {
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1565253136679-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_CAPTION"});
+  }
+  if (wi_ismobile) {
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1567408559923-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_SP_SECOND"});
+  } else {
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1567408559923-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_BOTTOM_LEFT"});
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1658912377789-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_BOTTOM_RIGHT"});
+  }
+</script>
+<script type="text/javascript">
+if (defineSlotFlux.length) {
+    window.fluxtag = {
+        readyBids: { prebid: false, google: false },
+        failSafeTimeout: 3e3, // 3秒でフェイルセーフ発動
+        isFn: function isFn(object) {
+            var _t = 'Function';
+            var toString = Object.prototype.toString;
+            return toString.call(object) === '[object ' + _t + ']';
+        },
+        launchAdServer: function () {
+            if (!fluxtag.readyBids.prebid) {
+                return;
+            }
+            fluxtag.requestAdServer();
+        },
+        requestAdServer: function () {
+            if (!fluxtag.readyBids.google) {
+                fluxtag.readyBids.google = true;
+                googletag.cmd.push(function () {
+                    var pbjsLoaded = !!(window.pbjs && pbjs.que &&
+                        fluxtag.isFn(pbjs.que.push) &&
+                        (pbjs.libLoaded || (pbjs.setTargetingForGPTAsync &&
+                            fluxtag.isFn(pbjs.setTargetingForGPTAsync))));
+                    if (pbjsLoaded) {
+                        pbjs.que.push(function () {
+                            if (pbjs.setTargetingForGPTAsync && fluxtag.isFn(pbjs.setTargetingForGPTAsync)) {
+                                try {
+                                    Promise.resolve(pbjs.setTargetingForGPTAsync())
+                                        .catch(function () {})
+                                        .then(function () {
+                                            googletag.pubads().refresh();
+                                        });
+                                } catch (e) {
+                                    googletag.pubads().refresh();
+                                }
+                            } else {
+                                googletag.pubads().refresh();
+                            }
+                        });
+                    } else {
+                        googletag.pubads().refresh();
+                    }
+                });
+            }
+        }
+    };
+
+    setTimeout(function () {
+        fluxtag.requestAdServer();
+    }, fluxtag.failSafeTimeout);
+}
+</script>
+<script>
+googletag.cmd.push(function() {
+    if (wi_ismobile && wi_isportrait) {
+        var overlaySlot = googletag.defineSlot('/19033742/WIKIWIKI_SP_OVERLAY',[[320,100],[320,50],[1,1]],'div-gpt-ad-1563441919648-0');
+        if (overlaySlot) {
+            overlaySlot.addService(googletag.pubads());
+            // 分母はこの枠だけで数え、空の初回描画にも次回用の印を付ける。
+            var overlayRenderHandler = function(event) {
+                if (event.slot !== overlaySlot) return;
+                overlaySlot.setConfig({ targeting: { wi_refresh: '1' } });
+                googletag.pubads().removeEventListener('slotRenderEnded', overlayRenderHandler);
+            };
+            googletag.pubads().addEventListener('slotRenderEnded', overlayRenderHandler);
+        }
+    }
+    if (wi_isinbound && wi_ismobile && wi_group == "N" && wi_agreement === "false") {
+      googletag.defineSlot('/19033742/WIKIWIKI_SP_INBOUND',[[300,250]],
+        'div-gpt-ad-1563430750445-0').addService(googletag.pubads());
+    } else if (wi_isinbound && wi_group == "N" && wi_agreement === "false") {
+      googletag.defineSlot('/19033742/WIKIWIKI_PC_INBOUND',[[336,280],[300,250]],
+        'div-gpt-ad-1567409776345-0').addService(googletag.pubads());
+      googletag.defineSlot('/19033742/WIKIWIKI_PC_INBOUND_RIGHT',[[336,280],[300,250]],
+        'div-gpt-ad-1658802281376-0').addService(googletag.pubads());
+    }
+  if (wi_ismobile && !wi_isinbound) {
+    googletag.defineSlot('/19033742/WIKIWIKI_SP_CAPTION',[[300,250],[1,1]],'div-gpt-ad-1562925510696-0').addService(googletag.pubads());
+  } else if (wi_group === 'N' && wi_agreement === 'false' && !wi_isinbound) {
+    googletag.defineSlot('/19033742/WIKIWIKI_PC_CAPTION',[[300,250],[1,1]],'div-gpt-ad-1565253136679-0').addService(googletag.pubads());
+  }
+    if (wi_ismobile) {
+        googletag.defineSlot('/19033742/WIKIWIKI_SP_SECOND',[[300,250]],
+        'div-gpt-ad-1567408559923-0').addService(googletag.pubads());
+    } else {
+        googletag.defineSlot('/19033742/WIKIWIKI_PC_BOTTOM_LEFT',[[336,280],[300,250]],
+        'div-gpt-ad-1567408559923-0').addService(googletag.pubads());
+        googletag.defineSlot('/19033742/WIKIWIKI_PC_BOTTOM_RIGHT',[[336,280],[300,250]],
+        'div-gpt-ad-1658912377789-0').addService(googletag.pubads());
+    }
+    googletag.setConfig({ targeting: {
+        "gpolicy": "sunny",
+        "site": "chunithmwiki"
+    } });
+    googletag.setConfig({ collapseDiv: 'ON_NO_FILL' });
+    googletag.setConfig({ singleRequest: true });
+    googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+        var slot = event.slot;
+        if (document.getElementById(slot.getSlotElementId()) != null){
+            var slotElm = document.getElementById(slot.getSlotElementId());
+            if (slotElm && slotElm.className === 'overlay-ad-wrapper') {
+                var overlayRenderedEvent = document.createEvent('Event');
+                overlayRenderedEvent.initEvent('overlay-ad-rendered', true, true);
+                slotElm.dispatchEvent(overlayRenderedEvent);
+            }
+        }
+    });
+    googletag.setConfig({
+        lazyLoad: {
+            fetchMarginPercent: 50,   // 0.5画面分まできたらリクエスト
+            renderMarginPercent: 50,  // 0.5画面分まできたら描画
+            mobileScaling: 2.0        // モバイルはスクロールが早いため2倍（1.0画面分）にする
+        }
+    });
+    if (defineSlotFlux.length) {googletag.setConfig({ disableInitialLoad: true });};
+    googletag.enableServices();
+    if (defineSlotFlux.length) {
+        pbjs.que.push(function () {
+            window.pbFlux.prebidBidder();
+        });
+    }
+});
+</script>
+
+<script>
+googletag.cmd.push(function() {
+  googletag.setConfig({ targeting: {
+    "wi_agreement": String(wi_data.agreementStatus || "false"),
+    "wi_group": String(wi_data.group || "N"),
+    "wi_comment": wi_comment.length.toString(),
+    "wi_edit": wi_edit.length.toString(),
+    "wi_freeze": wi_freeze.length.toString(),
+    "wi_smsAuth": String(wi_data.smsAuth || false),
+    "wi_hasPosted": String(wi_data.hasPosted || false),
+    "wi_referer": String(wi_referer || "unknown"),
+    "wi_random110": String(wi_random110 || "0"),
+    "wi_hour": ('0' + new Date().getHours()).slice(-2)
+  } });
+});
+</script>
+
+<style>
+.pc-caption-ad-default {
+    margin-top:20px;
+    display:flex;
+    justify-content:flex-start;
+    gap: 10px 5px;
+    min-height:280px;
+    position: sticky;
+    z-index: 3;
+    top: 45px;
+}
+
+.pc-caption-ad-center{
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+    gap: 10px 5px;
+    min-height:280px;
+    position: sticky;
+    z-index: 3;
+    top: 45px;
+}
+.pc-caption-ad-mobile{
+    margin-top:20px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:center;
+    min-height:331px;
+    position: sticky;
+    z-index: 3;
+    top: 45px;
+}
+.pc-caption-ad-mobile-300x600{
+    margin-top:20px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:center;
+    min-height:331px;
+}
+.default-advertisement {
+    background-color: transparent;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'%3E%3C!--!Font Awesome Pro 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.--%3E%3Cpath d='M16 48l0 416 544 0 0-416L16 48zM0 32l16 0 544 0 16 0 0 16 0 416 0 16-16 0L16 480 0 480l0-16L0 48 0 32zM320 280a56 56 0 1 0 112 0 56 56 0 1 0 -112 0zm56-72c22.6 0 42.8 10.4 56 26.7l0-66.7 0-8 16 0 0 8 0 112 0 64 0 8-16 0 0-8 0-18.7c-13.2 16.3-33.4 26.7-56 26.7c-39.8 0-72-32.2-72-72s32.2-72 72-72zM183.1 160l5.2 0 7.3 0 5.2 0 2.1 4.8L284.2 352l-17.4 0-20.8-48-107.8 0-20.8 48-17.4 0L181 164.8l2.1-4.8zM145 288l94 0L192 179.7 145 288z' fill='%23BBB'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 25px 25px;
+}
+
+@media (max-width: 500px) {
+  .caption-flybox:has(iframe[id^="google_ads_iframe_"]) {
+    position: relative;
+    min-height: 450px;
+  }
+}
+</style>
+
+
+<script>
+googletag.cmd.push(function() {
+    const pcCaptionPaths = [
+        '/19033742/WIKIWIKI_PC_CAPTION',
+        '/19033742/WIKIWIKI_PC_CAPTION_SIDE_BY',
+        '/19033742/WIKIWIKI_PC_CAPTION_20TH',
+        '/19033742/WIKIWIKI_CAPTION_B'
+    ];
+
+    const spCaptionPaths = [
+        '/19033742/WIKIWIKI_SP_CAPTION',
+        '/19033742/WIKIWIKI_SP_CAPTION_300x600'
+    ];
+
+    googletag.pubads().addEventListener('slotRenderEnded', function(event) {
+        const slotElement = document.getElementById(event.slot.getSlotElementId());
+        const parent = slotElement?.parentNode;
+
+        if (parent && !event.isEmpty) {
+            if (pcCaptionPaths.includes(event.slot.getAdUnitPath())) {
+                parent.classList.add(parent.clientWidth < 769 ? "pc-caption-ad-center" : "pc-caption-ad-default");
+            } else if (spCaptionPaths.includes(event.slot.getAdUnitPath())) {
+                if (event.slot.getAdUnitPath() === '/19033742/WIKIWIKI_SP_CAPTION_300x600') {
+                    parent.classList.add("pc-caption-ad-mobile-300x600");
+                } else {
+                    parent.classList.add("pc-caption-ad-mobile");
+                }
+            }
+        }
+    });
+
+    googletag.pubads().addEventListener('slotOnload', function(event) {
+        const slotElement = document.getElementById(event.slot.getSlotElementId());
+        slotElement?.parentNode?.classList.remove("default-advertisement");
+    });
+});
+</script>
+
+<link rel="preload" as="script" href="https://pdn.adingo.jp/p.js">
+<link rel="preconnect" href="https://sh.adingo.jp" crossorigin="use-credentials">
+    <link rel="canonical" href="https://wikiwiki.jp/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER">
+    <style>
+@media screen and (min-width: 820px) {
+  .container-wrapper {
+    min-width: 1280px;
+    max-width: 1280px;
+  }
+}
+</style>
+<style>
+  .columns-container.has-left-column:not(.has-right-column).three-columns-container {
+      grid-template-columns: 260px 1fr;
+  }
+  .columns-container.has-left-column.has-right-column.three-columns-container {
+      grid-template-columns: 260px 1fr 170px;
+  }
+  .columns-container.has-left-column.two-columns-container {
+    grid-template-columns: 260px 20px 1fr;
+  }
+</style>
+<style>
+  body {
+      font-family: Verdana, Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      font-size: 13px;
+  }
+</style>
+        <script>
+        window.globalParamsContainer = {"smsAuthParams":{"actionTrollingDefenceCheck":"\/chunithmwiki\/::cmd\/trolling_defence_pass","actionSubmitNumber":"\/p\/sms-auth\/code\/request","actionSubmitCode":"\/p\/sms-auth\/code\/activate","cookieName":"authkey"},"editAssistantImgSrc":{"face_smile":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/smile.png?v=4","face_bigsmile":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/bigsmile.png?v=4","face_huh":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/huh.png?v=4","face_oh":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/oh.png?v=4","face_wink":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/wink.png?v=4","face_sad":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/sad.png?v=4","face_worried":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/worried.png?v=4","face_tear":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/tear.png?v=4","face_tere":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/tere.png?v=4","face_shock":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/shock.png?v=4","face_heart":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/heart.png?v=4","face_star":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/star.gif?v=4","face_hatena":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/hatena.gif?v=4","face_tip":"https:\/\/cdn.wikiwiki.jp\/to\/w\/common\/image\/face\/tip.gif?v=4"},"experimentalFeature":false};
+    </script>
+</head>
+<body class="">
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KQ52VZ3"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<style>
+/* 1 */
+@media (max-width: 500px) {
+    body {
+        margin-bottom: 129px !important;
+        transition: margin-bottom 0.4s ease-in-out;
+    }
+    body:has(#div-gpt-ad-1563441919648-0 iframe[height="50"]) {
+        margin-bottom: 79px !important;
+    }
+}
+
+/* 2 */
+#overlay-anchor-wrapper {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    width: 100%;
+    z-index: 99998;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition: transform 0.4s ease-in-out 10s;
+}
+
+body:has(#div-gpt-ad-1563441919648-0 iframe) #overlay-anchor-wrapper {
+    transform: translateY(0);
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.6s;
+}
+
+/* 3 */
+#pc-overlay-ad-parent-container {
+    contain: layout style;
+    content-visibility: auto;
+
+    width: 100%;
+    background-color: var(--h2-background-color, #ffffff) !important;
+    padding-top: 5px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+
+    max-height: 105px;
+    height: auto;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible !important;
+}
+
+#pc-overlay-ad-parent-container:has(iframe[height="50"]) {
+    max-height: 60px;
+}
+
+/* 4 */
+#pc-overlay-ad-close-button {
+    position: absolute;
+    top: -24px;
+    right: 12px;
+    width: 38px; height: 24px;
+    background-color: var(--h2-background-color, #ffffff) !important;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.6s ease-out 10s, transform 0.6s ease-out 10s;
+}
+
+body:has(#div-gpt-ad-1563441919648-0 iframe) #pc-overlay-ad-close-button {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out 1.8s, transform 0.6s ease-out 1.8s;
+}
+
+#pc-overlay-ad-close-button svg {
+    width: 14px; height: 14px;
+    fill: var(--h2-text-color, #666666) !important;
+}
+
+/* 5 */
+#ad-close-trigger { display: none; }
+
+#ad-close-trigger:checked ~ #overlay-anchor-wrapper {
+    transform: translateY(100%) !important;
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 1, 1), opacity 0.4s cubic-bezier(0.4, 0, 1, 1) !important;
+    pointer-events: none;
+}
+
+body:has(#ad-close-trigger:checked) {
+    margin-bottom: 0 !important;
+}
+
+/* 6 */
+.overlay-ad-container { 
+    display: flex; justify-content: center; align-items: center; 
+    min-height: 50px; position: relative; 
+}
+.overlay-ad-container::before { 
+    content: ""; position: absolute; width: 320px; height: 100%; 
+    border-radius: 4px; z-index: 0;
+    animation: quietPulse 3s infinite; 
+}
+@keyframes quietPulse { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(0, 0, 0, 0.04); } }
+
+#div-gpt-ad-1563441919648-0 { position: relative; z-index: 1; display: flex; justify-content: center; width: 100%; }
+#div-gpt-ad-1563441919648-0 iframe {
+    animation: fadeInQuick 0.5s ease-in-out 0.2s both !important;
+    background: var(--h2-background-color, #ffffff);
+}
+@keyframes fadeInQuick { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
+<input type="checkbox" id="ad-close-trigger">
+<div id="overlay-anchor-wrapper" class="hidden-switch-class">
+    <label for="ad-close-trigger" id="pc-overlay-ad-close-button">
+        <svg viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
+    </label>
+<div id="pc-overlay-ad-parent-container" class="hidden-switch-class">
+    <div id="pc-overlay-ad-container-hidden" class="overlay-ad-container">
+        <div id="pc-overlay-ad-container">
+            <div id='div-gpt-ad-1563441919648-0' class="overlay-ad-wrapper"></div>
+        </div>
+    </div>
+</div>
+</div>
+<noscript>
+    <div class="noscript-alert">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        ブラウザの JavaScript がオフ（ブロックまたは許可しない）に設定されているため、このページは正常に機能しません。
+    </div>
+</noscript>
+<div class="container-wrapper">
+
+    <div class="container clearfix">
+                                <div id="header" class="user-header">
+                <div class="h-scrollable"><table><tbody><tr><td colspan="4"><a href="/chunithmwiki/" title="FrontPage" class="rel-wiki-page"><img src="https://cdn.wikiwiki.jp/to/w/chunithmwiki/%3AHeader/::ref/mateheader.png.webp?rev=f6952de0a1aff35b73c6a68d0ad7a98b&amp;t=20260701213143" alt="mateheader.png" title="mateheader.png" width="800" height="800"  loading="lazy"></a></td></tr><tr><td style="text-align:center; font-size:12px; width:25%;"><a href="/chunithmwiki/%E3%81%93%E3%82%8C%E3%81%8B%E3%82%89CHUNITHM%E3%82%92%E5%A7%8B%E3%82%81%E3%82%8B%E4%BA%BA%E3%81%B8" title="これからCHUNITHMを始める人へ" class="rel-wiki-page">基本の遊び方</a></td><td style="text-align:center; font-size:12px; width:24%;"><a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%861%29" title="CHUNITHM Mate 楽曲一覧(定数順1)" class="rel-wiki-page">楽曲一覧</a></td><td style="text-align:center; font-size:12px; width:26%;"><a href="/chunithmwiki/%E3%82%AF%E3%83%A9%E3%82%B9%E8%AA%8D%E5%AE%9A" title="クラス認定" class="rel-wiki-page">クラス認定</a></td><td style="text-align:center; font-size:12px; width:25%;"><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97" title="設置店舗" class="rel-wiki-page">設置店舗</a></td></tr><tr><td style="text-align:center; font-size:12px; width:25%;"><a href="/chunithmwiki/%E9%9B%91%E8%AB%87%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="雑談掲示板" class="rel-wiki-page">雑談掲示板</a></td><td style="text-align:center; font-size:12px; width:24%;"><a href="/chunithmwiki/%E5%88%9D%E5%BF%83%E8%80%85%EF%BC%86%E4%B8%AD%E7%B4%9A%E8%80%85%E6%8C%87%E5%8D%97#ha77694b" title="初心者＆中級者指南" class="rel-wiki-page">質問掲示板</a></td><td style="text-align:center; font-size:12px; width:26%;"><a href="/chunithmwiki/%E6%83%85%E5%A0%B1%E6%8F%90%E4%BE%9B%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="情報提供掲示板" class="rel-wiki-page">情報提供掲示板</a></td><td style="text-align:center; font-size:12px; width:25%;"><a href="/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="難易度議論掲示板" class="rel-wiki-page">難易度議論所</a></td></tr></tbody></table></div>            </div>
+                <div class="toolbox-container system-ui clearfix" id="naviframe">
+            <div class="toolbox toolbox-desktop navibar-container">
+                <div id="navigator">[ <a href="/chunithmwiki/">ホーム</a> | <a href="/chunithmwiki/::cmd/newpage?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow">新規</a> | <a href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow">編集</a> | <a href="/chunithmwiki/::cmd/attach?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow">添付</a> ]</div>            </div>
+            <div class="toolbox toolbox-desktop toolbar-container">
+                <div class="toolbar"><a href="/chunithmwiki/::cmd/list" title="一覧" rel="nofollow"><span class="system-icon toolbar list"></span></a>
+<a href="/chunithmwiki/RecentChanges" title="最終更新" rel="nofollow"><span class="system-icon toolbar recent"></span></a>
+<a href="/chunithmwiki/::cmd/diff?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="差分" rel="nofollow"><span class="system-icon toolbar diff"></span></a>
+<a href="/chunithmwiki/::cmd/backup?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="バックアップ" rel="nofollow"><span class="system-icon toolbar backup"></span></a>
+<a href="/chunithmwiki/::cmd/freeze?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="凍結" rel="nofollow"><span class="system-icon toolbar freeze"></span></a>
+<a href="/chunithmwiki/::cmd/template?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="複製" rel="nofollow"><span class="system-icon toolbar copy"></span></a>
+<a href="/chunithmwiki/::cmd/rename?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="名前変更" rel="nofollow"><span class="system-icon toolbar rename"></span></a>
+<a href="/chunithmwiki/::cmd/help" title="ヘルプ" rel="nofollow"><span class="system-icon toolbar help"></span></a></div>            </div>
+            <div class="toolbox toolbox-mobile toolbar-container">
+                <div class="toolbar"><a href="/chunithmwiki/" title="ホーム"><span class="system-icon toolbar top"></span></a>
+<a href="/chunithmwiki/RecentChanges" title="最終更新" rel="nofollow"><span class="system-icon toolbar recent"></span></a>
+<a id="menu-in-nav" href="#menubar" class="menu-in-nav">Menu<i class="fa-solid fa-arrow-alt-down"></i></a></div>            </div>
+            <div class="toolbox toolbox-searchbar">
+                <form action="/chunithmwiki/::cmd/search" method="get">
+                    <input type="search" name="word" value="" size="16" aria-label="サイト内検索" placeholder="サイト内検索">
+                    <input type="hidden" name="type" value="AND">
+                    <input type="submit" value="検索">
+                </form>
+            </div>
+        </div>
+            <div id="responsive-navigation"></div>
+    <div style="display: none;">
+        <div id="edit-menu" class="system-ui">
+            <div id="edit-menu-items">
+                <ul><li><a href="/chunithmwiki/::cmd/newpage?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar new'></span> 新規</a></li><li><a href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar edit'></span> 編集</a></li><li><a href="/chunithmwiki/::cmd/attach?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar upload'></span> 添付</a></li></ul>
+<ul><li><a href="/chunithmwiki/::cmd/list" rel="nofollow"><span class='system-icon toolbar list'></span> 一覧</a></li><li><a href="/chunithmwiki/RecentChanges" rel="nofollow"><span class='system-icon toolbar recent'></span> 最終更新</a></li><li><a href="/chunithmwiki/::cmd/diff?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar diff'></span> 差分</a></li><li><a href="/chunithmwiki/::cmd/backup?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar backup'></span> バックアップ</a></li></ul>
+<ul><li><a href="/chunithmwiki/::cmd/freeze?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar freeze'></span> 凍結</a></li><li><a href="/chunithmwiki/::cmd/template?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar copy'></span> 複製</a></li><li><a href="/chunithmwiki/::cmd/rename?refer=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow"><span class='system-icon toolbar rename'></span> 名前変更</a></li></ul>
+<ul><li><a href="/chunithmwiki/::cmd/help" rel="nofollow"><span class='system-icon toolbar help'></span> ヘルプ</a></li></ul>
+
+            </div>
+        </div>
+    </div>    </div>
+
+    <div class="container">
+        <div class="clearfix">
+            <div id="breadcrumbs" class="system-ui">
+                <div id="topicpath"><a href="/chunithmwiki/" title="FrontPage"><i class="fa-solid fa-home" style="margin-left: 6px; display: inline-block; min-width: 1.2em;"></i></a> &gt; レーティング・OVER POWER</div>            </div>
+            <div id="system-icon-container" class="system-ui">
+                                <span id="share-button-root"></span>                <span id="admin-contact-root" class="single-system-icon"></span>
+                <div id="load-panel-root"></div>
+                <span id="admin-login" class="single-system-icon">
+                    
+<a class="admin-login-status" href="/chunithmwiki/::cmd/admin_login?return_to=%2Fchunithmwiki%2F%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" title="未ログイン">
+    <i class="fa-solid fa-cog"></i>
+</a>
+                </span>
+            </div>
+        </div>
+        <hr />
+    </div>
+
+    <div id="contents" class="columns-container three-columns-container container clearfix has-left-column">
+
+        <div class="column-center clearfix">
+            <div id="body">
+                                                <div id="title">
+                                            <h1 class="title">レーティング・OVER POWER</h1>
+                                                                <div id="lastmodified">
+                            Last-modified: 2026-09-29 (火) 23:06:33                                                    </div>
+                                    </div>
+
+                
+<div id="inbound-ad-container">
+  <!-- /19033742/WIKIWIKI_PC_INBOUND -->
+  <div id='div-gpt-ad-1567409776345-0'></div>
+  <!-- /19033742/WIKIWIKI_PC_INBOUND_RIGHT -->
+  <div id='div-gpt-ad-1658802281376-0'></div>
+  <!-- /19033742/WIKIWIKI_SP_INBOUND -->
+  <div id='div-gpt-ad-1563430750445-0' class="hidden-switch-class"></div>
+</div>
+
+<style>
+.pc-inbound-ad-default {
+    margin-top:40px;
+    margin-bottom:40px;
+    display:flex;
+    justify-content:flex-start;
+    gap: 10px 5px;
+    min-height:280px;
+}
+.pc-inbound-ad-center{
+    margin-top:40px;
+    margin-bottom:40px;
+    display:flex;
+    justify-content:center;
+    gap: 10px 5px;
+    min-height:280px;
+    position: relative;
+}
+.pc-inbound-ad-mobile{
+    margin-top:20px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:center;
+    min-height:280px;
+}
+.pc-inbound-ad-close-button {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"%3E%3C!--! Font Awesome Pro 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc. --%3E%3Cpath class="fa-secondary" opacity=".4" d="M281.4 390.6L304 413.3 349.3 368l-22.6-22.6L237.3 256l89.4-89.4L349.3 144 304 98.7l-22.6 22.6L192 210.7l-89.4-89.4L80 98.7 34.7 144l22.6 22.6L146.7 256 57.4 345.4 34.7 368 80 413.3l22.6-22.6L192 301.3l89.4 89.4z" fill="%23888"/%3E%3C/svg%3E') no-repeat center;
+    background-size: contain;
+    cursor: pointer;
+}
+</style>
+
+<script>
+(function () {
+    const co = document.getElementById('inbound-ad-container');
+    const inboundPaths = [
+        '/19033742/WIKIWIKI_PC_INBOUND',
+        '/19033742/WIKIWIKI_PC_INBOUND_RIGHT'
+    ];
+
+    if (wi_isinbound && wi_group === "N" && wi_agreement === "false") {
+        if (wi_ismobile) {
+            co.classList.add("pc-inbound-ad-mobile","default-advertisement");
+        } else {
+            const width = co.clientWidth;
+            const adClass = width < 683 || (width >= 683 && width < 900) ? ["pc-inbound-ad-center","default-advertisement"] : ["pc-inbound-ad-default"];
+            co.classList.add(...adClass);
+
+            if (adClass.includes("pc-inbound-ad-center")) {
+                googletag.cmd.push(function() {
+                    googletag.pubads().addEventListener('slotOnload', function(event) {
+                        if (inboundPaths.includes(event.slot.getAdUnitPath())) {
+                            let closeButton = co.querySelector(".pc-inbound-ad-close-button");
+                            if (!closeButton) {
+                                closeButton = document.createElement("div");
+                                closeButton.classList.add("pc-inbound-ad-close-button");
+                                closeButton.onclick = () => co.style.display = "none";
+                                co.appendChild(closeButton);
+                            }
+                        }
+                    });
+                });
+            }
+        }
+    }
+})();
+</script>
+
+                <div class="search-words small" style="display: none;">
+    <div class="small">これらのキーワードがハイライトされています：<ul class="search-words-words"></ul></div>
+    <hr class="full_hr">
+</div>
+                <div id="content">
+                                        <div class="contents">
+<a id="contents-index"></a>
+<ul class="list2"><li><a href="#z11ca3f0">前提知識：譜面定数 </a></li>
+<li><a href="#h8d0fa77">レーティング </a>
+<ul class="list3"><li><a href="#rating_color">レーティングの色分け </a></li>
+<li><a href="#rating_single">単曲レートの算出 </a></li>
+<li><a href="#rating_best">ベスト枠 </a></li>
+<li><a href="#rating_new">新曲枠(『VERSE』より新設) </a></li>
+<li><a href="#rating_candiate">候補枠 </a></li>
+<li><a href="#rating_recent">リーセント枠(『VERSE』で廃止) </a></li></ul></li>
+<li><a href="#ia15b1e4">レーティング理論値(2026/9/25時点) </a></li>
+<li><a href="#over_power">OVER POWER </a></li>
+<li><a href="#r3bcb7bb">レーティングポゼッション </a></li></ul>
+</div>
+<h3 id="h3_content_1_0" >前提知識：譜面定数  <a class="anchor_super" name ="z11ca3f0"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=z11ca3f0" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h3>
+<p>譜面定数とは、内部データで値が設定されている細かいレベル設定の事であり、レーティングやOVER POWERの計算には、この譜面定数が使用されている。<br />
+例えば同じLv.12と表記されている譜面でも、12.0～12.4まで段階が存在する。この小数第一位までの値が俗に「<strong>譜面定数</strong>」と呼ばれている<a id="notetext_1"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;定着し切ってはいるがあくまでもマスクデータの為、基本的に公式で触れられる事は無く正式な呼称でもない(ポケットモンスターの「努力値(きそポイント)」のようなもの) &lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_1&quot;&gt;脚注 *1 へ&lt;/a&gt;&lt;/div&gt;">*1</a>。</p>
+<p>小数第一位が5以上(n.5～n.9)の場合、レベル表記に「+」が付く。</p>
+<p>Lv.1～Lv.6、Lv.7/8/9は必ず譜面定数の小数第一位が0(n.0)になり、Lv.7+/8+/9+は必ず譜面定数の小数第一位が5(n.5)になる。</p>
+<p>詳細な譜面定数については各楽曲のページ、および<a href="/chunithmwiki/CHUNITHM%20X-VERSE%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%861%29" title="CHUNITHM X-VERSE 楽曲一覧(定数順1)" class="rel-wiki-page">定数順譜面一覧</a>を参照。<br />
+<span class="wikicolor" style="color:#ff0000">※注意：当wikiでは<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%96%B0%E6%9B%B2%E6%9E%A0%E5%AF%BE%E8%B1%A1%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="CHUNITHM Mate 新曲枠対象楽曲一覧" class="rel-wiki-page">新曲枠対象楽曲一覧</a>を除きLv.1～Lv.10+の譜面の定数は掲載していません。</span></p>
+<h3 id="h3_content_1_1" class="heading-after-first">レーティング  <a class="anchor_super" name ="h8d0fa77"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=h8d0fa77" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h3>
+<p>各譜面のスコアから算出したレーティング値のうち、後述のベスト枠30譜面と新曲枠20譜面の平均値がプレイヤーのレーティングとなる。<br />
+CRYSTAL以降、スタンダードコースに加入するとCHUNITHM-NETで対象譜面を確認できるようになった。なお、確認できるのは対象譜面とスコアだけで、詳細なレーティング値は確認できない<a id="notetext_2"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;参考：オンゲキはプレミアムコースで、maimaiはスタンダードコースで対象譜面を確認可能。レーティング値を確認できないのは同様&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_2&quot;&gt;脚注 *2 へ&lt;/a&gt;&lt;/div&gt;">*2</a>。</p>
+<ul class="list1"><li>LUMINOUS以降、(隠し解禁楽曲など)CHUNITHM-NETでのプレイデータ閲覧不可の楽曲がレーティング対象に含まれる場合もあり<a id="notetext_3"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;該当曲のプレイデータの記録自体は内部的には行われるため&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_3&quot;&gt;脚注 *3 へ&lt;/a&gt;&lt;/div&gt;">*3</a>。該当楽曲・譜面がレーティングに絡んでいる場合、レーティング対象の表示数が少なくなることがある。
+<ul class="list2"><li>VERSE以降のバージョン内で削除された楽曲がレーティングに絡んでいる場合のは不明。<a id="notetext_4"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;&lt;a class=&quot;ext&quot; href=&quot;https://info-chunithm.sega.jp/8774/&quot; rel=&quot;nofollow&quot;&gt;VERSE稼働前告知&lt;span class=&quot;system-icon ext pukiwiki-open-uri&quot; data-href=&quot;https://info-chunithm.sega.jp/8774/&quot; data-frame=&quot;_blank&quot;&gt;&lt;/span&gt;&lt;/a&gt;には「VERSEへ引き継いだ際、合計レーティングが一時的に大きく下がりますが、バージョン内でそれ以上レーティングが下がることはありません」という記述もあるので、バージョン内削除曲が隠し解禁楽曲同様に内部的にはレーティング集計対象する可能性もある&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_4&quot;&gt;脚注 *4 へ&lt;/a&gt;&lt;/div&gt;">*4</a></li></ul></li>
+<li>詳細なレーティング値や到達可能レートはスタンダードコースに加入の上有志が制作したスコア管理ツール<a class="ext" href="https://chunirec.net/" rel="nofollow">chunirec<span class="system-icon ext pukiwiki-open-uri" data-href="https://chunirec.net/" data-frame="_blank"></span></a>と連携することで確認できるが、SEGA純正のツールではない為使用は自己責任で。</li></ul>
+<h4 id="h4_content_1_2" class="heading-after-first">レーティングの色分け  <a class="anchor_super" name ="rating_color"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_color" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p>レーティング値が一定以上になると、レーティングの数値の色が変わる。<br />
+PARADISE以降、銅(12.00)以上の各カラーに初めて到達すると演出が入る(レーティング下降後に再度到達した場合は演出はない)。</p>
+<p>VERSE以降はプラチナレートに到達するとレーティングアップ演出の帯に星が表示され、ランク内の演出表示毎に1つずつ増える。<br />
+また、17.00以降のレートに到達すると虹色が濃くなる仕様(通称「虹極レート」)が追加された。</p>
+<div class="h-scrollable"><table><thead><tr><th>レーティング</th><th>色</th></tr></thead><tbody><tr><td style="text-align:center;">0.00～3.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:green">緑</span></td></tr><tr><td style="text-align:center;">4.00～6.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:orange">橙</span></td></tr><tr><td style="text-align:center;">7.00～9.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:red">赤</span></td></tr><tr><td style="text-align:center;">10.00～11.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:purple">紫</span></td></tr><tr><td style="text-align:center;">12.00～13.24</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#ac6b25">銅</span></td></tr><tr><td style="text-align:center;">13.25～14.49</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#736d71">銀</span></td></tr><tr><td style="text-align:center;">14.50～15.24</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#c1ab05">金</span></td></tr><tr><td style="text-align:center;">15.25～15.49</td><td style="background-color:gray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑<a id="notetext_5"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;プラチナ&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_5&quot;&gt;脚注 *5 へ&lt;/a&gt;&lt;/div&gt;">*5</a>☆1</span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">15.50～15.74</span></td><td style="text-align:center; background-color:#afafb0;"><span style="font-size:11px"><span class="wikicolor" style="color:#fffacd">鉑☆2</span></span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">15.75～15.99</span></td><td style="text-align:center; background-color:#afafb0;"><span style="font-size:11px"><span class="wikicolor" style="color:#fffacd">鉑☆3</span></span></td></tr><tr><td style="text-align:center;">16.00～16.24</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹☆1</span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">16.25～16.49</span></td><td style="text-align:center; background-color:gray;"><span style="font-size:11px"><span class="wikicolor" style="color:#00fa9a">虹☆2</span></span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">16.50～16.74</span></td><td style="text-align:center; background-color:gray;"><span style="font-size:11px"><span class="wikicolor" style="color:#00fa9a">虹☆3</span></span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">16.75～16.99</span></td><td style="text-align:center; background-color:gray;"><span style="font-size:11px"><span class="wikicolor" style="color:#00fa9a">虹☆4</span></span></td></tr><tr><td style="text-align:center;">17.00～17.24</td><td style="background-color:#333631; text-align:center;"><span class="wikicolor" style="color:#eb6ea0">虹極★1</span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">17.25～17.49</span></td><td style="background-color:#626063; text-align:center;"><span style="font-size:11px"><span class="wikicolor" style="color:#eb6ea0">虹極★2</span></span></td></tr><tr><td style="text-align:center;"><span style="font-size:11px">17.50～</span></td><td style="background-color:#626063; text-align:center;"><span style="font-size:11px"><span class="wikicolor" style="color:#eb6ea0">虹極★3</span></span></td></tr></tbody></table></div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">過去の色分け</div>
+    <div class="fold-content visible-on-open"><p><strong>初代～AMAZON PLUSまでの色分け</strong></p>
+<div class="h-scrollable"><table><thead><tr><th>レーティング</th><th>色</th></tr></thead><tbody><tr><td style="text-align:center;">0.00～1.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:blue">青</span></td></tr><tr><td style="text-align:center;">2.00～3.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:green">緑</span></td></tr><tr><td style="text-align:center;">4.00～6.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:orange">橙</span></td></tr><tr><td style="text-align:center;">7.00～9.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:red">赤</span></td></tr><tr><td style="text-align:center;">10.00～11.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:purple">紫</span></td></tr><tr><td style="text-align:center;">12.00～12.99</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#cd853f">銅</span></td></tr><tr><td style="text-align:center;">13.00～13.99</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#736d71">銀</span></td></tr><tr><td style="text-align:center;">14.00～14.49</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#c1ab05">金</span></td></tr><tr><td style="text-align:center;">14.50～14.99</td><td style="background-color:#afafb0; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td></tr><tr><td style="text-align:center;">15.00～</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td></tr></tbody></table></div>
+<p><strong>CRYSTAL～PARADISE LOSTまでの色分け</strong><br />
+CRYSTALから<strong><span class="wikicolor" style="color:blue">青</span>(0.00～1.99)が<span class="wikicolor" style="color:green">緑</span>(2.00～3.99)に統合された</strong>。</p>
+<div class="h-scrollable"><table><thead><tr><th>レーティング</th><th>色</th></tr></thead><tbody><tr><td style="text-align:center;">0.00～3.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:green">緑</span></td></tr><tr><td style="text-align:center;">4.00～6.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:orange">橙</span></td></tr><tr><td style="text-align:center;">7.00～9.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:red">赤</span></td></tr><tr><td style="text-align:center;">10.00～11.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:purple">紫</span></td></tr><tr><td style="text-align:center;">12.00～12.99</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#cd853f">銅</span></td></tr><tr><td style="text-align:center;">13.00～13.99</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#736d71">銀</span></td></tr><tr><td style="text-align:center;">14.00～14.49</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#c1ab05">金</span></td></tr><tr><td style="text-align:center;">14.50～14.99</td><td style="background-color:#afafb0; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td></tr><tr><td style="text-align:center;">15.00～</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td></tr></tbody></table></div>
+<p><strong>NEW～LUMINOUS PLUSまでの色分け</strong><br />
+NEWから譜面難易度が全体的に変更されたためレーティングの色が変わるタイミングが変更された。(色が変わる、統合などの変更は無し)</p>
+<div class="h-scrollable"><table><thead><tr><th>レーティング</th><th>色</th></tr></thead><tbody><tr><td style="text-align:center;">0.00～3.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:green">緑</span></td></tr><tr><td style="text-align:center;">4.00～6.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:orange">橙</span></td></tr><tr><td style="text-align:center;">7.00～9.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:red">赤</span></td></tr><tr><td style="text-align:center;">10.00～11.99</td><td style="text-align:center; background-color:lightcyan;"><span class="wikicolor" style="color:purple">紫</span></td></tr><tr><td style="text-align:center;">12.00～13.24</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#cd853f">銅</span></td></tr><tr><td style="text-align:center;">13.25～14.49</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#736d71">銀</span></td></tr><tr><td style="text-align:center;">14.50～15.24</td><td style="background-color:#efefef; text-align:center;"><span class="wikicolor" style="color:#c1ab05">金</span></td></tr><tr><td style="text-align:center;">15.25～15.99</td><td style="background-color:#afafb0; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td></tr><tr><td style="text-align:center;">16.00～</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td></tr></tbody></table></div>
+</div>
+</div>
+<h4 id="h4_content_1_3" class="heading-after-first">単曲レートの算出  <a class="anchor_super" name ="rating_single"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_single" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p>各譜面のレーティングは特定のスコアの時に以下の値になるように設定されている(0以下の場合は0になる)。<br />
+ボーダーの間は直線的に変化する。</p>
+<p>以下はボーダーごとの上昇値である。SSS+取得時の「譜面定数＋2.15」がレーティングの最大値となり、それ以上は上がらない。<br />
+レート計算的には実際に達成したランクより下位のボーダーにおけるランクにおける計算式を引き継いでおり、「ランクより下位のボーダーにおけるレーティング+そのボーダーを超えた分に対する加算分」という形になっている模様。</p>
+<ul class="list1"><li>A～AAAはAボーダー(この時点では-5.00)である90万点を超えた分に対して「(90万点を超えた分/75,000)×5.00」を加算している形<a id="notetext_6"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;結果としては「975,000点に満たない分/75,000×5.00」を減算している形になる&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_6&quot;&gt;脚注 *6 へ&lt;/a&gt;&lt;/div&gt;">*6</a>で統一されている模様。</li>
+<li>S+はSと同様に「975,000点を超えた分/25,000」を加算となっている。S+ボーダーである99万点ちょうどの時の加算値は+0.6(=15,000/25,000)。</li></ul>
+<div class="h-scrollable"><table><thead><tr><th>ランク</th><th>スコア</th><th>レーティング値</th><th>上昇量</th></tr></thead><tbody><tr><td>SSS+</td><td style="text-align:right; width:100px;">1,009,000</td><td>譜面定数+2.15</td><td>0</td></tr><tr><td>SSS</td><td style="text-align:right; width:100px;">1,007,500</td><td>譜面定数+2.0</td><td>100点毎に+0.01</td></tr><tr><td>SS+</td><td style="text-align:right; width:100px;">1,005,000</td><td>譜面定数+1.5</td><td>50点毎に+0.01</td></tr><tr><td>SS</td><td style="text-align:right; width:100px;">1,000,000</td><td>譜面定数+1.0</td><td>100点毎に+0.01</td></tr><tr><td>S+</td><td style="text-align:right; width:100px;">990,000</td><td>譜面定数+0.6</td><td rowspan="2">250点毎に+0.01</td></tr><tr><td>S</td><td style="text-align:right; width:100px;">975,000</td><td>譜面定数</td></tr><tr><td>AAA</td><td style="text-align:right; width:100px;">950,000</td><td>譜面定数－1.67</td><td rowspan="3">150点毎に+0.01</td></tr><tr><td>AA</td><td style="text-align:right; width:100px;">925,000</td><td>譜面定数－3.34</td></tr><tr><td>A</td><td style="text-align:right; width:100px;">900,000</td><td>譜面定数－5.0</td></tr><tr><td>BBB</td><td style="text-align:right; width:100px;">800,000</td><td>(譜面定数－5.0)/2</td><td>(2000/(譜面定数-5)点毎に+0.01)</td></tr><tr><td>C</td><td style="text-align:right; width:100px;">500,000</td><td>0</td><td>(6000/(譜面定数-5)点毎に+0.01)</td></tr></tbody></table></div>
+<p><a href="https://cdn.wikiwiki.jp/to/w/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER/::attach/chart-975000.png?rev=9c502778c41bac6b76ad1d1074085690&amp;t=20250402011742" title="chart-975000.png" data-lightbox="imageset"><img src="https://cdn.wikiwiki.jp/to/w/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER/::ref/chart-975000.png?rev=9c502778c41bac6b76ad1d1074085690&amp;t=20250402011742" alt="chart-975000.png" title="chart-975000.png" width="600" height="371"  loading="lazy"></a><br />
+<a href="https://cdn.wikiwiki.jp/to/w/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER/::attach/chart-1000000.png?rev=0fddd7fd91481f5e9afac9bc146a38a2&amp;t=20250402011747" title="chart-1000000.png" data-lightbox="imageset"><img src="https://cdn.wikiwiki.jp/to/w/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER/::ref/chart-1000000.png?rev=0fddd7fd91481f5e9afac9bc146a38a2&amp;t=20250402011747" alt="chart-1000000.png" title="chart-1000000.png" width="600" height="371"  loading="lazy"></a></p>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">参考情報</div>
+    <div class="fold-content visible-on-open"><p>参考情報</p>
+<p>PARADISE LOSTまではSSSの1,007,500点が上限だった。<br />
+SS+はNEWで追加されたランクだが、ボーダーの1,005,000点はPARADISE LOSTまでにおいてもレーティング計算式における増分レートの変化点だった。<br />
+NEWではS+も追加されたが、レーティング計算式はSと同じく「譜面定数+0.6+(0.1/2,500点)」。0.6の部分はSとしての計算式における99万点の際の増分(15,000/25,000)に等しい。</p>
+</div>
+</div>
+<h4 id="h4_content_1_4" class="heading-after-first">ベスト枠  <a class="anchor_super" name ="rating_best"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_best" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p>ベストスコアから算出されたレーティングの上位30譜面が入る枠。<br />
+あくまで、難易度・譜面別に集計されるため、同じ楽曲で重複することもある。<br />
+コースモードでプレーした場合も、ベストスコアが更新されるため反映される。</p>
+<h4 id="h4_content_1_5" class="heading-after-first">新曲枠(『VERSE』より新設)  <a class="anchor_super" name ="rating_new"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_new" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p><a href="/chunithmwiki/CHUNITHM%20VERSE%E6%83%85%E5%A0%B1%E3%81%BE%E3%81%A8%E3%82%81#rating" title="CHUNITHM VERSE情報まとめ" class="rel-wiki-page">VERSEより導入された</a>システムであり、新バージョンでの追加曲で上位20譜面が入る枠。<br />
+<strong>新バージョンで追加された既存曲のULTIMA譜面は新曲枠に入らない</strong><a id="notetext_7"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;これはmaimaiにおけるRe:MASTERの扱いと同様。&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_7&quot;&gt;脚注 *7 へ&lt;/a&gt;&lt;/div&gt;">*7</a>が、新曲枠対象期間以前にWORLD'S ENDで限定配信されていた楽曲が通常移行した場合は新曲としてカウントされる。</p>
+<p>なお、「ベスト枠」と「新曲枠」は重複しない。新バージョンでの追加曲でベスト枠下限よりも高い単曲レートを出した場合は、新曲枠に入る。<br />
+新バージョンへアップデートされた際に合計レーティングが一時的に大きく下がる<a id="notetext_8"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;新曲枠が全て空になるため。なお新曲枠に入っていたスコアデータ自体はベスト枠の方で引き続き参照される&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_8&quot;&gt;脚注 *8 へ&lt;/a&gt;&lt;/div&gt;">*8</a>が、同一バージョン内ではそれ以上の下降は発生しない。</p>
+<h4 id="h4_content_1_6" class="heading-after-first">候補枠  <a class="anchor_super" name ="rating_candiate"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_candiate" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p>CHUNITHM-NETで確認可能な情報。<br />
+ベスト枠と新曲枠のそれぞれに対し、各枠の対象の直下にある譜面が入る枠。</p>
+<p>ただし実際には「スコアを更新することでレーティングが伸びる」という条件で集計されているため、「すでにSSS+を達成している(=スコア更新で単曲レートが伸びない)」「SSS+を達成しても各枠に入らない譜面」は含まれない。<br />
+この条件による除外をしたうえで上位10譜面となっているため、楽曲削除を伴うバージョンアップ後には候補枠になかった譜面がベスト枠に出現するケースもある。</p>
+<h4 id="h4_content_1_7" class="heading-after-first">リーセント枠(『VERSE』で廃止)  <a class="anchor_super" name ="rating_recent"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=rating_recent" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h4>
+<p>※リーセント(recent)は英語で「最近の」という意味である。</p>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">リーセント枠について(CHUNITHM LUMINOUS PLUS までの仕様)</div>
+    <div class="fold-content visible-on-open"><p>リーセント枠について(CHUNITHM LUMINOUS PLUS までの仕様)</p>
+<p>最近プレイした30譜面のうち、その時のスコアから算出されたレーティングの上位10譜面が実際のレーティングに反映される。<br />
+ただし、一定の条件を満たす譜面のプレー内容は集計(算出時に参照される30譜面プレイ分)に入ることなく破棄される。その条件については確定的なものは判明しなかったが、大まかにいうと「SSS以上(『NEW』以降はSSS+説あり)を達成した際のレーティング値がリーセント枠(orベスト枠)の末席より下位となる」という説が存在した。<br />
+また、それとは別に<strong>コースモード(クラス認定)でプレーした際の内容は参照されない</strong>という条件もある。<br />
+集計に入る条件を満たしたプレーにおいて単曲レートがベスト枠に入るレベルだった場合、その成績によってベスト枠とリーセント枠の両方が更新されることになる。</p>
+<p>なお、他の譜面を何度かプレイした事で集計対象の30枠から追い出された場合、<strong>レーティングが下がる</strong>ことがある。</p>
+</div>
+</div>
+<div class="caption-flybox" >
+  <div id="pc-caption-ad-container">
+    <!-- /19033742/WIKIWIKI_PC_CAPTION -->
+    <div id='div-gpt-ad-1565253136679-0'></div>
+    <!-- /19033742/WIKIWIKI_PC_CAPTION_SIDE_BY -->
+    <div id='div-gpt-ad-1719748039754-0' style='max-width: 300px;'></div>
+    <!-- /19033742/WIKIWIKI_SP_CAPTION -->
+    <div id='div-gpt-ad-1562925510696-0' class="hidden-switch-class"></div>
+  </div>
+</div>
+
+<script>
+if (wi_ismobile && !wi_isinbound) {
+    document.getElementById("pc-caption-ad-container").classList.add("default-advertisement","pc-caption-ad-mobile");
+    googletag.cmd.push(function() {googletag.display('div-gpt-ad-1562925510696-0');});
+    if (window.wikiFq.checkWikifqDisplay('wi_fqgroup1',1,60,0.5) && wi_isread_yet ||wi_location_hash === '##gliaplayer') {
+        googletag.cmd.push(function() {googletag.setConfig({ targeting: { wi_fqgroup1: 'true' } });});
+        sessionStorage.setItem('wi_pip', false);
+        wi_isread_yet = false;
+    } else if (sessionStorage.getItem('wi_pip') === 'false') {
+        if (window.wikiFq.checkWikifqDisplay('wi_pip',10,60,1.0) && wi_isread_yet) {
+            googletag.cmd.push(function() {googletag.setConfig({ targeting: { wi_fqgroup1: 'true' } });});
+            wi_isread_yet = false;
+        }
+    }
+} else if (!wi_ismobile && wi_group === 'N' && wi_agreement === 'false' && !wi_isinbound) {
+    (function () {
+        var gi = document.getElementById("pc-caption-ad-container");
+        gi.classList.add("default-advertisement");
+        if (gi.clientWidth > 610) {
+            if (gi.clientWidth < 769) {
+                gi.classList.add("pc-caption-ad-center");
+            } else {
+                gi.classList.add("pc-caption-ad-default");
+            }
+            if (window.wikiFq.checkWikifqDisplay('wi_fqgroup1',1,60,1.0) && wi_recref && (wi_recref.includes("google") || wi_recref.includes("yahoo")) || window.wikiFq.checkWikifqDisplay('wi_fqgroup2',1,60,0.2)) {
+                googletag.cmd.push(function() {googletag.setConfig({ targeting: { wi_fqgroup1: 'true' } });});
+                sessionStorage.setItem('wi_pip', false);
+            } else if (sessionStorage.getItem('wi_pip') === 'false') {
+                if (window.wikiFq.checkWikifqDisplay('wi_pip',10,60,1.0)) {
+                    googletag.cmd.push(function() {googletag.setConfig({ targeting: { wi_fqgroup1: 'true' } });});
+                }
+            }
+            defineSlotFlux.push({"slotID": "div-gpt-ad-1719748039754-0", "sizes": [[300,250]], "slotName":"WIKIWIKI_PC_CAPTION_SIDE_BY"});
+            googletag.cmd.push(function() {googletag.display('div-gpt-ad-1565253136679-0');});
+            googletag.cmd.push(function() {
+                googletag.defineSlot('/19033742/WIKIWIKI_PC_CAPTION_SIDE_BY',[[300,250],[1,1]],'div-gpt-ad-1719748039754-0').addService(googletag.pubads());
+                googletag.display('div-gpt-ad-1719748039754-0');});
+        }
+    })();
+}
+</script>
+<h3 id="h3_content_1_8" class="heading-after-first">レーティング理論値(2026/9/25時点)  <a class="anchor_super" name ="ia15b1e4"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=ia15b1e4" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h3>
+<p>レーティングの理論値と、対象にする譜面の内訳は以下の通り。</p>
+<div class="h-scrollable"><table><thead><tr><th>難易度</th><th>譜面定数</th><th>対象にする譜面</th></tr></thead><tfoot><tr><td colspan="3" style="text-align:center;">レーティング理論値：17.45 (17.4580)</td></tr></tfoot><tbody><tr><td colspan="3" style="background-color:lightgray; text-align:center;">ベスト枠 (理論値：17.7533)</td></tr><tr><td style="background-color:#ff1c33; text-align:center;">ULT</td><td style="text-align:center;">16.0</td><td style="text-align:center;"><a href="/chunithmwiki/Melodiniq" title="Melodiniq" class="rel-wiki-page">Melodiniq</a></td></tr><tr><td style="background-color:#ff1c33; text-align:center;">ULT</td><td style="text-align:center;">15.8</td><td style="text-align:center;"><a href="/chunithmwiki/YOUNITHM" title="YOUNITHM" class="rel-wiki-page">YOUNITHM</a></td></tr><tr><td rowspan="5" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="5" style="text-align:center;">15.7</td><td style="text-align:center;"><a href="/chunithmwiki/The%20Metaverse%20-First%20story%20of%20the%20SeelischTact-" title="The Metaverse -First story of the SeelischTact-" class="rel-wiki-page">The Metaverse<br class="spacer">-First story of the SeelischTact-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E7%A5%88%20-%E6%88%91%E3%82%89%E7%A5%9E%E7%A5%96%E3%81%A8%E5%85%B1%E3%81%AB%E6%AD%A9%E3%82%80%E8%80%85%E3%81%AA%E3%82%8A-" title="祈 -我ら神祖と共に歩む者なり-" class="rel-wiki-page">祈 -我ら神祖と共に歩む者なり-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Forsaken%20Tale" title="Forsaken Tale" class="rel-wiki-page">Forsaken Tale</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Crossmythos%20Rhapsodia" title="Crossmythos Rhapsodia" class="rel-wiki-page">Crossmythos Rhapsodia</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E5%89%B5%20-%E6%B1%9D%E3%82%89%E6%96%B0%E4%B8%96%E7%95%8C%E3%81%B8%E6%AD%A9%E3%82%80%E8%80%85%E3%81%AA%E3%82%8A-" title="創 -汝ら新世界へ歩む者なり-" class="rel-wiki-page">創 -汝ら新世界へ歩む者なり-</a></td></tr><tr><td rowspan="13" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="13" style="text-align:center;">15.6</td><td style="text-align:center;"><a href="/chunithmwiki/PANDORA%20PARADOXXX" title="PANDORA PARADOXXX" class="rel-wiki-page">PANDORA PARADOXXX</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Aether%20Crest%EF%BC%9A%20Celestial" title="Aether Crest： Celestial" class="rel-wiki-page">Aether Crest: Celestial</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Verse%20X" title="Verse X" class="rel-wiki-page">Verse X</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E6%A5%AD%20-%E5%96%84%E3%81%AA%E3%82%8B%E7%A5%9E%E3%81%A8%E3%81%93%E3%81%AE%E4%B8%96%E3%81%AE%E6%82%AA%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6-" title="業 -善なる神とこの世の悪について-" class="rel-wiki-page">業 -善なる神とこの世の悪について-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/MALKUTH%20-The%20Last%20Ruler%20of%20Terrestrials-" title="MALKUTH -The Last Ruler of Terrestrials-" class="rel-wiki-page">MALKUTH<br class="spacer">-The Last Ruler of Terrestrials-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/DA%27AT%20-The%20First%20Seeker%20of%20Souls-" title="DA&#039;AT -The First Seeker of Souls-" class="rel-wiki-page">DA'AT -The First Seeker of Souls-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%82%B0%E3%83%A9%E3%82%A6%E3%83%B3%E3%83%89%E3%82%B9%E3%83%A9%E3%82%A4%E3%83%80%E3%83%BC%E5%8D%94%E5%A5%8F%E6%9B%B2%E7%AC%AC%E4%B8%80%E7%95%AA%E3%80%8C%E9%A2%A8%E5%94%84%E3%80%8D" title="グラウンドスライダー協奏曲第一番「風唄」" class="rel-wiki-page">グラウンドスライダー<br class="spacer">協奏曲第一番「風唄」</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Daphnis" title="Daphnis" class="rel-wiki-page">Daphnis</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Chaotic%20%C3%98rder" title="Chaotic Ørder" class="rel-wiki-page">Chaotic &#216;rder</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Ultimate%20Force" title="Ultimate Force" class="rel-wiki-page">Ultimate Force</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E7%A5%9E%E9%B3%B4" title="神鳴" class="rel-wiki-page">神鳴</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Sweet%20%EF%BC%86%20Sour" title="Sweet ＆ Sour" class="rel-wiki-page">Sweet &amp; Sour</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Melodiniq" title="Melodiniq" class="rel-wiki-page">Melodiniq</a></td></tr><tr><td rowspan="16" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="16" style="text-align:center;">15.5<br class="spacer">(内10譜面)</td><td style="text-align:center;"><a href="/chunithmwiki/%E3%83%94%E3%82%A2%E3%83%8E%E5%8D%94%E5%A5%8F%E6%9B%B2%E7%AC%AC%EF%BC%91%E7%95%AA%E2%80%9D%E8%A0%8D%E7%81%AB%E2%80%9D" title="ピアノ協奏曲第１番”蠍火”" class="rel-wiki-page">ピアノ協奏曲第１番”蠍火”</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%CE%BC3" title="μ3" class="rel-wiki-page">μ3</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/To%EF%BC%9ABe%20Continued" title="To：Be Continued" class="rel-wiki-page">To：Be Continued</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%83%A9%E3%82%B9%E3%83%88%E3%83%94%E3%83%BC%E3%82%B9%E3%81%AB%E7%A5%9D%E7%A6%8F%E3%81%A8%E6%A0%84%E5%85%89%E3%82%92" title="ラストピースに祝福と栄光を" class="rel-wiki-page">ラストピースに祝福と栄光を</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E6%B7%B7%E6%B2%8C%E3%82%92%E8%B6%8A%E3%81%88%E3%81%97%E6%88%91%E3%82%89%E3%81%8C%E7%A5%9E%E8%81%96%E3%81%AA%E3%82%8B%E8%AA%BF%E5%BE%8B%E4%B8%BB%E3%82%92%E8%AE%83%E3%81%88%E3%82%88" title="混沌を越えし我らが神聖なる調律主を讃えよ" class="rel-wiki-page">混沌を越えし我らが<br class="spacer">神聖なる調律主を讃えよ</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/World%20Vanquisher" title="World Vanquisher" class="rel-wiki-page">World Vanquisher</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E5%AE%BF%E6%98%9F%E5%AF%A9%E5%88%A4" title="宿星審判" class="rel-wiki-page">宿星審判</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%CE%9Bzure%20Vixen" title="Λzure Vixen" class="rel-wiki-page">Λzure Vixen</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Makear" title="Makear" class="rel-wiki-page">Makear</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Tuatha%20D%C3%A9%20Danann" title="Tuatha Dé Danann" class="rel-wiki-page">Tuatha D&#233; Danann</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Megidd%C3%98" title="MegiddØ" class="rel-wiki-page">Megidd&#216;</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Tru%27nembra" title="Tru&#039;nembra" class="rel-wiki-page">Tru'nembra</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Deep%20Blue" title="Deep Blue" class="rel-wiki-page">Deep Blue</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Phantom%20Crisis" title="Phantom Crisis" class="rel-wiki-page">Phantom Crisis</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E6%9C%88%E8%91%AC" title="月葬" class="rel-wiki-page">月葬</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/YOUNITHM" title="YOUNITHM" class="rel-wiki-page">YOUNITHM</a></td></tr><tr><td colspan="3" style="background-color:lightgray; text-align:center;"><a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%96%B0%E6%9B%B2%E6%9E%A0%E5%AF%BE%E8%B1%A1%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="CHUNITHM Mate 新曲枠対象楽曲一覧" class="rel-wiki-page">新曲枠</a> (理論値：17.0150)</td></tr><tr><td style="background-color:#c0a0ff; text-align:center;">MAS</td><td style="text-align:center;">15.6</td><td style="text-align:center;"><a href="/chunithmwiki/Garakuta%20Doll%20Play%20%28sasakure.UK%20clutter%20remix%29" title="Garakuta Doll Play (sasakure.UK clutter remix)" class="rel-wiki-page">Garakuta Doll Play<br class="spacer">(sasakure.UK clutter remix)</a></td></tr><tr><td rowspan="2" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="2" style="text-align:center;">15.3</td><td style="text-align:center;"><a href="/chunithmwiki/Tachy%E2%88%85n" title="Tachy∅n" class="rel-wiki-page">Tachy&#8709;n</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%EF%BC%BBIMPERIALDISORDER%EF%BC%BD" title="［IMPERIALDISORDER］" class="rel-wiki-page">［IMPERIALDISORDER］</a></td></tr><tr><td style="background-color:#c0a0ff; text-align:center;">MAS</td><td style="text-align:center;">15.2</td><td style="text-align:center;"><a href="/chunithmwiki/%E9%9B%B6%E8%99%9F%E8%BB%8A%E8%BC%9B" title="零號車輛" class="rel-wiki-page">零號車輛</a></td></tr><tr><td rowspan="2" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="2" style="text-align:center;">15.1</td><td style="text-align:center;"><a href="/chunithmwiki/RE%EF%BC%9AUNION%20-Duo%20Blade%20Against-" title="RE：UNION -Duo Blade Against-" class="rel-wiki-page">RE:UNION -Duo Blade Against-</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%83%9A%E3%83%B3%E3%82%AE%E3%83%B3%E3%81%AE%E3%83%86%E3%83%BC%E3%83%9E%EF%BD%9E%E5%B7%A6%E4%B8%8B%E3%82%88%E3%82%8A%E6%84%9B%E3%82%92%E3%81%93%E3%82%81%E3%81%A6%EF%BD%9E" title="チュウニペンギンのテーマ～左下より愛をこめて～" class="rel-wiki-page">チュウニペンギンのテーマ<br class="spacer">～左下より愛をこめて～</a></td></tr><tr><td rowspan="2" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="2" style="text-align:center;">15.0</td><td style="text-align:center;"><a href="/chunithmwiki/E.V.E" title="E.V.E" class="rel-wiki-page">E.V.E</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%82%A6%E3%83%8B%E3%81%AE%E6%AD%8C%28Nanoru%20Naganai%20Remix%29" title="ウニの歌(Nanoru Naganai Remix)" class="rel-wiki-page">ウニの歌(Nanoru Naganai Remix)</a></td></tr><tr><td style="background-color:#c0a0ff; text-align:center;">MAS</td><td style="text-align:center;">14.9</td><td style="text-align:center;"><a href="/chunithmwiki/%E5%8B%A6%E6%BB%85" title="勦滅" class="rel-wiki-page">勦滅</a></td></tr><tr><td rowspan="2" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="2" style="text-align:center;">14.8</td><td style="text-align:center;"><a href="/chunithmwiki/Drift" title="Drift" class="rel-wiki-page">Drift</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/On%20And%20On%21%21" title="On And On!!" class="rel-wiki-page">On And On!!</a></td></tr><tr><td style="background-color:#c0a0ff; text-align:center;">MAS</td><td style="text-align:center;">14.7</td><td style="text-align:center;"><a href="/chunithmwiki/%E6%9C%80%E7%B5%82%E9%AC%BC%E7%95%9C%E5%A6%B9%E3%83%95%E3%83%A9%E3%83%B3%E3%83%89%E3%83%BC%E3%83%AB%E3%83%BBS%20%28%E5%8E%9F%E5%8F%A3%E6%B2%99%E8%BC%94%E3%81%AF%E9%AC%BC%E7%95%9C%E3%81%AA%E3%81%AE%E3%81%8B%EF%BC%9Fremix%29" title="最終鬼畜妹フランドール・S (原口沙輔は鬼畜なのか？remix)" class="rel-wiki-page">最終鬼畜妹フランドール・S<br class="spacer">(原口沙輔は鬼畜なのか？remix)</a></td></tr><tr><td rowspan="5" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="5" style="text-align:center;">14.6</td><td style="text-align:center;"><a href="/chunithmwiki/Your%20Reality%20%28Kenji%20Mizuno%20Remix%29" title="Your Reality (Kenji Mizuno Remix)" class="rel-wiki-page">Your Reality (Kenji Mizuno Remix)</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/OMAKENO%20Stroke" title="OMAKENO Stroke" class="rel-wiki-page">OMAKENO Stroke</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Hello%21%20My%20World%21%21" title="Hello! My World!!" class="rel-wiki-page">Hello! My World!!</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%82%B3%E3%83%88%E3%83%90%E3%83%8E%E5%BB%83%E9%83%BD" title="コトバノ廃都" class="rel-wiki-page">コトバノ廃都</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Prismatic%20Theory" title="Prismatic Theory" class="rel-wiki-page">Prismatic Theory</a></td></tr><tr><td rowspan="4" style="background-color:#c0a0ff; text-align:center;">MAS</td><td rowspan="4" style="text-align:center;">14.5<br class="spacer">(内3譜面)</td><td style="text-align:center;"><a href="/chunithmwiki/Glitch%20Street" title="Glitch Street" class="rel-wiki-page">Glitch Street</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/ALLNIGHT_DANCER" title="ALLNIGHT_DANCER" class="rel-wiki-page">ALLNIGHT_DANCER</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/Luminous%20CANDY" title="Luminous CANDY" class="rel-wiki-page">Luminous CANDY</a></td></tr><tr><td style="text-align:center;"><a href="/chunithmwiki/%E3%82%A2%E3%83%B3%E3%82%B5%E3%83%AC%E3%82%B9%E3%83%86%E3%83%A9%E3%83%BC" title="アンサレステラー" class="rel-wiki-page">アンサレステラー</a></td></tr></tbody></table></div>
+<h3 id="h3_content_1_9" class="heading-after-first">OVER POWER  <a class="anchor_super" name ="over_power"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=over_power" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h3>
+<p>STAR PLUSから登場した指標。言わば「全曲対象レーティング」。<br />
+各譜面のベストスコアから計算したOVER POWER値の合計が以下のそれぞれにおいて集計され、理論値に対するパーセンテージとともに表示される。</p>
+<ul class="list1"><li>フォルダおよび難易度別 - Sランク以上の取得数・FULL COMBO/ALL JUSTICEの取得数も表示される。ただし、「新曲」「WORLD'S END」「課題曲」「お気に入り」フォルダでは設定がONでも表示されない。</li>
+<li>レベル別全譜面 - レベル別ソートフォルダの場合、難易度に関係なく表示しているレベルの全譜面合計で集計される。それ以外はフォルダおよび難易度別に準じる。</li>
+<li>全曲<a id="notetext_9"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;厳密には「未解禁」「課題曲フォルダに存在する(既に通常配信されている楽曲が移動した場合でも該当)」楽曲を除いた全曲&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_9&quot;&gt;脚注 *9 へ&lt;/a&gt;&lt;/div&gt;">*9</a> - CHUNITHM-NETのプレイヤーデータに表示されるほか、後述の「レーティングポゼッション」における判定に用いられる。<br />
+表示するには、オプションの詳細設定で「オーバーパワー表示」をONにする必要がある。</li>
+<li>新曲（HOT OVER POWER） - HOT OVER POWERとは、「現在のバージョンで追加された楽曲を対象としたOVER POWER」のこと。VERSEから、詳細設定の「オーバーパワー表示」をONにしていると、リザルト画面に表示されるようになった。</li></ul>
+<p>レベルフォルダを除き、OVER POWERは1曲につき最も高い1譜面のみ計算される<a id="notetext_10"  class="note_super tooltip"
+            data-tooltip-content="&lt;p&gt;LUMINOUS PLUSより変更。元は全譜面ごとにOVER POWERが計算されており、ポゼッションの計算にはMASTERとULTIMAの値が使用されていた。&lt;/p&gt;&lt;div style=&quot;text-align: right;&quot;&gt;&lt;a href=&quot;#notefoot_10&quot;&gt;脚注 *10 へ&lt;/a&gt;&lt;/div&gt;">*10</a>。</p>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">OVER POWERの計算例</div>
+    <div class="fold-content visible-on-open"><p><strong>LAMIA</strong> (<span class="wikicolor" style="color:#9900ff">MASTER</span>:15.3, <span class="wikicolor" style="color:red">EXPERT</span>:14.1)の場合</p>
+<p>EXPERT譜面をAJすると、OVER POWERはおおよそ85点強になる。このとき、MASTER譜面のスコアが1006000点以下ならばMASTER譜面のOVER POWERは85点以下にしかならず、EXPERTのOVER POWERを越えられないため計算に用いられない。</p>
+<p>上記のように曲のうち最高定数の譜面のスコアが低く、次点の譜面の定数との差が1.5程度であればこのような逆転現象は起こりうる。</p>
+</div>
+</div>
+<p>OVER POWER値の計算方法はレーティングに近く、特定のスコアの時のボーダー値があり、その間は直線的に変化する。<br />
+ただしこちらはSSS+を達成しただけでは上限にならず、SSS以上のスコア分の反映率が異なる他、FC/AJ/AJC時のボーナスも存在する。<br />
+OVER POWERの計算値は以下の通り。</p>
+<div class="h-scrollable"><table><thead><tr><th>ランク</th><th>スコア</th><th>OVER POWER値</th></tr></thead><tbody><tr><td style="text-align:center;">AJC</td><td style="text-align:right;">1,010,000</td><td style="text-align:left;">(譜面定数+2)×5+(<span class="wikicolor" style="color:red">1.25</span>+<span class="wikicolor" style="color:green">3.75</span>)<br class="spacer">=(譜面定数+3)×5</td></tr><tr><td style="text-align:center;">SSS以上</td><td style="text-align:right;">1,007,501～</td><td style="text-align:left;">(譜面定数+2)×5+<span class="wikicolor" style="color:red">補正1</span>+<span class="wikicolor" style="color:green">補正2</span></td></tr><tr><td style="text-align:center;">S～SSS</td><td style="text-align:right;">975,000～1,007,500</td><td style="text-align:left;">レーティング値×5＋<span class="wikicolor" style="color:red">補正1</span></td></tr></tbody></table></div>
+<p><span class="wikicolor" style="color:red">補正1</span>…FCで0.5、AJで1.0、AJCで1.25<br />
+<span class="wikicolor" style="color:green">補正2</span>…(スコア-1,007,500)×0.0015 = SSS~理論値までの間で最大3.75<br />
+例)譜面定数15.4のスコア1,009,540でAJとすると<br />
+(15.4+2)×5+<span class="wikicolor" style="color:red">1.0</span>+<span class="wikicolor" style="color:green">(1,009,540-1,007,500)×0.0015</span>となり、OVER POWERは91.06となる。<br />
+101万点(理論値)を達成したときのOVER POWERをこの計算式に当てはめると「(譜面定数+2)×5+(<span class="wikicolor" style="color:red">1.25</span>＋<span class="wikicolor" style="color:green">3.75</span>)」となるため、「(譜面定数+3)×5」がその譜面のOVER POWER理論値となる。</p>
+<p>レーティングと比べての備考</p>
+<ul class="list1"><li>譜面ごとのOVER POWER値は基本的にレーティングの5倍(+<span class="wikicolor" style="color:red">補正1</span>(FC以上でのボーナス))になる。</li>
+<li>ただし、SSSを超えた分のスコアは定数に関係しない一定倍率(<span class="wikicolor" style="color:green">補正2</span>)となってOVER POWER値に上乗せされる。<br />
+『NEW』以降のレーティングとは異なり上限は理論値以外に存在せず、SSS+ボーダーの1,009,000点を超えてもOVER POWER値は伸びる余地がある。</li>
+<li>FULL COMBO以上を達成することでOVER POWER値にボーナスが入る。
+<ul class="list2"><li>このボーナスはスコアとは独立しており、一度アワードを取得して記録されれば次のハイスコアがアワード未取得の場合でも<span class="wikicolor" style="color:red">補正1</span>は残り続ける？</li></ul></li></ul>
+<p>理論値に対する割合が一定以上になると数値の色が変わる。理論値に対する割合が基準であること以外はレーティングと同様だが、現状は銅区分が存在しない。</p>
+<div class="h-scrollable"><table><thead><tr><th>％表示</th><th>色</th></tr></thead><tbody><tr><td style="text-align:center;">0.00~69.99</td><td style="text-align:center; background-color:lightcyan;">白</td></tr><tr><td style="text-align:center;">70.00~79.99</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td></tr><tr><td style="text-align:center;">80.00~89.99</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td></tr><tr><td style="text-align:center;">90.00~94.99</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td></tr><tr><td style="text-align:center;">95.00~100.00</td><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td></tr></tbody></table></div>
+<h3 id="h3_content_1_10" class="heading-after-first">レーティングポゼッション  <a class="anchor_super" name ="r3bcb7bb"></a> <a class="anchor_super" href="/chunithmwiki/::cmd/edit?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER&id=r3bcb7bb" rel='nofollow'><span class="system-icon paraedit" title="Edit"></span></a></h3>
+<p>AMAZON PLUSより登場した指標。<br />
+レーティングとOVER POWERの値を一定以上にすると、レーティングとネームプレートの背景色が変化する。<br />
+条件は非常に厳しく設定されており、「虹レートの細分化」という意味合いが強い。<br />
+現在、「レーティング値」「全ての<span class="wikicolor" style="color:purple">MASTER</span>＋<span class="wikicolor" style="color:crimson">ULTIMA</span>譜面で一定ランク以上を達成」「全楽曲のOVER POWER合計値の理論値に対する割合」によって決まると推測されているが、詳細な条件は判明していない。(下表の通りと思われる)<br />
+OVER POWER表示がOFFの場合も反映されるが、レーティング表示をOFFにしている場合は反映されない。</p>
+<p>色分けと条件は以下の通り。</p>
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td rowspan="4" style="text-align:center;">16.00以上</td><td rowspan="2" style="text-align:center;">S以上</td><td style="text-align:center;">(条件なし)</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td style="text-align:center;">97.50%</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">S+以上</td><td style="text-align:center;">99.00%</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">SS以上</td><td style="text-align:center;">99.50%</td></tr></tbody></table></div>
+<ul class="list1"><li>Mateにて金/鉑/虹のM/U全譜面最小ランク条件が引き下げられた。</li></ul>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">過去の仕様変更</div>
+    <div class="fold-content visible-on-open"><p>過去の仕様変更<br />
+※NEW PLUS以前の情報は後から振り返ることが難しく、特に必要OP率については不正確です。</p>
+<ul class="list1"><li>AMAZON PLUS～PARADISE LOST<br />
+AMAZON PLUS～CRYSTALでは「銀/金/虹」の3種類で、CRYSTAL PLUSより金と虹の間に「プラチナ(鉑)」が追加されて4種類になった。
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th><th>備考</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td style="text-align:center;">15.25以上</td><td style="text-align:center;">S以上</td><td rowspan="2" style="text-align:center;">(条件なし)</td><td></td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td rowspan="2" style="text-align:center;">15.50以上</td><td rowspan="2" style="text-align:center;">SS以上</td><td></td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">98.50%?</td><td>CRYSTAL PLUSより追加。</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">15.75以上</td><td style="text-align:center;">SS+以上</td><td style="text-align:center;">99.50%?</td><td></td></tr></tbody></table></div></li></ul>
+<ul class="list1"><li>NEW～NEW PLUS<br />
+NEWでのレベル見直しに伴い、全ポゼッションのレーティング条件が1.00引き上げられた。
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td style="text-align:center;">16.25以上</td><td style="text-align:center;">S以上</td><td rowspan="2" style="text-align:center;">(条件なし)</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td rowspan="2" style="text-align:center;">16.50以上</td><td rowspan="2" style="text-align:center;">SS以上</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">98.50%?</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">16.75以上</td><td style="text-align:center;">SS+以上</td><td style="text-align:center;">99.50%?</td></tr></tbody></table></div></li></ul>
+<ul class="list1"><li>SUN～LUMINOUS
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th><th>備考</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td style="text-align:center;">16.25以上</td><td style="text-align:center;">S以上</td><td style="text-align:center;">(条件なし)</td><td></td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td rowspan="2" style="text-align:center;">16.50以上</td><td style="text-align:center;">S+以上</td><td style="text-align:center;">97.50%</td><td>ランク条件が緩くなり、OP条件が追加。</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">SS以上</td><td style="text-align:center;">98.85%</td><td>OP条件が厳しくなった。</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">16.75以上</td><td style="text-align:center;">SSS以上</td><td style="text-align:center;">99.62%</td><td>ランク条件・OP条件が厳しくなった。</td></tr></tbody></table></div></li></ul>
+<ul class="list1"><li>LUMINOUS PLUS
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th><th>備考</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td style="text-align:center;">16.25以上</td><td style="text-align:center;">S以上</td><td style="text-align:center;">(条件なし)</td><td></td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td style="text-align:center;">16.50以上</td><td style="text-align:center;">S+以上</td><td style="text-align:center;">97.50%</td><td></td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">16.50以上</td><td style="text-align:center;">SS以上</td><td style="text-align:center;">99.00%</td><td>OP条件が厳しくなった。</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">16.75以上</td><td style="text-align:center;">SSS以上</td><td style="text-align:center;">99.50%</td><td>ランク条件が厳しくなり、OP条件が緩くなった。</td></tr></tbody></table></div></li></ul>
+<ul class="list1"><li>VERSE～X-VERSE-X<br />
+VERSEにて全ポゼッションのレーティング条件が引き下げられ、一律で16.00以上になった。
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>レーティング</th><th>M/U全譜面最小ランク</th><th>必要OP率</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:silver">銀</span></td><td rowspan="4" style="text-align:center;">16.00以上</td><td style="text-align:center;">S以上</td><td style="text-align:center;">(条件なし)</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td style="text-align:center;">S+以上</td><td style="text-align:center;">97.50%</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:center;">SS以上</td><td style="text-align:center;">99.00%</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:center;">SSS以上</td><td style="text-align:center;">99.50%</td></tr></tbody></table></div></li></ul>
+</div>
+</div>
+<p>2026/9/25現在の全<span class="wikicolor" style="color:purple">MASTER</span>・<span class="wikicolor" style="color:crimson">ULTIMA</span>譜面のOP理論値、及び各ポゼッションの条件値は以下の通り(要解禁楽曲を全て解禁済みとした場合の値で、小数第5位で切り捨てている)。</p>
+<div class="h-scrollable"><table><thead><tr><th>色</th><th>条件%</th><th>必要OP値</th></tr></thead><tbody><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:gold">金</span></td><td style="text-align:right;">97.50%</td><td style="text-align:right;">136893.9000</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#fffacd">鉑</span></td><td style="text-align:right;">99.00%</td><td style="text-align:right;">138999.9600</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#00fa9a">虹</span></td><td style="text-align:right;">99.50%</td><td style="text-align:right;">139701.9800</td></tr><tr><td style="background-color:dimgray; text-align:center;"><span class="wikicolor" style="color:#ffff00">理論値</span></td><td style="text-align:right;">(100.0%)</td><td style="text-align:right;">140404.0000</td></tr></tbody></table></div>
+<p><br class="spacer"></p>
+                </div>
+                <div id="main-contents-bottom">
+                    <div class="caption-flybox" >
+<div id="pc-bottom-parent-ad-container" style="min-height:250px;">
+<div id="pc-bottom-left-ad-container">
+    <!-- /19033742/WIKIWIKI_PC_BOTTOM_LEFT or /19033742/WIKIWIKI_SP_SECOND -->
+    <div id='div-gpt-ad-1567408559923-0' class="hidden-switch-class"></div>
+</div>
+<div id="pc-bottom-right-ad-container">
+    <!-- /19033742/WIKIWIKI_PC_BOTTOM_RIGHT -->
+    <div id='div-gpt-ad-1658912377789-0'></div>
+</div>
+</div>
+</div>
+
+<style>
+.pc-bottom-ad-default {
+    margin-top:120px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:flex-start;
+    gap: 10px 5px;
+}
+.pc-bottom-ad-center{
+    margin-top:120px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap: 10px 5px;
+}
+.pc-bottom-ad-mobile{
+    margin-top:20px;
+    margin-bottom:20px;
+    display:flex;
+    align-items: center;
+    flex-direction:column;
+    position:sticky;
+    z-index: 3;
+    top:45px;
+}
+</style>
+
+<script>
+(function() {
+    var body = document.getElementById('body');
+    var co = document.getElementById("pc-bottom-parent-ad-container");
+    var fh = 50;
+    if (!wi_ismobile && body.clientHeight < 620) {
+        co.style.marginTop = '200px';
+    }
+    if (wi_ismobile && body.clientWidth < 400){
+        co.classList.add("pc-bottom-ad-mobile");
+    } else if (co.clientWidth < 769) {
+        co.classList.add("pc-bottom-ad-center");
+    } else {
+        co.classList.add("pc-bottom-ad-default");
+    }
+}());
+</script>
+                </div>
+
+            </div>
+        </div>
+
+        
+                    <div class="column-left">
+                <div id="menubar">
+                                        <div style="text-align:center"><strong><a href="/chunithmwiki/%E5%BD%93wiki%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" title="当wikiについて" class="rel-wiki-page">当wikiについて</a></strong><br class="spacer"><strong><a href="/chunithmwiki/::cmd/short_url?page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER" rel="nofollow">このページの短縮URLはこちら</a></strong><br class="spacer"></div>
+<h4 id="h4_content_1_0" >基本メニュー</h4>
+<p><strong><a href="/chunithmwiki/%E3%81%93%E3%82%8C%E3%81%8B%E3%82%89CHUNITHM%E3%82%92%E5%A7%8B%E3%82%81%E3%82%8B%E4%BA%BA%E3%81%B8" title="これからCHUNITHMを始める人へ" class="rel-wiki-page">これからCHUNITHMを始める人へ</a></strong><br />
+<strong><a href="/chunithmwiki/CHUNITHM%E3%81%AB%E5%B0%91%E3%81%97%E6%85%A3%E3%82%8C%E3%81%A6%E3%81%8D%E3%81%9F%E4%BA%BA%E3%81%B8" title="CHUNITHMに少し慣れてきた人へ" class="rel-wiki-page">少し慣れてきた人へ</a></strong><br />
+<strong><a href="/chunithmwiki/%E5%88%9D%E5%BF%83%E8%80%85%EF%BC%86%E4%B8%AD%E7%B4%9A%E8%80%85%E6%8C%87%E5%8D%97" title="初心者＆中級者指南" class="rel-wiki-page">初心者＆中級者指南</a></strong><br />
+┗<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%82%BE%E5%90%91%E5%88%A5%E3%81%8A%E3%81%99%E3%81%99%E3%82%81%E7%B7%B4%E7%BF%92%E6%9B%B2" title="譜面傾向別おすすめ練習曲" class="rel-wiki-page">譜面傾向別おすすめ練習曲</a></p>
+<p><strong>ゲームシステム</strong><br />
+・<a href="/chunithmwiki/%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A01" title="ゲームシステム1" class="rel-wiki-page">プレイ方法、基本システムなど</a><br />
+・<a href="/chunithmwiki/%E3%82%B2%E3%83%BC%E3%83%A0%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A02" title="ゲームシステム2" class="rel-wiki-page">マップ、解禁、スキルなど</a><br />
+・<a href="/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER" title="レーティング・OVER POWER" class="rel-wiki-page">レーティング・OVER POWER</a><br />
+・<a href="/chunithmwiki/%E4%B8%8D%E5%85%B7%E5%90%88%E6%83%85%E5%A0%B1" title="不具合情報" class="rel-wiki-page">不具合情報</a></p>
+<p><strong>よくある質問</strong><br />
+・<a href="/chunithmwiki/%E3%82%88%E3%81%8F%E3%81%82%E3%82%8B%E8%B3%AA%E5%95%8F1" title="よくある質問1" class="rel-wiki-page">システム、筐体、Aimeなど</a><br />
+・<a href="/chunithmwiki/%E3%82%88%E3%81%8F%E3%81%82%E3%82%8B%E8%B3%AA%E5%95%8F2" title="よくある質問2" class="rel-wiki-page">NET、カード、大型アプデなど</a></p>
+<p><strong>用語集</strong><br />
+・<a href="/chunithmwiki/%E7%94%A8%E8%AA%9E%E9%9B%86" title="用語集" class="rel-wiki-page">用語集・プレイ関連</a><br />
+・<a href="/chunithmwiki/%E7%94%A8%E8%AA%9E%E9%9B%86%E3%83%BB%E6%A5%BD%E6%9B%B2%E9%96%A2%E9%80%A3" title="用語集・楽曲関連" class="rel-wiki-page">用語集・楽曲関連</a><br />
+・<a href="/chunithmwiki/%E7%94%A8%E8%AA%9E%E9%9B%86%E3%83%BB%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="用語集・イベント" class="rel-wiki-page">用語集・イベント</a></p>
+<h4 id="h4_content_1_1" class="heading-after-first">お知らせ一覧</h4>
+<hr class="full_hr" />
+<div class="h-scrollable"><table><thead><tr><td colspan="2" style="background-color:lavenderblush; text-align:center;"><strong>お知らせ</strong><br class="spacer"><span style="font-size:11px">(期間限定イベントは下記参照)</span></td></tr></thead><tbody><tr><th style="font-size:12px; text-align:center; width:235px;"><span style="font-size:10px">2026</span><br class="spacer">7/2</th><td style="text-align:center; width:465px;"><a href="/chunithmwiki/CHUNITHM%20Mate%E6%83%85%E5%A0%B1%E3%81%BE%E3%81%A8%E3%82%81" title="CHUNITHM Mate情報まとめ" class="rel-wiki-page"><strong>CHUNITHM<br class="spacer">Mate</strong></a></td></tr><tr><td colspan="2" style="text-align:center;"></td></tr><tr><th style="font-size:12px; text-align:center; width:235px;">9/17</th><td style="text-align:center; width:465px;"><a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E8%BF%BD%E5%8A%A0%E3%81%AE%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%282026.9.17%29" title="楽曲追加のお知らせ(2026.9.17)" class="rel-wiki-page"><strong>課題曲追加</strong></a></td></tr><tr><th style="font-size:12px; text-align:center; width:235px;">9/25</th><td style="text-align:center; width:465px;"><a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E8%BF%BD%E5%8A%A0%E3%81%AE%E3%81%8A%E7%9F%A5%E3%82%89%E3%81%9B%282026.9.25%29" title="楽曲追加のお知らせ(2026.9.25)" class="rel-wiki-page"><strong>新曲追加</strong></a></td></tr></tbody></table></div>
+<hr class="full_hr" />
+<div class="h-scrollable"><table><tbody><tr><th style="font-size:12px; width:700px;">開催中</th></tr><tr><td style="font-size:12px; width:700px;"><span style="font-size:10px"><strong>2026/10/7まで</strong></span><br class="spacer"><a href="/chunithmwiki/GUILTY%20GEAR%20-STRIVE-%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="GUILTY GEAR -STRIVE-コラボイベント" class="rel-wiki-page">GUILTY GEAR -STRIVE-コラボイベント</a></td></tr><tr><td style="font-size:12px; width:700px;"><span style="font-size:10px"><strong>2026/10/21まで</strong></span><br class="spacer">クラッシュフィーバーコラボイベント【 <a href="/chunithmwiki/%E3%82%AF%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5%E3%83%95%E3%82%A3%E3%83%BC%E3%83%90%E3%83%BC%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="クラッシュフィーバーコラボイベント" class="rel-wiki-page">第一弾</a><span class="wikicolor" style="color:red"><strong>(第3回)</strong></span> / <a href="/chunithmwiki/%E3%82%AF%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5%E3%83%95%E3%82%A3%E3%83%BC%E3%83%90%E3%83%BC%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%20%E7%AC%AC%E4%BA%8C%E5%BC%BE" title="クラッシュフィーバーコラボイベント 第二弾" class="rel-wiki-page">第二弾</a> 】<br class="spacer"><a href="/chunithmwiki/%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%88%E3%83%95%E3%82%A1%E3%82%A4%E3%82%BF%E3%83%BC%206%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="ストリートファイター 6コラボイベント" class="rel-wiki-page">ストリートファイター 6コラボイベント</a></td></tr><tr><td style="font-size:12px; width:700px;"><span style="font-size:10px"><strong>2026/11/11まで</strong></span><br class="spacer"><a href="/chunithmwiki/%E3%83%89%E3%82%AD%E3%83%89%E3%82%AD%E6%96%87%E8%8A%B8%E9%83%A8%21%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="ドキドキ文芸部!コラボイベント" class="rel-wiki-page">ドキドキ文芸部!コラボイベント</a><br class="spacer"><a href="/chunithmwiki/%E3%81%84%E3%82%88%E3%82%8F%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88" title="いよわコラボイベント" class="rel-wiki-page">いよわコラボイベント</a><span class="wikicolor" style="color:red"><strong>(第2回)</strong></span></td></tr><tr><td style="font-size:12px; width:700px;"><span style="font-size:11px">常設マップは<a href="/chunithmwiki/CHUNITHM%20Mate%20%E3%83%9E%E3%83%83%E3%83%97%E4%B8%80%E8%A6%A7#regular_collab" title="CHUNITHM Mate マップ一覧" class="rel-wiki-page">こちら</a>参照</span><br class="spacer"><span style="font-size:11px">常設クエストは<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88#regular_quest" title="チュウニズムクエスト" class="rel-wiki-page">こちら</a>参照</span></td></tr></tbody></table></div>
+<hr class="full_hr" />
+<h4 id="h4_content_1_2" class="heading-after-first">設置店舗</h4>
+<div class="accordion-container accordion-open">
+    <h2 class="accordion-header">
+        <i class="fa-solid fa-plus-square hidden-on-open"></i>
+        <i class="fa-solid fa-minus-square visible-on-open"></i>
+        一覧
+    </h2>
+    <div class="accordion-content"><p><strong><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97" title="設置店舗" class="rel-wiki-page">目次、共通事項など</a></strong></p>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">北海道・東北</div>
+    <div class="fold-content visible-on-open"><p>北海道・東北</p>
+<ul class="list1"><li>北海道
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%8C%97%E6%B5%B7%E9%81%93%28%E6%9C%AD%E5%B9%8C%E5%B8%82%29" title="設置店舗/北海道(札幌市)" class="rel-wiki-page">札幌市</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%8C%97%E6%B5%B7%E9%81%93%28%E6%9C%AD%E5%B9%8C%E5%B8%82%E4%BB%A5%E5%A4%96%29" title="設置店舗/北海道(札幌市以外)" class="rel-wiki-page">札幌市以外</a></li></ul></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%9D%92%E6%A3%AE%E7%9C%8C" title="設置店舗/青森県" class="rel-wiki-page">青森県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B2%A9%E6%89%8B%E7%9C%8C" title="設置店舗/岩手県" class="rel-wiki-page">岩手県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%A7%8B%E7%94%B0%E7%9C%8C" title="設置店舗/秋田県" class="rel-wiki-page">秋田県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%AE%AE%E5%9F%8E%E7%9C%8C" title="設置店舗/宮城県" class="rel-wiki-page">宮城県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B1%B1%E5%BD%A2%E7%9C%8C" title="設置店舗/山形県" class="rel-wiki-page">山形県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%A6%8F%E5%B3%B6%E7%9C%8C" title="設置店舗/福島県" class="rel-wiki-page">福島県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">関東</div>
+    <div class="fold-content visible-on-open"><p>関東</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%BE%A4%E9%A6%AC%E7%9C%8C" title="設置店舗/群馬県" class="rel-wiki-page">群馬県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%A0%83%E6%9C%A8%E7%9C%8C" title="設置店舗/栃木県" class="rel-wiki-page">栃木県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E8%8C%A8%E5%9F%8E%E7%9C%8C" title="設置店舗/茨城県" class="rel-wiki-page">茨城県</a></li>
+<li>埼玉県
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%9F%BC%E7%8E%89%E7%9C%8C%28%E3%81%95%E3%81%84%E3%81%9F%E3%81%BE%E3%83%BB%E5%8D%97%E9%83%A8%E3%83%BB%E7%9C%8C%E5%A4%AE%E3%83%BB%E5%8C%97%E9%83%A8%29" title="設置店舗/埼玉県(さいたま・南部・県央・北部)" class="rel-wiki-page">さいたま・南部・県央・北部</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%9F%BC%E7%8E%89%E7%9C%8C%28%E6%9D%B1%E9%83%A8%29" title="設置店舗/埼玉県(東部)" class="rel-wiki-page">東部</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%9F%BC%E7%8E%89%E7%9C%8C%28%E8%A5%BF%E9%83%A8%29" title="設置店舗/埼玉県(西部)" class="rel-wiki-page">西部</a></li></ul></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%8D%83%E8%91%89%E7%9C%8C" title="設置店舗/千葉県" class="rel-wiki-page">千葉県</a></li>
+<li>東京都
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%9D%B1%E4%BA%AC%E9%83%BD%2823%E5%8C%BA%E6%9D%B1%E9%83%A8%29" title="設置店舗/東京都(23区東部)" class="rel-wiki-page">23区東部</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%9D%B1%E4%BA%AC%E9%83%BD%2823%E5%8C%BA%E8%A5%BF%E9%83%A8%29" title="設置店舗/東京都(23区西部)" class="rel-wiki-page">23区西部</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%9D%B1%E4%BA%AC%E9%83%BD%28%E5%A4%9A%E6%91%A9%E5%9C%B0%E5%9F%9F%29" title="設置店舗/東京都(多摩地域)" class="rel-wiki-page">多摩地域</a></li></ul></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%A5%9E%E5%A5%88%E5%B7%9D%E7%9C%8C" title="設置店舗/神奈川県" class="rel-wiki-page">神奈川県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">北陸・甲信越</div>
+    <div class="fold-content visible-on-open"><p>北陸・甲信越</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B1%B1%E6%A2%A8%E7%9C%8C" title="設置店舗/山梨県" class="rel-wiki-page">山梨県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%96%B0%E6%BD%9F%E7%9C%8C" title="設置店舗/新潟県" class="rel-wiki-page">新潟県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%95%B7%E9%87%8E%E7%9C%8C" title="設置店舗/長野県" class="rel-wiki-page">長野県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%AF%8C%E5%B1%B1%E7%9C%8C" title="設置店舗/富山県" class="rel-wiki-page">富山県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%9F%B3%E5%B7%9D%E7%9C%8C" title="設置店舗/石川県" class="rel-wiki-page">石川県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%A6%8F%E4%BA%95%E7%9C%8C" title="設置店舗/福井県" class="rel-wiki-page">福井県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">東海</div>
+    <div class="fold-content visible-on-open"><p>東海</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%9D%99%E5%B2%A1%E7%9C%8C" title="設置店舗/静岡県" class="rel-wiki-page">静岡県</a></li>
+<li>愛知県
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%84%9B%E7%9F%A5%E7%9C%8C%28%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%29" title="設置店舗/愛知県(名古屋市)" class="rel-wiki-page">名古屋市</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%84%9B%E7%9F%A5%E7%9C%8C%28%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E4%BB%A5%E5%A4%96%29" title="設置店舗/愛知県(名古屋市以外)" class="rel-wiki-page">名古屋市以外</a></li></ul></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B2%90%E9%98%9C%E7%9C%8C" title="設置店舗/岐阜県" class="rel-wiki-page">岐阜県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E4%B8%89%E9%87%8D%E7%9C%8C" title="設置店舗/三重県" class="rel-wiki-page">三重県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">近畿</div>
+    <div class="fold-content visible-on-open"><p>近畿</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%BB%8B%E8%B3%80%E7%9C%8C" title="設置店舗/滋賀県" class="rel-wiki-page">滋賀県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E4%BA%AC%E9%83%BD%E5%BA%9C" title="設置店舗/京都府" class="rel-wiki-page">京都府</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%A5%88%E8%89%AF%E7%9C%8C" title="設置店舗/奈良県" class="rel-wiki-page">奈良県</a></li>
+<li>大阪府
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%A4%A7%E9%98%AA%E5%BA%9C%28%E5%A4%A7%E9%98%AA%E5%B8%82%29" title="設置店舗/大阪府(大阪市)" class="rel-wiki-page">大阪市</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%A4%A7%E9%98%AA%E5%BA%9C%28%E5%A4%A7%E9%98%AA%E5%B8%82%E4%BB%A5%E5%A4%96%29" title="設置店舗/大阪府(大阪市以外)" class="rel-wiki-page">大阪市以外</a></li></ul></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%92%8C%E6%AD%8C%E5%B1%B1%E7%9C%8C" title="設置店舗/和歌山県" class="rel-wiki-page">和歌山県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%85%B5%E5%BA%AB%E7%9C%8C" title="設置店舗/兵庫県" class="rel-wiki-page">兵庫県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">中国</div>
+    <div class="fold-content visible-on-open"><p>中国</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%B3%A5%E5%8F%96%E7%9C%8C" title="設置店舗/鳥取県" class="rel-wiki-page">鳥取県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B2%A1%E5%B1%B1%E7%9C%8C" title="設置店舗/岡山県" class="rel-wiki-page">岡山県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%BA%83%E5%B3%B6%E7%9C%8C" title="設置店舗/広島県" class="rel-wiki-page">広島県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B3%B6%E6%A0%B9%E7%9C%8C" title="設置店舗/島根県" class="rel-wiki-page">島根県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B1%B1%E5%8F%A3%E7%9C%8C" title="設置店舗/山口県" class="rel-wiki-page">山口県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">四国</div>
+    <div class="fold-content visible-on-open"><p>四国</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%BE%B3%E5%B3%B6%E7%9C%8C" title="設置店舗/徳島県" class="rel-wiki-page">徳島県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%A6%99%E5%B7%9D%E7%9C%8C" title="設置店舗/香川県" class="rel-wiki-page">香川県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%84%9B%E5%AA%9B%E7%9C%8C" title="設置店舗/愛媛県" class="rel-wiki-page">愛媛県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%AB%98%E7%9F%A5%E7%9C%8C" title="設置店舗/高知県" class="rel-wiki-page">高知県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">九州・沖縄</div>
+    <div class="fold-content visible-on-open"><p>九州・沖縄</p>
+<ul class="list1"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%A6%8F%E5%B2%A1%E7%9C%8C" title="設置店舗/福岡県" class="rel-wiki-page">福岡県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%A4%A7%E5%88%86%E7%9C%8C" title="設置店舗/大分県" class="rel-wiki-page">大分県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E4%BD%90%E8%B3%80%E7%9C%8C" title="設置店舗/佐賀県" class="rel-wiki-page">佐賀県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%95%B7%E5%B4%8E%E7%9C%8C" title="設置店舗/長崎県" class="rel-wiki-page">長崎県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%AE%AE%E5%B4%8E%E7%9C%8C" title="設置店舗/宮崎県" class="rel-wiki-page">宮崎県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E7%86%8A%E6%9C%AC%E7%9C%8C" title="設置店舗/熊本県" class="rel-wiki-page">熊本県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%B9%BF%E5%85%90%E5%B3%B6%E7%9C%8C" title="設置店舗/鹿児島県" class="rel-wiki-page">鹿児島県</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%B2%96%E7%B8%84%E7%9C%8C" title="設置店舗/沖縄県" class="rel-wiki-page">沖縄県</a></li></ul>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">海外版</div>
+    <div class="fold-content visible-on-open"><ul class="list1"><li>International Ver.
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%8F%B0%E6%B9%BE" title="設置店舗/台湾" class="rel-wiki-page">台湾</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%A6%99%E6%B8%AF" title="設置店舗/香港" class="rel-wiki-page">香港</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%82%B7%E3%83%B3%E3%82%AC%E3%83%9D%E3%83%BC%E3%83%AB" title="設置店舗/シンガポール" class="rel-wiki-page">シンガポール</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%9E%E3%83%AC%E3%83%BC%E3%82%B7%E3%82%A2" title="設置店舗/マレーシア" class="rel-wiki-page">マレーシア</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%9F%93%E5%9B%BD" title="設置店舗/韓国" class="rel-wiki-page">韓国</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%82%BF%E3%82%A4" title="設置店舗/タイ" class="rel-wiki-page">タイ</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%82%A4%E3%83%B3%E3%83%89%E3%83%8D%E3%82%B7%E3%82%A2" title="設置店舗/インドネシア" class="rel-wiki-page">インドネシア</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%9E%E3%82%AB%E3%82%AA" title="設置店舗/マカオ" class="rel-wiki-page">マカオ</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%95%E3%82%A3%E3%83%AA%E3%83%94%E3%83%B3" title="設置店舗/フィリピン" class="rel-wiki-page">フィリピン</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%99%E3%83%88%E3%83%8A%E3%83%A0" title="設置店舗/ベトナム" class="rel-wiki-page">ベトナム</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%82%AA%E3%83%BC%E3%82%B9%E3%83%88%E3%83%A9%E3%83%AA%E3%82%A2" title="設置店舗/オーストラリア" class="rel-wiki-page">オーストラリア</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%9F%E3%83%A3%E3%83%B3%E3%83%9E%E3%83%BC" title="設置店舗/ミャンマー" class="rel-wiki-page">ミャンマー</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%8B%E3%83%A5%E3%83%BC%E3%82%B8%E3%83%BC%E3%83%A9%E3%83%B3%E3%83%89" title="設置店舗/ニュージーランド" class="rel-wiki-page">ニュージーランド</a></li></ul></li>
+<li>その他
+<ul class="list2"><li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E4%B8%AD%E5%9B%BD" title="設置店舗/中国" class="rel-wiki-page">中国</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%82%A2%E3%83%A1%E3%83%AA%E3%82%AB" title="設置店舗/アメリカ" class="rel-wiki-page">アメリカ</a></li>
+<li><a href="/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E3%83%A8%E3%83%BC%E3%83%AD%E3%83%83%E3%83%91" title="設置店舗/ヨーロッパ" class="rel-wiki-page">ヨーロッパ</a></li></ul></li></ul>
+</div>
+</div>
+<p><strong>閉店・撤去店舗</strong></p>
+<ul class="list1"><li><a href="/chunithmwiki/%E9%96%89%E5%BA%97%E3%83%BB%E6%92%A4%E5%8E%BB%E5%BA%97%E8%88%97" title="閉店・撤去店舗" class="rel-wiki-page">関東以東</a></li>
+<li><a href="/chunithmwiki/%E9%96%89%E5%BA%97%E3%83%BB%E6%92%A4%E5%8E%BB%E5%BA%97%E8%88%972" title="閉店・撤去店舗2" class="rel-wiki-page">中部以西</a></li></ul>
+</div>
+</div>
+<h2 id="h2_content_1_3" class="heading-after-first">楽曲一覧</h2>
+<p><strong><a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E8%BF%BD%E5%8A%A0%E6%97%A5%E9%A0%86%29" title="CHUNITHM Mate 楽曲一覧(追加日順)" class="rel-wiki-page">追加日順</a></strong></p>
+<p><strong>定数順</strong><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%861%29" title="CHUNITHM Mate 楽曲一覧(定数順1)" class="rel-wiki-page">Lv.13+～Lv.16</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%862%29" title="CHUNITHM Mate 楽曲一覧(定数順2)" class="rel-wiki-page">Lv.12～Lv.13</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%863%29" title="CHUNITHM Mate 楽曲一覧(定数順3)" class="rel-wiki-page">Lv.10～Lv.11+</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%96%B0%E6%9B%B2%E6%9E%A0%E5%AF%BE%E8%B1%A1%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="CHUNITHM Mate 新曲枠対象楽曲一覧" class="rel-wiki-page">新曲枠</a></p>
+<p><strong>LEVEL順</strong><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%861%29" title="CHUNITHM Mate 楽曲一覧(Lv順1)" class="rel-wiki-page">Lv.13+～Lv.16</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%862%29" title="CHUNITHM Mate 楽曲一覧(Lv順2)" class="rel-wiki-page">Lv.12～Lv.13</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%863%29" title="CHUNITHM Mate 楽曲一覧(Lv順3)" class="rel-wiki-page">Lv.10～Lv.11+</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%864%29" title="CHUNITHM Mate 楽曲一覧(Lv順4)" class="rel-wiki-page">Lv.7～Lv.9+</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%865%29" title="CHUNITHM Mate 楽曲一覧(Lv順5)" class="rel-wiki-page">Lv.4～Lv.6</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28Lv%E9%A0%866%29" title="CHUNITHM Mate 楽曲一覧(Lv順6)" class="rel-wiki-page">Lv.1～Lv.3</a></p>
+<p><strong>ジャンル別</strong><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/POPS%EF%BC%86ANIME" title="ジャンル別楽曲一覧/POPS＆ANIME" class="rel-wiki-page">POPS&amp;ANIME</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/niconico" title="ジャンル別楽曲一覧/niconico" class="rel-wiki-page">niconico</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/%E6%9D%B1%E6%96%B9Project" title="ジャンル別楽曲一覧/東方Project" class="rel-wiki-page">東方Project</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/VARIETY" title="ジャンル別楽曲一覧/VARIETY" class="rel-wiki-page">VARIETY</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/%E3%82%A4%E3%83%AD%E3%83%89%E3%83%AA%E3%83%9F%E3%83%89%E3%83%AA" title="ジャンル別楽曲一覧/イロドリミドリ" class="rel-wiki-page">イロドリミドリ</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/%E3%82%B2%E3%82%AD%E3%83%9E%E3%82%A4" title="ジャンル別楽曲一覧/ゲキマイ" class="rel-wiki-page">ゲキマイ</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/ORIGINAL" title="ジャンル別楽曲一覧/ORIGINAL" class="rel-wiki-page">ORIGINAL</a><br />
+・<a href="/chunithmwiki/%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%AB%E5%88%A5%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7/%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28ULTIMA%2CWE%29" title="ジャンル別楽曲一覧/楽曲一覧(ULTIMA,WE)" class="rel-wiki-page">ULTIMA,WORLD'S END</a></p>
+<p>・<strong><a href="/chunithmwiki/WORLD%27S%20END" title="WORLD&#039;S END" class="rel-wiki-page">WORLD'S END</a></strong><br />
+┗各曲備考【<a href="/chunithmwiki/WORLD%27S%20END%28%E5%82%99%E8%80%83%29" title="WORLD&#039;S END(備考)" class="rel-wiki-page"> 1 </a>/<a href="/chunithmwiki/WORLD%27S%20END%28%E5%82%99%E8%80%832%29" title="WORLD&#039;S END(備考2)" class="rel-wiki-page"> 2 </a>/<a href="/chunithmwiki/WORLD%27S%20END%28%E5%82%99%E8%80%83%E3%83%BB%E9%85%8D%E4%BF%A1%E7%B5%82%E4%BA%86%29" title="WORLD&#039;S END(備考・配信終了)" class="rel-wiki-page"> 停 </a>】</p>
+<p>・<a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E3%83%AC%E3%83%99%E3%83%AB%E5%A4%89%E6%9B%B4%E4%B8%80%E8%A6%A7%28NEW%EF%BD%9E%29" title="楽曲レベル変更一覧(NEW～)" class="rel-wiki-page">楽曲レベル変更一覧</a><br />
+・<a href="/chunithmwiki/%E9%85%8D%E4%BF%A1%E7%B5%82%E4%BA%86%E3%83%BB%E6%97%A5%E6%9C%AC%E7%89%88%E6%9C%AA%E5%8F%8E%E9%8C%B2%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="配信終了・日本版未収録楽曲一覧" class="rel-wiki-page">配信終了・日本版未収録</a><br />
+・<a href="/chunithmwiki/%E3%82%AA%E3%83%95%E3%83%A9%E3%82%A4%E3%83%B3%E7%AD%90%E4%BD%93%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="オフライン筐体楽曲一覧" class="rel-wiki-page">オフライン筐体楽曲一覧</a></p>
+<p><strong>記録など</strong><br />
+・<a href="/chunithmwiki/CHUNITHM%20%E6%A5%BD%E6%9B%B2%E6%9C%AA%E6%9B%B4%E6%96%B0%E4%B8%80%E8%A6%A7" title="CHUNITHM 楽曲未更新一覧" class="rel-wiki-page">ノーツ内訳未更新楽曲</a><br />
+・<a href="/chunithmwiki/%E7%90%86%E8%AB%96%E5%80%A4%E6%9C%AA%E9%81%94%E6%88%90" title="理論値未達成" class="rel-wiki-page">理論値未達成楽曲</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E6%83%85%E5%A0%B1%E3%83%A9%E3%83%B3%E3%82%AD%E3%83%B3%E3%82%B0" title="譜面情報ランキング" class="rel-wiki-page">譜面情報ランキング</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E3%83%8D%E3%82%BF%E3%81%BE%E3%81%A8%E3%82%81" title="譜面ネタまとめ" class="rel-wiki-page">譜面ネタまとめ</a></p>
+<h2 id="h2_content_1_4" class="heading-after-first">他モード</h2>
+<p>・<a href="/chunithmwiki/%E3%82%AF%E3%83%A9%E3%82%B9%E8%AA%8D%E5%AE%9A" title="クラス認定" class="rel-wiki-page">クラス認定</a><br />
+・<a href="/chunithmwiki/%E5%85%A8%E5%9B%BD%E5%AF%BE%E6%88%A6" title="全国対戦" class="rel-wiki-page">全国対戦</a><br />
+・<a href="/chunithmwiki/UNLOCK%20CHALLENGE" title="UNLOCK CHALLENGE" class="rel-wiki-page">UNLOCK CHALLENGE</a></p>
+<p>・<strong><a href="/chunithmwiki/Linked%20VERSE" title="Linked VERSE" class="rel-wiki-page">Linked VERSE</a></strong><br />
+　┗<a href="/chunithmwiki/Linked%20VERSE/%E3%81%93%E3%82%8C%E3%81%8B%E3%82%89%E9%80%B2%E3%82%81%E3%82%8B%E4%BA%BA%E3%81%B8" title="Linked VERSE/これから進める人へ" class="rel-wiki-page">これから進める人へ</a></p>
+<p>・<a href="/chunithmwiki/%E3%83%A1%E3%82%A4%E3%83%88%E3%83%AB%E3%83%BC%E3%83%A0" title="メイトルーム" class="rel-wiki-page">メイトルーム</a></p>
+<h2 id="h2_content_1_5" class="heading-after-first">キャラ一覧</h2>
+<p><strong>ゲキチュウマイキャラ</strong><br />
+・<a href="/chunithmwiki/CHUNITHM%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM キャラクター一覧" class="rel-wiki-page">無印</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20AIR%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM AIR キャラクター一覧" class="rel-wiki-page">AIR</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20STAR%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM STAR キャラクター一覧" class="rel-wiki-page">STAR</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20AMAZON%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM AMAZON キャラクター一覧" class="rel-wiki-page">AMAZON</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20CRYSTAL%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM CRYSTAL キャラクター一覧" class="rel-wiki-page">CRYSTAL</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20PARADISE%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM PARADISE キャラクター一覧" class="rel-wiki-page">PARADISE</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20NEW%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM NEW キャラクター一覧" class="rel-wiki-page">NEW</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20SUN%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM SUN キャラクター一覧" class="rel-wiki-page">SUN</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20LUMINOUS%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM LUMINOUS キャラクター一覧" class="rel-wiki-page">LUMINOUS</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20VERSE%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM VERSE キャラクター一覧" class="rel-wiki-page">VERSE</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="CHUNITHM Mate キャラクター一覧" class="rel-wiki-page">Mate</a></p>
+<p>・キャラクター世界観【<a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%96%E7%95%8C%E8%A6%B31" title="キャラクター世界観1" class="rel-wiki-page"> 1 </a>/<a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%96%E7%95%8C%E8%A6%B32" title="キャラクター世界観2" class="rel-wiki-page"> 2 </a>/<a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%96%E7%95%8C%E8%A6%B33" title="キャラクター世界観3" class="rel-wiki-page"> 3 </a>】</p>
+<p><strong>コラボキャラ</strong><br />
+・PARADISE LOST以前【<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7%28%EF%BD%9EPARADISE%20LOST1%29" title="コラボキャラクター一覧(～PARADISE LOST1)" class="rel-wiki-page"> 1 </a>/<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7%28%EF%BD%9EPARADISE%20LOST2%29" title="コラボキャラクター一覧(～PARADISE LOST2)" class="rel-wiki-page"> 2 </a>】<br />
+・NEW以降【<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7%28NEW%EF%BD%9E%29" title="コラボキャラクター一覧(NEW～)" class="rel-wiki-page"> 1 </a>/<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7%28NEW%EF%BD%9E%292" title="コラボキャラクター一覧(NEW～)2" class="rel-wiki-page"> 2 </a>】</p>
+<h2 id="h2_content_1_6" class="heading-after-first">マップ・スキル</h2>
+<p><strong>マップ一覧</strong><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E3%83%9E%E3%83%83%E3%83%97%E4%B8%80%E8%A6%A7" title="CHUNITHM Mate マップ一覧" class="rel-wiki-page">Mate・ゲキチュウマイ</a><br />
+・<a href="/chunithmwiki/CHUNITHM%20Mate%20%E3%83%9E%E3%83%83%E3%83%97%E4%B8%80%E8%A6%A7/%E6%97%A7%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3" title="CHUNITHM Mate マップ一覧/旧バージョン" class="rel-wiki-page">VERSE・ep.∞</a><br />
+・<a href="/chunithmwiki/%E3%83%9E%E3%83%83%E3%83%97%E3%83%9C%E3%83%BC%E3%83%8A%E3%82%B9%E3%83%BB%E9%99%90%E7%95%8C%E7%AA%81%E7%A0%B4" title="マップボーナス・限界突破" class="rel-wiki-page">マップボーナス・限界突破</a></p>
+<p><strong>スキル</strong><br />
+・<a href="/chunithmwiki/%E3%82%B9%E3%82%AD%E3%83%AB%E6%AF%94%E8%BC%83%28Mate%EF%BD%9E%29" title="スキル比較(Mate～)" class="rel-wiki-page">スキル比較(Mate～)</a></p>
+<h2 id="h2_content_1_7" class="heading-after-first">コレクション</h2>
+<p><strong>称号一覧</strong><br />
+・<a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E3%83%97%E3%83%AC%E3%82%A4%E7%A7%B0%E5%8F%B7%E4%B8%80%E8%A6%A7" title="楽曲プレイ称号一覧" class="rel-wiki-page">楽曲プレイ称号一覧</a><br />
+・<a href="/chunithmwiki/%E3%83%9E%E3%83%83%E3%83%81%E3%83%B3%E3%82%B0%E7%A7%B0%E5%8F%B7%E4%B8%80%E8%A6%A7" title="マッチング称号一覧" class="rel-wiki-page">マッチング称号一覧</a><br />
+・<a href="/chunithmwiki/%E9%80%B2%E8%A1%8C%E5%BA%A6%E3%83%BB%E4%BB%96%E3%82%B2%E3%83%BC%E3%83%A0%E9%80%A3%E5%8B%95%E7%A7%B0%E5%8F%B7%E4%B8%80%E8%A6%A7" title="進行度・他ゲーム連動称号一覧" class="rel-wiki-page">進行度・他ゲーム連動称号一覧</a><br />
+・新規取得不可称号一覧 【<a href="/chunithmwiki/%E6%96%B0%E8%A6%8F%E5%8F%96%E5%BE%97%E4%B8%8D%E5%8F%AF%E7%A7%B0%E5%8F%B7%E4%B8%80%E8%A6%A7%28%E6%A5%BD%E6%9B%B2%E3%83%97%E3%83%AC%E3%82%A4%29" title="新規取得不可称号一覧(楽曲プレイ)" class="rel-wiki-page"> 1 </a>/<a href="/chunithmwiki/%E6%96%B0%E8%A6%8F%E5%8F%96%E5%BE%97%E4%B8%8D%E5%8F%AF%E7%A7%B0%E5%8F%B7%E4%B8%80%E8%A6%A7%28%E3%81%9D%E3%81%AE%E4%BB%96%29" title="新規取得不可称号一覧(その他)" class="rel-wiki-page"> 2 </a>】</p>
+<p><strong><a href="/chunithmwiki/%E3%83%8D%E3%83%BC%E3%83%A0%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="ネームプレート" class="rel-wiki-page">ネームプレート</a></strong><br />
+<strong><a href="/chunithmwiki/%E3%83%9E%E3%83%83%E3%83%97%E3%82%A2%E3%82%A4%E3%82%B3%E3%83%B3" title="マップアイコン" class="rel-wiki-page">マップアイコン</a></strong><br />
+<strong><a href="/chunithmwiki/%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E3%83%9C%E3%82%A4%E3%82%B9" title="システムボイス" class="rel-wiki-page">システムボイス</a></strong><br />
+<strong><a href="/chunithmwiki/%E3%82%B9%E3%83%86%E3%83%BC%E3%82%B8%E8%83%8C%E6%99%AF" title="ステージ背景" class="rel-wiki-page">ステージ背景</a></strong><br />
+<strong><a href="/chunithmwiki/%E3%82%A2%E3%83%90%E3%82%BF%E3%83%BC%E3%83%BB%E3%83%81%E3%83%A3%E3%83%83%E3%83%88" title="アバター・チャット" class="rel-wiki-page">アバター・チャット</a></strong></p>
+<p><strong><a href="/chunithmwiki/%E5%85%A8%E9%9B%A3%E6%98%93%E5%BA%A6%E3%83%97%E3%83%AC%E3%82%A4%E3%81%AE%E8%A7%A3%E7%A6%81%E8%A6%81%E7%B4%A0" title="全難易度プレイの解禁要素" class="rel-wiki-page">全難易度プレイの解禁要素</a></strong><br />
+<strong><a href="/chunithmwiki/%E3%82%A2%E3%82%A4%E3%83%86%E3%83%A0%E4%BA%A4%E6%8F%9B%E6%89%80" title="アイテム交換所" class="rel-wiki-page">アイテム交換所</a></strong></p>
+<h2 id="h2_content_1_8" class="heading-after-first">CHUNITHM関係者一覧</h2>
+<p><strong>楽曲提供者一覧</strong><br />
+・<a href="/chunithmwiki/%E9%96%A2%E9%80%A3%E3%82%A2%E3%83%BC%E3%83%86%E3%82%A3%E3%82%B9%E3%83%88%28%E3%81%82%E8%A1%8C%29" title="関連アーティスト(あ行)" class="rel-wiki-page">あ行</a><br />
+・<a href="/chunithmwiki/%E9%96%A2%E9%80%A3%E3%82%A2%E3%83%BC%E3%83%86%E3%82%A3%E3%82%B9%E3%83%88%28%E3%81%8B%E8%A1%8C%EF%BD%9E%E3%81%95%E8%A1%8C%29" title="関連アーティスト(か行～さ行)" class="rel-wiki-page">か行～さ行</a><br />
+・<a href="/chunithmwiki/%E9%96%A2%E9%80%A3%E3%82%A2%E3%83%BC%E3%83%86%E3%82%A3%E3%82%B9%E3%83%88%28%E3%81%9F%E8%A1%8C%EF%BD%9E%E3%81%AF%E8%A1%8C%29" title="関連アーティスト(た行～は行)" class="rel-wiki-page">た行～は行</a><br />
+・<a href="/chunithmwiki/%E9%96%A2%E9%80%A3%E3%82%A2%E3%83%BC%E3%83%86%E3%82%A3%E3%82%B9%E3%83%88%28%E3%81%BE%E8%A1%8C%EF%BD%9E%E3%82%8F%E8%A1%8C%29" title="関連アーティスト(ま行～わ行)" class="rel-wiki-page">ま行～わ行</a></p>
+<p><strong>譜面制作者一覧</strong><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A71" title="譜面制作者一覧1" class="rel-wiki-page">あ行～さ行</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A72" title="譜面制作者一覧2" class="rel-wiki-page">た行～は行</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A73" title="譜面制作者一覧3" class="rel-wiki-page">ま行</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A74" title="譜面制作者一覧4" class="rel-wiki-page">や行～わ行</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A75" title="譜面制作者一覧5" class="rel-wiki-page">合作・不明・未調査</a><br />
+・<a href="/chunithmwiki/%E8%AD%9C%E9%9D%A2%E5%88%B6%E4%BD%9C%E8%80%85%E4%B8%80%E8%A6%A76" title="譜面制作者一覧6" class="rel-wiki-page">配信停止曲</a></p>
+<p><strong><a href="/chunithmwiki/%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC%E4%B8%80%E8%A6%A7" title="イラストレーター一覧" class="rel-wiki-page">イラストレーター一覧</a></strong><br />
+<strong><a href="/chunithmwiki/%E5%A3%B0%E5%84%AA%E4%B8%80%E8%A6%A7" title="声優一覧" class="rel-wiki-page">声優一覧</a></strong></p>
+<p><strong><a href="/chunithmwiki/niconico%E3%83%9C%E3%83%BC%E3%82%AB%E3%83%AB%E3%81%BE%E3%81%A8%E3%82%81" title="niconicoボーカルまとめ" class="rel-wiki-page">niconicoボーカルまとめ</a></strong></p>
+<h2 id="h2_content_1_9" class="heading-after-first">その他情報</h2>
+<p><strong>関連機種・コンテンツ</strong><br />
+・<a href="/chunithmwiki/maimai%E3%81%A8%E3%81%AE%E9%80%A3%E5%8B%95%E8%A6%81%E7%B4%A0" title="maimaiとの連動要素" class="rel-wiki-page">maimai連動</a> / <a href="/chunithmwiki/%E3%82%AA%E3%83%B3%E3%82%B2%E3%82%AD%E3%81%A8%E3%81%AE%E9%80%A3%E5%8B%95%E8%A6%81%E7%B4%A0" title="オンゲキとの連動要素" class="rel-wiki-page">オンゲキ連動</a><br />
+・<a href="/chunithmwiki/%E3%82%A4%E3%83%AD%E3%83%89%E3%83%AA%E3%83%9F%E3%83%89%E3%83%AA%E3%81%BE%E3%81%A8%E3%82%81" title="イロドリミドリまとめ" class="rel-wiki-page">イロドリミドリまとめ</a><br />
+・<a href="/chunithmwiki/%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%BB%E3%82%AB%E3%82%A4%E3%81%8B%E3%82%89%E6%9D%A5%E3%81%9F%E4%BA%BA%E3%81%B8" title="プロジェクトセカイから来た人へ" class="rel-wiki-page">プロジェクトセカイから来た人へ</a></p>
+<p><strong>楽曲関連</strong><br />
+・<a href="/chunithmwiki/%E3%82%AA%E3%83%AA%E3%82%B8%E3%83%8A%E3%83%AB%E6%A5%BD%E6%9B%B2%E3%82%B3%E3%83%B3%E3%83%86%E3%82%B9%E3%83%88" title="オリジナル楽曲コンテスト" class="rel-wiki-page">オリジナル楽曲コンテスト</a><br />
+・<a href="/chunithmwiki/%E3%83%AD%E3%83%B3%E3%82%B0%E3%83%BB%E3%83%AA%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9%E6%A5%BD%E6%9B%B2%E6%83%85%E5%A0%B1" title="ロング・リミックス楽曲情報" class="rel-wiki-page">ロング・リミックス楽曲情報</a><br />
+・<a href="/chunithmwiki/%E4%BB%96%E3%81%AE%E9%9F%B3%E6%A5%BD%E3%82%B2%E3%83%BC%E3%83%A0%E3%81%AB%E7%A7%BB%E6%A4%8D%E3%81%95%E3%82%8C%E3%81%9F%E3%82%AA%E3%83%AA%E3%82%B8%E3%83%8A%E3%83%AB%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="他の音楽ゲームに移植されたオリジナル楽曲一覧" class="rel-wiki-page">移植されたオリジナル楽曲一覧</a><br />
+・<a href="/chunithmwiki/%E6%A8%A9%E5%88%A9%E9%96%A2%E4%BF%82%E3%81%8C%E7%89%B9%E6%AE%8A%E3%81%A8%E3%81%BF%E3%82%89%E3%82%8C%E3%82%8B%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7" title="権利関係が特殊とみられる楽曲一覧" class="rel-wiki-page">権利関係が特殊とみられる楽曲一覧</a></p>
+<p><strong>その他</strong><br />
+・<a href="/chunithmwiki/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E4%B8%80%E8%A6%A7" title="イベント一覧" class="rel-wiki-page">イベント一覧</a><br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E3%83%9F%E3%83%83%E3%82%B7%E3%83%A7%E3%83%B3" title="チュウニズムミッション" class="rel-wiki-page">チュウニズムミッション</a><br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88" title="チュウニズムクエスト" class="rel-wiki-page">チュウニズムクエスト</a></p>
+<p>・<a href="/chunithmwiki/%E3%83%81%E3%82%B1%E3%83%83%E3%83%88%E4%B8%80%E8%A6%A7" title="チケット一覧" class="rel-wiki-page">チケット一覧</a><br />
+・<a href="/chunithmwiki/%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%9C%E3%83%BC%E3%83%8A%E3%82%B9" title="ログインボーナス" class="rel-wiki-page">ログインボーナス</a><br />
+・<a href="/chunithmwiki/%E5%85%AC%E5%BC%8F%E3%82%B0%E3%83%83%E3%82%BA" title="公式グッズ" class="rel-wiki-page">公式グッズ</a></p>
+<p>・<a href="/chunithmwiki/%E5%B0%8F%E3%83%8D%E3%82%BF%E9%9B%86" title="小ネタ集" class="rel-wiki-page">小ネタ集</a><br />
+・<a href="/chunithmwiki/%E3%82%B9%E3%82%BF%E3%83%83%E3%83%95%E3%82%B3%E3%83%A1%E3%83%B3%E3%83%88%E4%B8%80%E8%A6%A7" title="スタッフコメント一覧" class="rel-wiki-page">スタッフコメント一覧</a></p>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open"><strong>公式全国大会</strong></div>
+    <div class="fold-content visible-on-open"><p><strong>公式全国大会</strong><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%20The%207th" title="KING of Performai The 7th" class="rel-wiki-page">KING of Performai The 7th</a><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%20The%206th" title="KING of Performai The 6th" class="rel-wiki-page">KING of Performai The 6th</a><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%20The%205th" title="KING of Performai The 5th" class="rel-wiki-page">KING of Performai The 5th</a><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%20The%204th" title="KING of Performai The 4th" class="rel-wiki-page">KING of Performai The 4th</a><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%20The%203rd" title="KING of Performai The 3rd" class="rel-wiki-page">KING of Performai The 3rd</a><br />
+・<a href="/chunithmwiki/KING%20of%20Performai%202020" title="KING of Performai 2020" class="rel-wiki-page">KING of Performai 2020</a><br />
+・<a href="/chunithmwiki/%E5%A4%A9%E4%B8%8B%E4%B8%80%E9%9F%B3%E3%82%B2%E7%A5%AD" title="天下一音ゲ祭" class="rel-wiki-page">天下一音ゲ祭(2017～2019)</a></p>
+<p>・<a href="/chunithmwiki/Wahlap%20Esports%20Championship" title="Wahlap Esports Championship" class="rel-wiki-page"><span style="font-size:12px">Wahlap Esports Championship</span></a></p>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open"><strong>各種イベント</strong></div>
+    <div class="fold-content visible-on-open"><p><strong>各種イベント</strong><br />
+・<a href="/chunithmwiki/Another%20Vision%E3%81%B8%E3%81%AE%E6%8C%91%E6%88%A6" title="Another Visionへの挑戦" class="rel-wiki-page">Another Visionへの挑戦</a><br />
+・<a href="/chunithmwiki/MISSION%20in%20progress" title="MISSION in progress" class="rel-wiki-page">MISSION in progress</a><br />
+・<a href="/chunithmwiki/1UM1N0U5%20ep.111" title="1UM1N0U5 ep.111" class="rel-wiki-page">1UM1N0U5 ep.111</a><br />
+・<a href="/chunithmwiki/LUMINOUS%20ep.Ascension" title="LUMINOUS ep.Ascension" class="rel-wiki-page">LUMINOUS ep.Ascension</a><br />
+・<a href="/chunithmwiki/Arcaea%20vs%20CHUNITHM%20%E2%80%93%20Cross%20Axis" title="Arcaea vs CHUNITHM – Cross Axis" class="rel-wiki-page">Cross Axis</a></p>
+<p>・<a href="/chunithmwiki/CAVE%20of%20RVESE" title="CAVE of RVESE" class="rel-wiki-page">CAVE of RVESE</a></p>
+</div>
+</div>
+<div class="fold-container  clearfix">
+    <button class="fold-toggle-button hidden-on-open"><i class="fal fa-plus-square"></i></button>
+    <button class="fold-toggle-button visible-on-open"><i class="fal fa-minus-square"></i></button>
+    <div class="fold-summary hidden-on-open">過去のデータ</div>
+    <div class="fold-content visible-on-open"><p>過去のデータ</p>
+<p><strong><a href="/chunithmwiki/%E6%97%A7%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E6%83%85%E5%A0%B1" title="旧バージョン情報" class="rel-wiki-page">旧バージョン情報</a></strong></p>
+<p><strong><a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E3%83%87%E3%83%A5%E3%82%A8%E3%83%AB" title="チュウニズムデュエル" class="rel-wiki-page">チュウニズムデュエル</a></strong></p>
+<p><strong><a href="/chunithmwiki/%E3%82%B3%E3%83%8FD%E3%81%AB%E8%B3%AA%E5%95%8F%20%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA" title="コハDに質問 シリーズ" class="rel-wiki-page">コハDに質問 シリーズ</a></strong></p>
+<p><strong><a href="/chunithmwiki/CARD%20MAKER" title="CARD MAKER" class="rel-wiki-page">CARD MAKER</a><br class="spacer"><span style="font-size:10px">(※2026年9月2日 関連機能終了)</span></strong></p>
+<p>大戦カード一覧<br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E9%9B%A3%E6%98%93%E5%BA%A6%E5%88%A5" title="チュウニズム大戦カード一覧：難易度別" class="rel-wiki-page">難易度別</a><br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E3%83%AC%E3%83%BC%E3%83%99%E3%83%AB%E5%88%A5" title="チュウニズム大戦カード一覧：レーベル別" class="rel-wiki-page">レーベル別</a><br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E3%82%B9%E3%82%AD%E3%83%AB%E5%88%A5" title="チュウニズム大戦カード一覧：スキル別" class="rel-wiki-page">スキル別</a><br />
+・筐体別 【 <a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E7%AD%90%E4%BD%93%E5%88%A51" title="チュウニズム大戦カード一覧：筐体別1" class="rel-wiki-page">1</a> / <a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E7%AD%90%E4%BD%93%E5%88%A52" title="チュウニズム大戦カード一覧：筐体別2" class="rel-wiki-page">2</a> 】<br />
+・<a href="/chunithmwiki/%E3%83%81%E3%83%A5%E3%82%A6%E3%83%8B%E3%82%BA%E3%83%A0%E5%A4%A7%E6%88%A6%E3%82%AB%E3%83%BC%E3%83%89%E4%B8%80%E8%A6%A7%EF%BC%9A%E3%81%9D%E3%81%AE%E4%BB%96" title="チュウニズム大戦カード一覧：その他" class="rel-wiki-page">その他</a></p>
+</div>
+</div>
+<h2 id="h2_content_1_10" class="heading-after-first">掲示板</h2>
+<p>・<a href="/chunithmwiki/%E9%9B%91%E8%AB%87%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="雑談掲示板" class="rel-wiki-page">雑談掲示板</a><br />
+・<a href="/chunithmwiki/%E5%88%9D%E5%BF%83%E8%80%85%EF%BC%86%E4%B8%AD%E7%B4%9A%E8%80%85%E6%8C%87%E5%8D%97#ud99b0b0" title="初心者＆中級者指南" class="rel-wiki-page">質問掲示板</a><br />
+　<span style="font-size:8px">※「初級者・中級者指南」のページにジャンプします</span><br />
+・<a href="/chunithmwiki/%E3%83%95%E3%83%AC%E3%83%B3%E3%83%89%E5%8B%9F%E9%9B%86%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="フレンド募集掲示板" class="rel-wiki-page">フレンド募集掲示板</a><br />
+・<a href="/chunithmwiki/%E3%83%9E%E3%83%83%E3%83%81%E3%83%B3%E3%82%B0%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="マッチング掲示板" class="rel-wiki-page">マッチング掲示板</a></p>
+<p>・<a href="/chunithmwiki/%E6%83%85%E5%A0%B1%E6%8F%90%E4%BE%9B%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="情報提供掲示板" class="rel-wiki-page">情報提供掲示板</a><br />
+・<a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E5%88%A5%E6%94%BB%E7%95%A5%E4%BD%9C%E6%88%90%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="楽曲別攻略作成掲示板" class="rel-wiki-page">楽曲別攻略作成掲示板</a><br />
+・<a href="/chunithmwiki/%E7%B7%A8%E9%9B%86%E8%80%85%E7%94%A8%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="編集者用掲示板" class="rel-wiki-page">編集者用掲示板</a><br />
+・<a href="/chunithmwiki/%E7%AE%A1%E7%90%86%E8%80%85%E3%81%B8%E3%81%AE%E8%A6%81%E6%9C%9B%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="管理者への要望掲示板" class="rel-wiki-page">管理者への要望掲示板</a></p>
+<p>・<a href="/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF" title="難易度議論掲示板" class="rel-wiki-page">難易度議論掲示板</a></p>
+<h2 id="h2_content_1_11" class="heading-after-first">外部リンク</h2>
+<p><strong>公式サイト</strong><br />
+・<a href="https://chunithm.sega.jp/" rel="nofollow">チュウニズム公式サイト</a><br />
+・<a href="https://chunithm.sega.jp/irodorimidori/" rel="nofollow">イロドリミドリ公式サイト</a><br />
+・<a href="https://new.chunithm-net.com/" rel="nofollow">CHUNITHM-NET</a><br />
+・<a href="https://maimai.sega.jp/kop7th" rel="nofollow">KING of Performai The 7th</a><br />
+・<a href="https://music-am.sega.jp/" rel="nofollow">オリジナル楽曲ポータルサイト</a></p>
+<p>・<a href="https://chunithm.sega.jp/10th/" rel="nofollow">CHUNITHM 10周年記念サイト</a></p>
+<p><strong>SNSアカウント</strong><br />
+・<a href="http://x.com/chunithm" rel="nofollow">チュウニズム公式X</a><br />
+・<a href="https://x.com/performai" rel="nofollow">ゲキ！チュウマイ総合X</a><br />
+・<a href="http://facebook.com/CHUNITHM.International.ver/?locale=ja_JP" rel="nofollow">International ver. 公式Facebook</a><br />
+・<a href="https://space.bilibili.com/1311127373" rel="nofollow">中二&#33410;奏 公式bilibili</a></p>
+<p>・ゲキ！チュウマイ公式ちゃんねる<br />
+　・<a href="https://www.youtube.com/c/gekichumai" rel="nofollow">YouTube</a><br />
+　・<a href="https://www.nicovideo.jp/user/24973895" rel="nofollow">ニコニコ</a></p>
+<p>・<a href="http://x.com/CHUNITHM_wiki" rel="nofollow">チュウニズム<strong>wiki</strong>公式X</a></p>
+<p><strong>ゲキマイwikiリンク</strong><br />
+・<a href="https://maimai.gamerch.com" rel="nofollow">maimai 攻略wiki</a><br />
+・<a href="https://wikiwiki.jp/gameongeki/" rel="nofollow">オンゲキ 攻略wiki</a></p>
+<p><strong>その他</strong><br />
+<span style="font-size:11px">▼ <strong>譜面定数参考元</strong></span><br />
+<span style="font-size:11px">・<a href="https://twitter.com/RCMF_chunithm" rel="nofollow">CHUNITHM譜面定数メインフレーム</a></span><br />
+<span style="font-size:11px">▼ <strong>譜面画像参考元</strong></span><br />
+<span style="font-size:11px">・<a href="http://www.sdvx.in/chunithm.html" rel="nofollow">CHUNITHM譜面保管所</a></span><br />
+<span style="font-size:11px">▼ <strong>楽曲・譜面情報参考元</strong></span><br />
+<span style="font-size:11px">・<a href="https://db.chunirec.net" rel="nofollow">chunirec(ウニDB)</a></span><br />
+<span style="font-size:11px">・<a href="https://chunisupport.net/songs" rel="nofollow">ChuniSupport</a></span></p>
+<h2 id="h2_content_1_12" class="heading-after-first">編集テンプレート</h2>
+<p>・<a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="楽曲テンプレート" class="rel-wiki-page"><strong>楽曲ページ</strong></a> / <a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E3%83%9A%E3%83%BC%E3%82%B8%E5%87%A1%E4%BE%8B" title="楽曲ページ凡例" class="rel-wiki-page">凡例</a></p>
+<p><strong>キャラページ</strong><br />
+・<a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="キャラテンプレート" class="rel-wiki-page">オリジナル</a> / <a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E3%83%9A%E3%83%BC%E3%82%B8%E5%87%A1%E4%BE%8B" title="キャラクターページ凡例" class="rel-wiki-page">凡例</a><br />
+・<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="コラボキャラテンプレート" class="rel-wiki-page">コラボ</a></p>
+<p><strong>その他テンプレート</strong><br />
+・<a href="/chunithmwiki/%E6%96%B0%E3%83%90%E3%83%BC%E3%82%B8%E3%83%A7%E3%83%B3%E6%83%85%E5%A0%B1%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="新バージョン情報テンプレート" class="rel-wiki-page">新バージョン告知</a><br />
+・<a href="/chunithmwiki/%E6%96%B0%E6%9B%B2%E8%BF%BD%E5%8A%A0%E5%91%8A%E7%9F%A5%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="新曲追加告知テンプレート" class="rel-wiki-page">新曲追加告知</a><br />
+・<a href="/chunithmwiki/%E6%A5%BD%E6%9B%B2%E8%A7%A3%E7%A6%81%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="楽曲解禁イベントテンプレート" class="rel-wiki-page">楽曲解禁イベント</a><br />
+・<a href="/chunithmwiki/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="イベントテンプレート" class="rel-wiki-page">イベント告知</a><br />
+・<a href="/chunithmwiki/%E3%82%B0%E3%83%83%E3%82%BA%E3%82%AD%E3%83%A3%E3%83%B3%E3%83%9A%E3%83%BC%E3%83%B3%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88" title="グッズキャンペーンテンプレート" class="rel-wiki-page">グッズキャンペーン</a><br />
+・<a href="/chunithmwiki/%E3%82%B9%E3%82%AD%E3%83%ABinclude%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC" title="スキルincludeテンプレ" class="rel-wiki-page">スキルinclude</a></p>
+<div class="navfold-container clearfix ">
+    <button class="navfold-summary"><span class="navfold-summary-icon navfold-icon-close"><i class="fa-solid fa-fw fa-xs fa-chevron-right"></i></span><span class="navfold-summary-icon navfold-icon-open"><i class="fa-solid fa-fw fa-xs fa-chevron-down"></i></span><span class="navfold-summary-label">PARADISE×以前用テンプレート</span></button>
+    <div class="navfold-content"><p>・<a href="/chunithmwiki/%E3%82%AD%E3%83%A3%E3%83%A9%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%28PARADISE%20LOST%E4%BB%A5%E5%89%8D%29" title="キャラテンプレート(PARADISE LOST以前)" class="rel-wiki-page">オリジナルキャラページ</a><br />
+・<a href="/chunithmwiki/%E3%82%B3%E3%83%A9%E3%83%9C%E3%82%AD%E3%83%A3%E3%83%A9%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%28PARADISE%20LOST%E4%BB%A5%E5%89%8D%29" title="コラボキャラテンプレート(PARADISE LOST以前)" class="rel-wiki-page">コラボキャラページ</a><br />
+・<a href="/chunithmwiki/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%E3%83%BC%E3%83%88%28PARADISE%20LOST%E4%BB%A5%E5%89%8D%29" title="イベントテンプレート(PARADISE LOST以前)" class="rel-wiki-page">イベント告知</a><br />
+・<a href="/chunithmwiki/%E3%82%B9%E3%82%AD%E3%83%ABinclude%E3%83%86%E3%83%B3%E3%83%97%E3%83%AC%28PARADISE%20LOST%E4%BB%A5%E5%89%8D%29" title="スキルincludeテンプレ(PARADISE LOST以前)" class="rel-wiki-page">スキルinclude</a></p>
+</div>
+</div>
+<p>・<a href="/chunithmwiki/include%E3%83%AA%E3%83%B3%E3%82%AF" title="includeリンク" class="rel-wiki-page">includeリンク</a><br />
+　( <a href="/chunithmwiki/%E3%82%B9%E3%82%AD%E3%83%ABinclude%E3%83%AA%E3%83%B3%E3%82%AF" title="スキルincludeリンク" class="rel-wiki-page">スキル</a> / <a href="/chunithmwiki/%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88include%E3%83%AA%E3%83%B3%E3%82%AF" title="イベントincludeリンク" class="rel-wiki-page">イベント</a> )</p>
+<p>・<a href="/chunithmwiki/CHUNITHM%20%E6%A5%BD%E6%9B%B2%E6%9C%AA%E6%9B%B4%E6%96%B0%E4%B8%80%E8%A6%A7" title="CHUNITHM 楽曲未更新一覧" class="rel-wiki-page">楽曲未更新一覧</a><br />
+・<a href="/chunithmwiki/%E6%9C%AA%E4%BD%9C%E6%88%90%E3%83%BB%E6%9C%AA%E7%B7%A8%E9%9B%86%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC%E3%83%9A%E3%83%BC%E3%82%B8%E8%A1%A8" title="未作成・未編集キャラクターページ表" class="rel-wiki-page">キャラクター未作成一覧</a><br />
+・<a href="/chunithmwiki/%28%E7%B7%A8%E9%9B%86%E7%94%A8%29%E7%94%BB%E5%83%8F%E6%9C%AA%E6%B7%BB%E4%BB%98%E3%83%9A%E3%83%BC%E3%82%B8%E4%B8%80%E8%A6%A7" title="(編集用)画像未添付ページ一覧" class="rel-wiki-page">画像未添付ページ一覧</a></p>
+<p>・<a href="/chunithmwiki/%E7%B7%A8%E9%9B%86%E3%83%A1%E3%83%A2" title="編集メモ" class="rel-wiki-page">編集ルール</a> / <a href="/chunithmwiki/%E7%B7%A8%E9%9B%86%E3%83%A1%E3%83%A2/%E8%A8%98%E6%B3%95" title="編集メモ/記法" class="rel-wiki-page">記法解説</a> / <a href="/chunithmwiki/%E7%A0%82%E5%A0%B4" title="砂場" class="rel-wiki-page">砂場</a></p>
+<hr class="full_hr" />
+<div class="recent-container" data-recent-hash="0e2b20d10ac5219c6455d7e1c174ebfb"></div>
+<div style="text-align:center">〔<a href="/chunithmwiki/%E4%BA%BA%E6%B0%97100" title="人気100" class="rel-wiki-page"><strong>人気</strong></a>/<a href="/chunithmwiki/%E4%BB%8A%E6%97%A5100" title="今日100" class="rel-wiki-page"><strong>今日人気</strong></a>〕〔<a href="/chunithmwiki/RecentChanges" title="RecentChanges" class="rel-wiki-page"><strong>最新</strong></a>〕</div>
+<div style="text-align:center">〔<a href="https://wikiwiki.jp/chunithmwiki/::cmd/diff_log" rel="nofollow"><strong>編集履歴</strong></a>〕〔<a href="/chunithmwiki/RecentCreated" title="RecentCreated" class="rel-wiki-page"><strong>新規作成</strong></a>〕〔<a href="/chunithmwiki/RecentDeleted" title="RecentDeleted" class="rel-wiki-page"><strong>削除</strong></a>〕</div>
+<hr class="full_hr" />
+<h2 id="h2_content_1_13" class="heading-after-first">最新のコメント（zawazawa版）</h2>
+<p><a href="https://z.wikiwiki.jp/chunithm/" rel="nofollow">zawazawaトップ</a></p>
+<div class="zawazawa-recent" data-zrecent-hash="1e4b2e5c4d62786b9d289d283bfd661e" data-zrecent-data="{&quot;topics&quot;:[{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;雑談掲示板&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%91%E8%AB%87%E6%8E%B2%E7%A4%BA%E6%9D%BF#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:18546,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 11:15:08 +0900&quot;,&quot;topicNumber&quot;:1,&quot;topicTitle&quot;:&quot;雑談掲示板&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/1&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;零號車輛&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%B6%E8%99%9F%E8%BB%8A%E8%BC%9B#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:41,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 02:43:55 +0900&quot;,&quot;topicNumber&quot;:1989,&quot;topicTitle&quot;:&quot;零號車輛&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/1989&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;Colossus&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/Colossus#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:26,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 02:24:09 +0900&quot;,&quot;topicNumber&quot;:2023,&quot;topicTitle&quot;:&quot;Colossus&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/2023&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;Schrecklicher Aufstand&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/Schrecklicher%20Aufstand#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:12,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 01:06:57 +0900&quot;,&quot;topicNumber&quot;:187,&quot;topicTitle&quot;:&quot;Schrecklicher Aufstand&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/187&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;クラス認定&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E3%82%AF%E3%83%A9%E3%82%B9%E8%AA%8D%E5%AE%9A#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:80,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 00:23:38 +0900&quot;,&quot;topicNumber&quot;:1819,&quot;topicTitle&quot;:&quot;クラス認定&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/1819&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;Dengeki Tube&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/Dengeki%20Tube#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:19,&quot;lastCommentedAt&quot;:&quot;Sat, 03 Oct 2026 22:06:45 +0900&quot;,&quot;topicNumber&quot;:132,&quot;topicTitle&quot;:&quot;Dengeki Tube&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/132&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;ヒバナ&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E3%83%92%E3%83%90%E3%83%8A#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:26,&quot;lastCommentedAt&quot;:&quot;Sat, 03 Oct 2026 21:41:03 +0900&quot;,&quot;topicNumber&quot;:827,&quot;topicTitle&quot;:&quot;ヒバナ&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/827&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;Kattobi KEIKYU Rider&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/Kattobi%20KEIKYU%20Rider#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:15,&quot;lastCommentedAt&quot;:&quot;Sat, 03 Oct 2026 20:48:52 +0900&quot;,&quot;topicNumber&quot;:218,&quot;topicTitle&quot;:&quot;Kattobi KEIKYU Rider&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/218&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;Idoratrize World&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/Idoratrize%20World#comment&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:8,&quot;lastCommentedAt&quot;:&quot;Sat, 03 Oct 2026 20:40:42 +0900&quot;,&quot;topicNumber&quot;:1847,&quot;topicTitle&quot;:&quot;Idoratrize World&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/1847&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;質問掲示板&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E5%88%9D%E5%BF%83%E8%80%85%EF%BC%86%E4%B8%AD%E7%B4%9A%E8%80%85%E6%8C%87%E5%8D%97#ha77694b&quot;}},&quot;forumSlug&quot;:&quot;chunithm&quot;,&quot;forumTitle&quot;:&quot;CHUNITHM【チュウニズム】攻略wiki&quot;,&quot;lastCommentNumber&quot;:1830,&quot;lastCommentedAt&quot;:&quot;Sat, 03 Oct 2026 20:15:32 +0900&quot;,&quot;topicNumber&quot;:8,&quot;topicTitle&quot;:&quot;質問掲示板&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/chunithm/topic/8&quot;}]}"></div>
+<hr class="full_hr" />
+<div class="zawazawa-recent" data-zrecent-hash="0d829a5d7cdf344592bb8b86587022ab" data-zrecent-data="{&quot;topics&quot;:[{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;難易度議論・Lv15&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF#Lv15&quot;}},&quot;forumSlug&quot;:&quot;Theoreticalvalue&quot;,&quot;forumTitle&quot;:&quot;CHUNITHMwiki 隔離掲示板&quot;,&quot;lastCommentNumber&quot;:216,&quot;lastCommentedAt&quot;:&quot;Sun, 04 Oct 2026 11:26:29 +0900&quot;,&quot;topicNumber&quot;:2,&quot;topicTitle&quot;:&quot;難易度議論・Lv15&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/Theoreticalvalue/topic/2&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;難易度議論・Lv14&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF#Lv14&quot;}},&quot;forumSlug&quot;:&quot;Theoreticalvalue&quot;,&quot;forumTitle&quot;:&quot;CHUNITHMwiki 隔離掲示板&quot;,&quot;lastCommentNumber&quot;:165,&quot;lastCommentedAt&quot;:&quot;Tue, 29 Sep 2026 01:28:33 +0900&quot;,&quot;topicNumber&quot;:4,&quot;topicTitle&quot;:&quot;難易度議論・Lv14&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/Theoreticalvalue/topic/4&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;難易度議論・Lv13+以下&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF#Lv13&quot;}},&quot;forumSlug&quot;:&quot;Theoreticalvalue&quot;,&quot;forumTitle&quot;:&quot;CHUNITHMwiki 隔離掲示板&quot;,&quot;lastCommentNumber&quot;:150,&quot;lastCommentedAt&quot;:&quot;Mon, 28 Sep 2026 19:09:54 +0900&quot;,&quot;topicNumber&quot;:5,&quot;topicTitle&quot;:&quot;難易度議論・Lv13+以下&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/Theoreticalvalue/topic/5&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;難易度議論・Lv15+&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF#Lv15plus&quot;}},&quot;forumSlug&quot;:&quot;Theoreticalvalue&quot;,&quot;forumTitle&quot;:&quot;CHUNITHMwiki 隔離掲示板&quot;,&quot;lastCommentNumber&quot;:74,&quot;lastCommentedAt&quot;:&quot;Sun, 27 Sep 2026 19:17:29 +0900&quot;,&quot;topicNumber&quot;:8,&quot;topicTitle&quot;:&quot;難易度議論・Lv15+&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/Theoreticalvalue/topic/8&quot;},{&quot;embeddedSites&quot;:{&quot;wikiwiki&quot;:{&quot;name&quot;:&quot;難易度議論・その他&quot;,&quot;url&quot;:&quot;https://wikiwiki.jp/chunithmwiki/%E9%9B%A3%E6%98%93%E5%BA%A6%E8%AD%B0%E8%AB%96%E6%8E%B2%E7%A4%BA%E6%9D%BF#other&quot;}},&quot;forumSlug&quot;:&quot;Theoreticalvalue&quot;,&quot;forumTitle&quot;:&quot;CHUNITHMwiki 隔離掲示板&quot;,&quot;lastCommentNumber&quot;:102,&quot;lastCommentedAt&quot;:&quot;Sat, 26 Sep 2026 12:34:26 +0900&quot;,&quot;topicNumber&quot;:6,&quot;topicTitle&quot;:&quot;難易度議論・その他&quot;,&quot;url&quot;:&quot;https://z.wikiwiki.jp/Theoreticalvalue/topic/6&quot;}]}"></div>
+<div style="text-align:right"><span style="font-size:10px">T.<span class="wikiwiki-counter wikiwiki-counter-today">?</span>　Y.<span class="wikiwiki-counter wikiwiki-counter-yesterday">?</span></span><br />
+<span style="font-size:10px"><span class="wikicolor" style="color:#663300">NOW.<span class="wikiwiki-online">?</span></span></span>　<span style="font-size:10px">TOTAL.<span class="wikiwiki-counter wikiwiki-counter-total">?</span></span><br />
+<span style="font-size:10px">〔<a href="https://wikiwiki.jp/chunithmwiki/?cmd=edit&amp;page=MenuBar" rel="nofollow">MENU編集</a>〕</span></div>                </div>
+                <div class="admenu-sticky">
+<!-- /19033742/WIKIWIKI_PC_MENU_STICKY -->
+<div id='div-gpt-ad-1567834179057-0'></div>
+</div>
+<script>
+if (document.documentElement.clientWidth > 805 && !wi_ismobile && wi_group === 'N' && wi_agreement === 'false' && !wi_isinbound &&
+    document.getElementById('body').clientHeight - document.getElementById('menubar').clientHeight > 1000) {
+    googletag.cmd.push(() => {
+        googletag.display(
+            googletag.defineSlot('/19033742/WIKIWIKI_PC_MENU_STICKY', [[120,600],[160,600],[1,1]], 'div-gpt-ad-1567834179057-0').addService(googletag.pubads())
+        );
+    });
+    defineSlotFlux.push({"slotID": "div-gpt-ad-1567834179057-0", "sizes": [[160,600]], "slotName":"WIKIWIKI_PC_MENU_STICKY"});
+}
+</script>
+<style>
+.admenu-sticky {
+    display: flex;
+    justify-content: center;
+    position: -webkit-sticky;
+    position: sticky;
+    margin-top: 50px;
+    top: 50px;
+    max-width: 160px;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+
+            </div>
+            </div>
+
+            <div class="container">
+            <div id="note">
+                <hr class="note_hr" /><a id="notefoot_1" href="#notetext_1" class="note_super">*1</a>
+<span class="small">定着し切ってはいるがあくまでもマスクデータの為、基本的に公式で触れられる事は無く正式な呼称でもない(ポケットモンスターの「努力値(きそポイント)」のようなもの) </span><br>
+<a id="notefoot_2" href="#notetext_2" class="note_super">*2</a>
+<span class="small">参考：オンゲキはプレミアムコースで、maimaiはスタンダードコースで対象譜面を確認可能。レーティング値を確認できないのは同様</span><br>
+<a id="notefoot_3" href="#notetext_3" class="note_super">*3</a>
+<span class="small">該当曲のプレイデータの記録自体は内部的には行われるため</span><br>
+<a id="notefoot_4" href="#notetext_4" class="note_super">*4</a>
+<span class="small"><a class="ext" href="https://info-chunithm.sega.jp/8774/" rel="nofollow">VERSE稼働前告知<span class="system-icon ext pukiwiki-open-uri" data-href="https://info-chunithm.sega.jp/8774/" data-frame="_blank"></span></a>には「VERSEへ引き継いだ際、合計レーティングが一時的に大きく下がりますが、バージョン内でそれ以上レーティングが下がることはありません」という記述もあるので、バージョン内削除曲が隠し解禁楽曲同様に内部的にはレーティング集計対象する可能性もある</span><br>
+<a id="notefoot_5" href="#notetext_5" class="note_super">*5</a>
+<span class="small">プラチナ</span><br>
+<a id="notefoot_6" href="#notetext_6" class="note_super">*6</a>
+<span class="small">結果としては「975,000点に満たない分/75,000×5.00」を減算している形になる</span><br>
+<a id="notefoot_7" href="#notetext_7" class="note_super">*7</a>
+<span class="small">これはmaimaiにおけるRe:MASTERの扱いと同様。</span><br>
+<a id="notefoot_8" href="#notetext_8" class="note_super">*8</a>
+<span class="small">新曲枠が全て空になるため。なお新曲枠に入っていたスコアデータ自体はベスト枠の方で引き続き参照される</span><br>
+<a id="notefoot_9" href="#notetext_9" class="note_super">*9</a>
+<span class="small">厳密には「未解禁」「課題曲フォルダに存在する(既に通常配信されている楽曲が移動した場合でも該当)」楽曲を除いた全曲</span><br>
+<a id="notefoot_10" href="#notetext_10" class="note_super">*10</a>
+<span class="small">LUMINOUS PLUSより変更。元は全譜面ごとにOVER POWERが計算されており、ポゼッションの計算にはMASTERとULTIMAの値が使用されていた。</span><br>            </div>
+        </div>
+    
+    <div id="footer">
+                                <div class="container">
+                <hr />
+                <div style="text-align:center"><span style="font-size:10px"><a href="/chunithmwiki/" title="FrontPage" class="rel-wiki-page">トップページ</a> | <a href="/chunithmwiki/%E7%B7%A8%E9%9B%86%E3%83%A1%E3%83%A2" title="編集メモ" class="rel-wiki-page">編集ルール</a> | <a href="/chunithmwiki/%E5%BD%93wiki%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6" title="当wikiについて" class="rel-wiki-page">当wikiについて</a> | <a href="https://x.com/CHUNITHM_wiki" rel="nofollow">wiki公式アカウント</a></span><br />
+<span style="font-size:10px">Favicon:(匿名希望) / OGImage:ritmo_v0</span></div>
+<div style="text-align:center"><span style="font-size:10px">当サイトはプレイヤーが運営する非営利のファンサイトであり、SEGA様及びGamerch様(旧wiki)との直接的な関係は現時点で一切ございません。</span></div>            </div>
+                <div class="container">
+            <hr />
+            <div class="footer-block clearfix">
+                <div class="footer-block-item-left" id="signature">
+                    <!-- google_ad_section_start(weight=ignore) -->
+                    レンタルWIKI by <a href="https://wikiwiki.jp/" title="無料レンタルWIKIサービス">WIKIWIKI.jp*</a>&nbsp;/&nbsp;
+                    Designed by <a href="https://wikiwiki.jp/pp/skin-design-policy" title="スキンデザインのご利用についてのお願い">Olivia</a>&nbsp;/&nbsp;
+                    <a href="https://wikiwiki.jp/pp/aboutad" title="広告について">広告について</a>&nbsp;/&nbsp;
+                    無料レンタル掲示板 <a href="https://z.wikiwiki.jp/" title="zawazawa">zawazawa</a>
+                    <!-- google_ad_section_end -->
+                </div>
+                <div class="footer-block-item-right">
+                    <div class="footer-mixirss">
+                        <div class="toolbar"><a href="/chunithmwiki/::cmd/mixirss" title="最終更新のRSS" rel="nofollow"><span class="system-icon rss"></span></a></div>                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="pageload" style="display: none" data-pageload="{&quot;time&quot;:{&quot;all&quot;:{&quot;real&quot;:0.010515928268432617,&quot;cost&quot;:0.10966181755065918},&quot;body&quot;:{&quot;real&quot;:0.0021049976348876953,&quot;cost&quot;:0.03241896629333496},&quot;main&quot;:{&quot;real&quot;:0.030313968658447266,&quot;cost&quot;:0.030313968658447266},&quot;menu&quot;:{&quot;real&quot;:0.05787396430969238,&quot;cost&quot;:0.05787396430969238},&quot;head&quot;:{&quot;real&quot;:0.009300947189331055,&quot;cost&quot;:0.009300947189331055},&quot;foot&quot;:{&quot;real&quot;:0.0016570091247558594,&quot;cost&quot;:0.0016570091247558594}},&quot;include&quot;:0,&quot;memory&quot;:1380088,&quot;io&quot;:{&quot;read&quot;:{&quot;files&quot;:1,&quot;bytes&quot;:8,&quot;locks&quot;:1},&quot;write&quot;:{&quot;files&quot;:0,&quot;bytes&quot;:0,&quot;locks&quot;:0},&quot;directory&quot;:{&quot;traversals&quot;:0,&quot;files&quot;:0},&quot;misc&quot;:39},&quot;contentSize&quot;:{&quot;all&quot;:139886,&quot;body&quot;:62199},&quot;timestamp&quot;:&quot;2026-10-04 11:55:30&quot;}"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/jquery.mark.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/js/fontawesome.min.js" data-auto-replace-svg="false"></script>
+<script type="text/javascript" src="https://cdn.wikiwiki.jp/to/w/common/assets/dist/wikiwiki-4cc87a2d5292824cfcec.min.js"></script>
+    <script>
+        if (window.FontAwesome) {
+            window.FontAwesome.dom.watch();
+        } else {
+            console.warn('FontAwesome is not loaded.');
+        }
+    </script>
+<script type="text/javascript">
+    bootLazy.addJqPluginInit('.fold-container', function() {
+        this.fold({
+            buttonSelector: '.fold-toggle-button',
+            openClassName: 'fold-open'
+        });
+    });
+</script>
+<div id="wikiwiki-pageview-counter" data-endpoint="https://counter.wikiwiki.jp/c/chunithmwiki/pv/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER" style="display: none;"></div>
+<script>
+    $('#wikiwiki-pageview-counter').pageview();
+</script>
+<script type="text/javascript">
+    bootLazy.addJqPluginInit('.accordion-container', function() {
+        this.accordion({
+            headerSelector: '.accordion-header',
+            contentSelector: '.accordion-content',
+            openClassName: 'accordion-open'
+        });
+    });
+</script>
+<script type="text/javascript">
+    bootLazy.addJqPluginInit('.navfold-container', function() {
+        this.navfold({
+            wiki: "chunithmwiki",
+            persistence: {
+                'menubar': '#menubar'
+            }
+        });
+    });
+</script>
+    <script type="text/javascript">
+        bootLazy.addJqPluginInit('.recent-container[data-recent-hash="0e2b20d10ac5219c6455d7e1c174ebfb"]', function() {
+            this.recent({"timestamp":1791042532,"list":[{"time":1791042532,"page":"設置店舗/沖縄県","link":"/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E6%B2%96%E7%B8%84%E7%9C%8C"},{"time":1791042325,"page":"閉店・撤去店舗2","link":"/chunithmwiki/%E9%96%89%E5%BA%97%E3%83%BB%E6%92%A4%E5%8E%BB%E5%BA%97%E8%88%972"},{"time":1791036487,"page":"プロジェクトセカイから来た人へ","link":"/chunithmwiki/%E3%83%97%E3%83%AD%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88%E3%82%BB%E3%82%AB%E3%82%A4%E3%81%8B%E3%82%89%E6%9D%A5%E3%81%9F%E4%BA%BA%E3%81%B8"},{"time":1791032153,"page":"CHUNITHM Mate 楽曲一覧(定数順1)","link":"/chunithmwiki/CHUNITHM%20Mate%20%E6%A5%BD%E6%9B%B2%E4%B8%80%E8%A6%A7%28%E5%AE%9A%E6%95%B0%E9%A0%861%29"},{"time":1791029303,"page":"設置店舗/茨城県","link":"/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E8%8C%A8%E5%9F%8E%E7%9C%8C"},{"time":1791013758,"page":"設置店舗/岐阜県","link":"/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%B2%90%E9%98%9C%E7%9C%8C"},{"time":1790981402,"page":"設置店舗/長崎県","link":"/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E9%95%B7%E5%B4%8E%E7%9C%8C"},{"time":1790980768,"page":"設置店舗/北海道(札幌市)","link":"/chunithmwiki/%E8%A8%AD%E7%BD%AE%E5%BA%97%E8%88%97/%E5%8C%97%E6%B5%B7%E9%81%93%28%E6%9C%AD%E5%B9%8C%E5%B8%82%29"},{"time":1790954409,"page":"MenuBar","link":"/chunithmwiki/MenuBar"},{"time":1790945747,"page":"零號車輛","link":"/chunithmwiki/%E9%9B%B6%E8%99%9F%E8%BB%8A%E8%BC%9B"}]});
+        });
+    </script>
+    <script type="text/javascript">
+        bootLazy.addJqPluginInit('.zawazawa-recent', function() {
+            this.zrecent();
+        });
+    </script>
+    <script type="text/javascript">
+        bootLazy.addJqPluginInit('.zawazawa-recent', function() {
+            this.zrecent();
+        });
+    </script>
+    <script>
+        bootLazy.addJqPluginInit('#responsive-navigation', function() {
+            this.responsiveNavigation({
+                menuBarSelector: '#menubar',
+                editMenuSelector: '#edit-menu',
+
+                mainContentsBottomElement: '#main-contents-bottom',
+                sidebarBottomElement: '#sidebar-bottom',
+                menuBarContainerElement: '#contents .column-left',
+                footerElement: '#footer',
+
+                overlayAdRenderedEventName: 'overlay-ad-rendered',
+                overlayAdMarginTop: 25
+            });
+        });
+    </script>
+    <script>
+        $('#share-button-root').sharePanel({
+            title: "レーティング・OVER POWER - CHUNITHM【チュウニズム】攻略 Wiki*",
+            controlPanelUrl: "https:\/\/c.wikiwiki.jp\/wiki\/chunithmwiki\/design",
+            imageUrl: "https:\/\/icon.wikiwiki.jp\/symbolicon\/chunithmwiki\/ogCustomImage\/8b256fb8bf32.png",
+            description: "SEGAのアーケード音楽ゲーム「CHUNITHM」のファンサイトです。",
+            shareUrl: "https:\/\/wikiwiki.jp\/chunithmwiki\/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER",
+            shortUrlRequestUrl: "\/chunithmwiki\/::cmd\/short_url?mode=json&page=%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER+POWER",
+            hasOgSettings: true,
+        })
+    </script>
+<script>
+    $('#admin-contact-root').adminContact({
+        logoImgUrl: "https:\/\/icon.wikiwiki.jp\/symbolicon\/chunithmwiki\/appleTouchIcon\/553cb177b980.png",
+        pageTitle: "CHUNITHM【チュウニズム】攻略 Wiki*",
+        controlPanelUrl: "https:\/\/c.wikiwiki.jp\/wiki\/chunithmwiki\/settings",
+        contact: "wikiの公式Xを開設しました。\r\nお問い合わせはDMへお願いします。\r\nX→https:\/\/x.com\/CHUNITHM_wiki\r\n\r\nページ名の改題依頼などについては[管理者への要望掲示板]へ、荒らしなどの対応についてはzawazawaの通報機能をご利用ください。\r\n\r\n",
+        helpLink: 'https://wikiwiki.jp/pp/admin_contact',
+    });
+</script>
+<script>
+$("#load-panel-root").loadpanel({
+    dataSelector: "#pageload",
+    helpLink: 'https://wikiwiki.jp/pp/page_load_panel'
+});
+</script>
+<script>
+    $('.admin-login-status').adminLoginStatus({
+        cookieName: 'login_session',
+    });
+</script>
+<script>
+    $(function() {
+        $('.search-words').searchWordHighlight({
+            paramName: 'word',
+            selector: "#content,#note",
+            limit: 10,
+            markedClassResolver: function (i) { return "word" + i; }
+        });
+    });
+</script>
+<script>$(".realtime-date").realtimeDate();</script>
+<script>
+    $("body").notificationBar();
+</script>
+<script>
+$("#contents").anchorLink({
+    url: '/chunithmwiki/%E3%83%AC%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%83%BBOVER%20POWER',
+});
+</script>
+    <script>
+        bootLazy.addJqPluginInit('.tooltip', function() {
+            this.tooltip();
+        });
+    </script>
+    <script>
+        bootLazy.addPlainScript(function() {
+            lightbox.option({
+                resizeDuration: 0
+            });
+        });
+    </script>
+<script>
+    $(function() {
+        window.bootLazy.bootOn(document);
+    });
+</script>
+<script>
+    $(document).pukiwiki();
+</script>
+<script>
+jQuery(function() {
+    $('form').usageStatistics({
+        keyName: 'usageStatistics',
+        smsAuthCookieName: 'authkey',
+        hasPostedCookieName: '__posted2',
+    });
+    $(document).browsingStatistics({
+        keyName: 'browsingStatistics'
+    });
+});
+</script>
+</body>
+</html>
