@@ -108,34 +108,24 @@ COMMAND_LIST = [
                   "chinese": "- 每個類型都有各自獨立的模板池，因此標註類型的句子不會與歌曲類型混用，反之亦然。\n- 機器人會避免在同一伺服器的同一類型中連續發送完全相同的模板。\n- 管理員可即時管理模板池：`!copypasta list [搜尋詞]`（開啟含上一頁／下一頁／搜尋／關閉的選單）、`info <類型>`（別名：`show`，分頁顯示）、`create <類型>`、`delete <類型>`、`enable/disable <類型>`、`add <類型> <包含 {text} 的模板>`、`remove <類型> <索引>`。"}
     },
     {
-        "name": "rating",
-        "description": {"english": "Looks up a CHUNITHM song and draws its player-population rating chart (one chart per request).",
-                         "chinese": "搜尋 CHUNITHM 曲目並產生玩家分布圖（每次只處理一張譜面）。"},
-        "usage": "`!rating <song> [difficulty] [detailed]` or `/rating` (with autocomplete)",
-        "arguments": {"english": "**song**: Song title or fragment. Wrap multi-word titles in quotes with `!`, e.g. `!rating \"XL TECHNO\" MASTER` (the `/` version has autocomplete and needs no quotes).\n**difficulty**: (Optional) `BASIC`, `ADVANCED`, `EXPERT`, `MASTER` (default) or `ULTIMA`.\n**detailed**: (Optional) `true` for the full score and player range instead of the default SS-to-MAX focus.\n- Example: `!rating サファリ MASTER`, `/rating song:... difficulty:MASTER detailed:True`.",
-                      "chinese": "**曲名**：曲名或片段。使用 `!` 時，含空格的曲名請加引號，例如 `!rating \"XL TECHNO\" MASTER`（`/` 版本有自動完成，無需引號）。\n**難度**：（可選）`BASIC`、`ADVANCED`、`EXPERT`、`MASTER`（預設）或 `ULTIMA`。\n**詳細**：（可選）設為 `true` 顯示完整分數與玩家範圍，預設為 SS 至 MAX 的聚焦視圖。\n- 示例：`!rating サファリ MASTER`、`/rating song:... difficulty:MASTER detailed:True`。"},
-        "notes": {"english": "- If the text matches several songs, a dropdown appears and only you can use it.\n- Charts are fetched and drawn only for the chart you pick; results are cached for 24 hours.\n- Statistics come from the public Chunirec site, so some charts have no usable data.\n- Cooldown: 5 seconds per user.",
-                  "chinese": "- 若文字符合多首曲目，會出現下拉選單，只有發起人可以選擇。\n- 只會為你選擇的譜面抓取資料並產圖，結果快取 24 小時。\n- 統計來自公開的 Chunirec 網站，部分譜面沒有可用的資料。\n- 冷卻時間：每位用戶 5 秒。"}
+        "name": "chunithm",
+        "description": {"english": "CHUNITHM tools: draw a song's player-population rating chart, search songs, and analyse your own imported scores.",
+                         "chinese": "CHUNITHM 工具：產生曲目的玩家分布圖、搜尋曲目，並分析你匯入的個人成績。"},
+        "usage": "`/chunithm <subcommand>` or `!chunithm <subcommand>`. Scores: `upload` `me` `song` `pattern` `suggest` `delete`. Charts: `rating` `song_search`. (`/` recommended)",
+        "arguments": {"english": "**rating** `<song> [difficulty] [detailed]`: Draws a song's player-population chart (one chart per request). Wrap multi-word titles in quotes with `!`, e.g. `!chunithm rating \"XL TECHNO\" MASTER` (`/` has autocomplete and needs no quotes). `difficulty` is `BASIC`, `ADVANCED`, `EXPERT`, `MASTER` (default) or `ULTIMA`; `detailed:true` shows the full score and player range instead of the SS-to-MAX focus.\n**song_search** `<query>`: Searches the song list (title, alias or fragment) and shows up to 10 candidates with their difficulties and an `id:` you can pass to `rating`. Never fetches statistics.\n**upload** `<file>`: Attach your `chunithm-player-data_*.json` export.\n**me**: Rating, level, played charts, SSS+/SS+/FC/AJ counts.\n**song** `<title>`: Your scores on a song (`/` autocompletes from your played songs).\n**pattern** `[all|best|rating]`: Strong and weak note patterns over all played 14+ charts, Best 30, or Best 30 + New 20.\n**suggest**: Songs to push your rating (your strong patterns) and to practice (your weak patterns).\n**delete**: Remove your stored data.\n- Examples: `/chunithm rating song:... difficulty:MASTER`, `!chunithm song_search サファリ`, `/chunithm pattern scope:best`",
+                      "chinese": "**rating** `<曲名> [難度] [詳細]`：產生曲目的玩家分布圖（每次一張）。使用 `!` 時，含空格的曲名請加引號，例如 `!chunithm rating \"XL TECHNO\" MASTER`（`/` 版本有自動完成，無需引號）。難度可選 `BASIC`、`ADVANCED`、`EXPERT`、`MASTER`（預設）或 `ULTIMA`；`detailed:true` 顯示完整分數與玩家範圍，預設為 SS 至 MAX 的聚焦視圖。\n**song_search** `<關鍵字>`：搜尋曲目清單（曲名、別名或片段），最多顯示 10 個候選曲目、難度，以及可用於 `rating` 的 `id:`。不會抓取統計資料。\n**upload** `<檔案>`：附上你的 `chunithm-player-data_*.json` 匯出檔。\n**me**：Rating、等級、已遊玩譜面數、SSS+/SS+/FC/AJ 數量。\n**song** `<曲名>`：你在某首曲目的成績（`/` 版本會從你玩過的曲目自動完成）。\n**pattern** `[all|best|rating]`：依所有已玩 14+ 譜面、Best 30 或 Best 30 + New 20，分析擅長與不擅長的配置。\n**suggest**：推薦推分曲（你擅長的配置）與練習曲（你不擅長的配置）。\n**delete**：刪除你已儲存的資料。\n- 示例：`/chunithm rating song:... difficulty:MASTER`、`!chunithm song_search サファリ`、`/chunithm pattern scope:best`"},
+        "notes": {"english": "- Score replies with `/` are only visible to you; with `!` they are public and an attached file stays in the channel, so use `/chunithm upload`.\n- Re-uploading replaces your old data; only played charts are stored.\n- `pattern` and `suggest` use the community chart sheet (14+ charts only); charts missing from it are ignored.\n- Skill values are relative to your own level and aim scores are estimates.\n- Suggestions also read the sheet's notes (error tolerance, personal difference, not-for-push).\n- `rating` and `song_search` search offline and rank by relevance; only the chart you pick is processed.",
+                  "chinese": "- 使用 `/` 時成績相關回覆只有你看得到；使用 `!` 時回覆是公開的，附件也會留在頻道中，所以請用 `/chunithm upload`。\n- 重新上傳會取代舊資料；只儲存已遊玩的譜面。\n- `pattern` 與 `suggest` 使用社群譜面表（僅限 14+ 譜面）；表中沒有的譜面會被忽略。\n- 實力數值是相對於你自己的水平，目標分數為估算值。\n- 推薦也會參考譜面表的說明（容錯、個人差、不適合推分）。\n- `rating` 與 `song_search` 離線搜尋並依相關度排序；只會處理你選擇的那張圖表。"}
     },
     {
-        "name": "song_search",
-        "description": {"english": "Searches CHUNITHM songs and lists their available difficulties (no chart is generated).",
-                         "chinese": "搜尋 CHUNITHM 曲目並列出可用難度（不會產生圖表）。"},
-        "usage": "`!song_search <query>` or `/song_search`",
-        "arguments": {"english": "**query**: Song title, alias or fragment (no quotes needed).\n- Example: `!song_search サファリ`",
-                      "chinese": "**關鍵字**：曲名、別名或片段（無需引號）。\n- 示例：`!song_search サファリ`"},
-        "notes": {"english": "- Shows up to 10 candidates with their difficulties and an `id:` you can pass to `!rating`.\n- Search is offline and ranked by relevance; it never fetches statistics.",
-                  "chinese": "- 最多顯示 10 個候選曲目、難度，以及可用於 `!rating` 的 `id:`。\n- 搜尋為離線進行並依相關度排序，不會抓取統計資料。"}
-    },
-    {
-        "name": "score",
-        "description": {"english": "Imports your CHUNITHM player-data JSON, shows your stats, and suggests songs from your note-pattern strengths and weaknesses.",
-                         "chinese": "匯入你的 CHUNITHM 玩家資料 JSON、查看成績，並根據你擅長／不擅長的配置推薦曲目。"},
-        "usage": "`/score <upload|me|song|pattern|suggest|delete>` or `!score ...` (`/` recommended)",
-        "arguments": {"english": "**upload** `<file>`: Attach your `chunithm-player-data_*.json` export.\n**me**: Rating, level, played charts, SSS+/SS+/FC/AJ counts.\n**song** `<title>`: Your scores on a song (`/` autocompletes from your played songs).\n**pattern** `[all|best|rating]`: Strong and weak note patterns over all played 14+ charts, Best 30, or Best 30 + New 20.\n**suggest**: Songs to push your rating (your strong patterns) and to practice (your weak patterns).\n**delete**: Remove your stored data.\n- Example: `/score pattern scope:best`",
-                      "chinese": "**upload** `<檔案>`：附上你的 `chunithm-player-data_*.json` 匯出檔。\n**me**：Rating、等級、已遊玩譜面數、SSS+/SS+/FC/AJ 數量。\n**song** `<曲名>`：你在某首曲目的成績（`/` 版本會從你玩過的曲目自動完成）。\n**pattern** `[all|best|rating]`：依所有已玩 14+ 譜面、Best 30 或 Best 30 + New 20，分析擅長與不擅長的配置。\n**suggest**：推薦推分曲（你擅長的配置）與練習曲（你不擅長的配置）。\n**delete**：刪除你已儲存的資料。\n- 示例：`/score pattern scope:best`"},
-        "notes": {"english": "- With `/` only you can see the replies; with `!` they are public and an attached file stays in the channel, so use `/score upload`.\n- Re-uploading replaces your old data; only played charts are stored.\n- `pattern` and `suggest` use the community chart sheet (14+ charts only); charts missing from it are ignored.\n- Skill values are relative to your own level and aim scores are estimates.\n- Suggestions also read the sheet's notes (error tolerance, personal difference, not-for-push).",
-                  "chinese": "- 使用 `/` 時只有你看得到回覆；使用 `!` 時回覆是公開的，附件也會留在頻道中，所以請用 `/score upload`。\n- 重新上傳會取代舊資料；只儲存已遊玩的譜面。\n- `pattern` 與 `suggest` 使用社群譜面表（僅限 14+ 譜面）；表中沒有的譜面會被忽略。\n- 實力數值是相對於你自己的水平，目標分數為估算值。\n- 推薦也會參考譜面表的說明（容錯、個人差、不適合推分）。"}
+        "name": "feed",
+        "description": {"english": "Tracks social media accounts and posts their new posts to a channel. Currently supports Bluesky.",
+                         "chinese": "追蹤社群媒體帳號，並將新貼文發送到指定頻道。目前支援 Bluesky。"},
+        "usage": "`/feed <subcommand>` or `!feed <subcommand>` (admin only). Subcommands: `add` `remove` `list` `check`. (`/` recommended)",
+        "arguments": {"english": "**add** `<account> [channel] [platform]`: Starts tracking an account. `account` is a profile URL or handle. `channel` is where posts go (defaults to the current channel; with `!` use a #mention, no ID needed; `/` gives a channel picker). `platform` defaults to `bluesky`.\n**remove** `<account>`: Stops tracking that account.\n**list**: Shows tracked accounts and their channels.\n**check**: Checks for new posts immediately.\n- Examples: `/feed add account:https://bsky.app/profile/performaien.bsky.social channel:#news`, `!feed add performaien.bsky.social #news`, `!feed remove performaien.bsky.social`",
+                      "chinese": "**add** `<帳號> [頻道] [平台]`：開始追蹤帳號。`帳號` 可以是個人檔案網址或帳號名稱。`頻道` 是貼文發送的位置（預設為目前頻道；使用 `!` 時直接標註 #頻道，不需要 ID；`/` 版本提供頻道選單）。`平台` 預設為 `bluesky`。\n**remove** `<帳號>`：停止追蹤該帳號。\n**list**：顯示已追蹤的帳號及其頻道。\n**check**：立即檢查是否有新貼文。\n- 示例：`/feed add account:https://bsky.app/profile/performaien.bsky.social channel:#news`、`!feed add performaien.bsky.social #news`、`!feed remove performaien.bsky.social`"},
+        "notes": {"english": "- Requires the Manage Server permission.\n- Checks every 5 minutes. Only posts made after you add the account are sent; old posts are not reposted.\n- Replies are skipped; reposts are included and labeled.\n- Replies to `list` and errors are only visible to you when using `/`.",
+                  "chinese": "- 需要「管理伺服器」權限。\n- 每 5 分鐘檢查一次。只會發送加入帳號之後的新貼文，不會重發舊貼文。\n- 回覆貼文會被略過；轉發貼文會包含並標示。\n- 使用 `/` 時，`list` 的回覆與錯誤訊息只有你看得到。"}
     },
     {
         "name": "chat",
@@ -297,8 +287,8 @@ class HelpCog(commands.Cog, name="help"):
                     "**Random Color**: `!rcg` creates a hex color with a preview.\n"
                     "**Permissions**: `!setperms` grants channel access (admin only).\n"
                     "**Auto-Reactions**: `!autoreact` sets emoji reactions for messages.\n"
-                    "**CHUNITHM Charts**: `!rating` draws a song's player-population chart; `!song_search` finds songs.\n"
-                    "**CHUNITHM Scores**: `/score upload` imports your player data; `/score pattern` and `/score suggest` analyse it.\n"
+                    "**CHUNITHM**: `/chunithm rating` draws a song's player-population chart; `/chunithm song_search` finds songs; `/chunithm upload` imports your player data and `/chunithm pattern` / `/chunithm suggest` analyse it.\n"
+                    "**Feed Tracker**: `/feed add` tracks a Bluesky account and posts its new posts to a channel; `/feed list`, `/feed remove` and `/feed check` manage it (admin only).\n"
                     "**AI Chat**: `!chat` or @mention the bot to talk to the local AI model; `!chatreset` clears it.",
                     "**隨機回應**：`!ask` 根據隨機成功率回應。\n"
                     "**隨機選擇**：`!pick` 從選項列表中選一個。\n"
@@ -306,9 +296,9 @@ class HelpCog(commands.Cog, name="help"):
                     "**隨機顏色**：`!rcg` 生成十六進制顏色並預覽。\n"
                     "**權限**：`!setperms` 授予頻道權限（僅限管理員）。\n"
                     "**自動反應**：`!autoreact` 為消息設置表情反應。\n"
-                    "**CHUNITHM 圖表**：`!rating` 產生曲目的玩家分布圖；`!song_search` 搜尋曲目。\n"
-                    "**CHUNITHM 成績**：`/score upload` 匯入玩家資料；`/score pattern` 與 `/score suggest` 進行分析。\n"
-                    "**AI 對話**：使用 `!chat` 或提及機器人與本地 AI 模型對話；`!chatreset` 清除對話。"),
+                    "**CHUNITHM**：`/chunithm rating` 產生曲目的玩家分布圖；`/chunithm song_search` 搜尋曲目；`/chunithm upload` 匯入玩家資料，`/chunithm pattern` 與 `/chunithm suggest` 進行分析。\n"
+                    "**動態追蹤**：`/feed add` 追蹤 Bluesky 帳號並將新貼文發送到頻道；`/feed list`、`/feed remove`、`/feed check` 用於管理（僅限管理員）。\n"
+                     "**AI 對話**：使用 `!chat` 或提及機器人與本地 AI 模型對話；`!chatreset` 清除對話。"),
                 inline=False
             )
             embed.add_field(
@@ -326,7 +316,9 @@ class HelpCog(commands.Cog, name="help"):
             await ctx.send(embed=embed, view=view)
             return
 
-        command = (command.lower().lstrip("!/").split() or [""])[0]   # "score pattern" -> "score"
+        command = (command.lower().lstrip("!/").split() or [""])[0]   # "chunithm rating" -> "chunithm"
+        # rating / song_search / score used to be their own top-level commands
+        command = {"rating": "chunithm", "song_search": "chunithm", "score": "chunithm"}.get(command, command)
         selected = next((cmd for cmd in COMMAND_LIST if cmd["name"] == command), None)
         if selected:
             embed = discord.Embed(
