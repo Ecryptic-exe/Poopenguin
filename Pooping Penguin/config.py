@@ -7,7 +7,8 @@ project root stays clean.
 import json
 import os
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        "../../Downloads/Poopenguin-main/Pooping Penguin/data")
 
 SETTINGS_FILE = os.path.join(DATA_DIR, "vote_settings.json")
 VOTES_FILE = os.path.join(DATA_DIR, "votes.json")
