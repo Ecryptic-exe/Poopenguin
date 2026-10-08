@@ -80,6 +80,7 @@ INITIAL_EXTENSIONS = (
     "cogs.rating_cog",
     "cogs.chunithm_cog",
     "cogs.ai_cog",
+    "cogs.feed_cog",
 )
 
 STATUS_MESSAGES = [
