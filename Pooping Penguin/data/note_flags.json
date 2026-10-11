@@ -1,0 +1,10 @@
+{
+  "_note": "flag -> regex searched in each chart's 説明 note (column H). Edit freely, then re-run tools/build_chart_tags.py.",
+  "high_tolerance": "高容錯|高到離譜的容錯|容錯(率)?[^，。,\\s不低]{0,4}高",
+  "low_tolerance": "低容錯|零容錯|沒有容錯|容錯(不高|不太高)|容錯[^，。,\\s高]{0,4}低",
+  "not_for_push": "不(建議|推介|適合|考慮)[^，。,]{0,6}推分|推分不推介|不推分|不適合推分",
+  "easy_score": "(?<!不)好吃分|吃分性價比",
+  "hard_score": "不好吃分|難吃分",
+  "personal": "個人差",
+  "practice": "(?<!不)(適合|很有|值得)?練習"
+}

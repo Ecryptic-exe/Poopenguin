@@ -36,7 +36,6 @@ import asyncio
 import contextlib
 import logging
 import os
-import re
 from secrets import SystemRandom
 from typing import Dict, Optional
 
@@ -53,9 +52,6 @@ logger = logging.getLogger("DiscordBot")
 EMBED_COLOR = 0x008C83
 LOGIN_TIMEOUT = 300   # seconds the login flow waits for a token
 BOOKMARKLET_URL = "https://chuni-penguin.beerpsi.cc/bookmarklet/"
-# The hosted bookmarklet prints `c>login clal=<token>` (the original bot's prefix).
-# Accept that, or a bare `login clal=<token>`, when pasted in the bot's DMs.
-PASTED_LOGIN_RE = re.compile(r"^(?:c>)?login\s+(clal=\S+|\S{64})$", re.IGNORECASE)
 
 
 class NotLoggedIn(Exception):
@@ -107,6 +103,19 @@ class SegaIDLoginModal(discord.ui.Modal, title="Login with SEGA ID"):
 
     async def on_submit(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=True)
+
+        # Nothing is waiting on this code any more (timed out / already used):
+        # don't log in and don't claim success.
+        cog = interaction.client.get_cog("login")
+        if cog is None or self.code not in cog._pending:
+            await interaction.followup.send(
+                embed=_embed(discord.Color.red(), "Error", t(
+                    self.language,
+                    "This login session has expired. Please run the login command again.",
+                    "此登入階段已過期，請重新執行登入指令。")),
+                ephemeral=True)
+            return
+
         try:
             clal = await asyncio.to_thread(
                 net.sega_id_login, self.username.value, self.password.value,
@@ -241,29 +250,6 @@ class LoginCog(commands.Cog, name="login"):
                   "<p>Check the bot's DMs to see if the account has been linked.</p>"
                   "</body></html>"))
 
-    # -- pasted bookmarklet command (DMs only) ---------------------------------
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot or message.guild is not None:
-            return
-        m = PASTED_LOGIN_RE.match(message.content.strip())
-        if m is None:
-            return
-        clal = net.strip_clal_prefix(m.group(1))
-        if not net.is_valid_clal(clal):
-            return await message.channel.send(embed=_embed(
-                discord.Color.red(), "Failed to login", "That token doesn't look valid."))
-        err = await self._verify_and_login(message.author.id, clal)
-        if err is None:
-            logger.info("user %s logged in to CHUNITHM-NET (pasted command)", message.author.id)
-            await message.channel.send(embed=_embed(
-                discord.Color.green(), "Successfully logged in",
-                "Your CHUNITHM-NET login is saved."))
-        else:
-            await message.channel.send(embed=_embed(
-                discord.Color.red(), "Failed to login",
-                "Invalid cookie: {}: {}".format(err.__class__.__name__, err)))
-
     # -- session access for other cogs -----------------------------------------
     @contextlib.asynccontextmanager
     async def session(self, user_id: int):
@@ -280,13 +266,20 @@ class LoginCog(commands.Cog, name="login"):
             if raw is None:
                 raise NotLoggedIn(user_id)
             inner = net.ChunithmNetSession(raw)
+            ok = False
             try:
                 yield AsyncSession(inner)
+                ok = True
             finally:
                 refreshed = inner.lwp_cookie_jar
+                keep = inner.has_clal()
                 inner.close()
-                # Skip the write-back if they logged out while we held the jar.
-                if refreshed != raw and net.get_cookie(user_id) is not None:
+                # Only persist a jar from a run that succeeded and still holds the
+                # clal token. A failed run (maintenance, network error, rejected
+                # session) can leave a jar with the token stripped; saving that
+                # would silently log the user out. Also skip it if they logged
+                # out while we held the jar.
+                if ok and keep and refreshed != raw and net.get_cookie(user_id) is not None:
                     net.set_cookie(user_id, refreshed)
 
     async def _verify_and_login(self, user_id: int, clal: str) -> Optional[Exception]:

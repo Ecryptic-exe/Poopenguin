@@ -1,7 +1,9 @@
 """
 Build data/chart_tags.json from the community chart spreadsheet (.xlsx).
 
-    python tools/build_chart_tags.py path/to/Chunithm_譜面.xlsx
+    python tools/build_chart_tags.py                      (uses the .xlsx in tools/)
+    python tools/build_chart_tags.py ChunithmChart.xlsx   (a name is looked up in tools/)
+    python tools/build_chart_tags.py C:/full/path/to/sheet.xlsx
 
 Needs openpyxl >= 3.1 (this tool only; the bot itself does not import it).
 Re-run whenever the sheet is updated.
@@ -24,7 +26,9 @@ import os
 import re
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(TOOLS_DIR)
+DEFAULT_XLSX = "ChunithmChart.xlsx"   # put the spreadsheet in vto2/tools/
 sys.path.insert(0, ROOT)
 from ratingbot.catalog import normalize   # noqa: E402
 
@@ -47,6 +51,26 @@ def _nearest_difficulty(rgb):
         if d < dist:
             best, dist = name, d
     return best if dist <= MAX_COLOR_DIST else None
+
+
+def _find_xlsx(arg=None):
+    """Resolve the spreadsheet: explicit path, a name inside tools/, or the
+    only .xlsx sitting in tools/."""
+    if arg:
+        for cand in (arg, os.path.join(TOOLS_DIR, arg)):
+            if os.path.isfile(cand):
+                return cand
+        sys.exit("Spreadsheet not found: %s\n(also looked in %s)" % (arg, TOOLS_DIR))
+    default = os.path.join(TOOLS_DIR, DEFAULT_XLSX)
+    if os.path.isfile(default):
+        return default
+    found = [f for f in os.listdir(TOOLS_DIR)
+             if f.lower().endswith(".xlsx") and not f.startswith("~$")]
+    if len(found) == 1:
+        return os.path.join(TOOLS_DIR, found[0])
+    sys.exit("Put the spreadsheet in %s as %s (or pass its path).%s" % (
+        TOOLS_DIR, DEFAULT_XLSX,
+        "" if not found else "\nFound several .xlsx files: " + ", ".join(found)))
 
 
 def _tag_key(t):
@@ -169,7 +193,6 @@ def main(xlsx, out_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2
+    main(_find_xlsx(sys.argv[1] if len(sys.argv) > 1 else None),
+         sys.argv[2] if len(sys.argv) > 2
          else os.path.join(ROOT, "data", "chart_tags.json"))

@@ -340,7 +340,7 @@ class AICog(commands.Cog):
         async with self.session.post(
                 f"{LM_STUDIO_BASE_URL}/chat/completions",
                 json=payload,
-                timeout=aiohttp.ClientTimeout(total=120),
+                timeout=aiohttp.ClientTimeout(total=300),
         ) as resp:
             if resp.status != 200:
                 body = await resp.text()

@@ -58,10 +58,27 @@ DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0"
 )
 TIMEOUT = 60
-MIN_REQUEST_INTERVAL = 0.1   # 10 requests/second, same budget as the original
+MIN_REQUEST_INTERVAL = 0.1   # 10 requests/second, shared by ALL users (like the original)
+# CHUNITHM-NET error codes that mean "session expired, log in again".
+# Every other error page is raised as-is instead of triggering a re-auth.
+REAUTH_ERROR_CODES = frozenset({200002, 200004})
 
 _COOKIE_CHARACTERS = set(string.ascii_lowercase + string.digits)
 _store_lock = threading.Lock()
+_rate_lock = threading.Lock()
+_next_slot = 0.0
+
+
+def _wait_for_slot() -> None:
+    """Block until this process-wide request slot comes up (all users share it)."""
+    global _next_slot
+    with _rate_lock:
+        now = time.monotonic()
+        slot = max(now, _next_slot)
+        _next_slot = slot + MIN_REQUEST_INTERVAL
+    delay = slot - now
+    if delay > 0:
+        time.sleep(delay)
 
 
 # -- errors -----------------------------------------------------------------
@@ -75,6 +92,10 @@ class AuthenticationError(SessionError):
 
 class NoCardsRegistered(AuthenticationError):
     """The Aime account has no access codes registered."""
+
+
+class MaintenanceError(SessionError):
+    """SEGA's servers are down / in maintenance. The login is NOT invalid."""
 
 
 class NetworkError(SessionError):
@@ -179,7 +200,6 @@ class ChunithmNetSession:
         self._jar = load_jar(lwp_cookie_jar)
         self._http = _http_session(user_agent)
         self._http.cookies = self._jar
-        self._last_request = 0.0
 
     @property
     def lwp_cookie_jar(self) -> str:
@@ -188,18 +208,17 @@ class ChunithmNetSession:
     def close(self) -> None:
         self._http.close()
 
+    def has_clal(self) -> bool:
+        return any(c.name == "clal" and c.domain.lstrip(".") == AIME_HOST for c in self._jar)
+
     # -- low level -----------------------------------------------------------
     def _send(self, method: str, url: str, **kwargs) -> requests.Response:
-        wait = MIN_REQUEST_INTERVAL - (time.monotonic() - self._last_request)
-        if wait > 0:
-            time.sleep(wait)
+        _wait_for_slot()
         kwargs.setdefault("timeout", TIMEOUT)
         try:
             return self._http.request(method, url, **kwargs)
         except requests.RequestException as e:
             raise NetworkError("{}: {}".format(e.__class__.__name__, e)) from e
-        finally:
-            self._last_request = time.monotonic()
 
     @staticmethod
     def _parse_error_page(resp: requests.Response) -> Optional[ChuniNetError]:
@@ -217,6 +236,26 @@ class ChunithmNetSession:
         return ChuniNetError(code, description)
 
     @staticmethod
+    def _is_maintenance(resp: requests.Response) -> bool:
+        """5xx, the ranking pages' 405, or an Aime-gateway page saying maintenance.
+
+        Maintenance must never be mistaken for an expired login. The keyword
+        scan is limited to the Aime gateway: normal CHUNITHM-NET pages can
+        contain the word in news/notices and must not be flagged.
+        """
+        if resp.status_code >= 500:
+            return True
+        u = urlparse(resp.url)
+        # Same signal the original uses: leaderboards return 405 during maintenance.
+        if u.hostname == NET_HOST and u.path.startswith("/mobile/ranking/") \
+                and resp.status_code == 405:
+            return True
+        if u.hostname == AIME_HOST and "text" in resp.headers.get("content-type", "text/html"):
+            head = resp.text[:20000].lower()
+            return "maintenance" in head or "メンテナンス" in head
+        return False
+
+    @staticmethod
     def _bounced_to_login(resp: requests.Response) -> bool:
         u = urlparse(resp.url)
         return u.hostname == NET_HOST and u.path == "/mobile/"
@@ -224,6 +263,9 @@ class ChunithmNetSession:
     def _reauthenticate(self) -> None:
         """Trade the clal cookie for fresh chunithm-net cookies."""
         resp = self._send("GET", AUTH_URL)
+        if self._is_maintenance(resp):
+            raise MaintenanceError(
+                "SEGA's servers are under maintenance. Your login is still saved; try again later.")
         u = urlparse(resp.url)
 
         # Still sitting on the Aime login page: clal was rejected.
@@ -250,9 +292,17 @@ class ChunithmNetSession:
         kwargs.setdefault("allow_redirects", True)
 
         resp = self._send(method, url, **kwargs)
-        if self._bounced_to_login(resp) or self._parse_error_page(resp) is not None:
+        if self._is_maintenance(resp):
+            raise MaintenanceError(
+                "CHUNITHM-NET is under maintenance. Your login is still saved; try again later.")
+        first_error = self._parse_error_page(resp)
+        if self._bounced_to_login(resp) or (
+                first_error is not None and first_error.code in REAUTH_ERROR_CODES):
             self._reauthenticate()
             resp = self._send(method, url, **kwargs)
+            if self._is_maintenance(resp):
+                raise MaintenanceError(
+                    "CHUNITHM-NET is under maintenance. Your login is still saved; try again later.")
             if self._bounced_to_login(resp):
                 raise AuthenticationError(
                     "CHUNITHM-NET rejected the session even after re-authenticating."
