@@ -32,10 +32,10 @@ def parse_time(time_str):
         rand = random.random() * 100
 
         if rand < 6.9:
-            # 1 to 7 days
+            # 7 to 28 days
             return timedelta(seconds=random.randint(
-                1 * 24 * 60 * 60,
-                7 * 24 * 60 * 60
+                7 * 24 * 60 * 60,
+                28 * 24 * 60 * 60
             ))
         elif rand < 75.9:
             # 1 second to 1 day
@@ -43,9 +43,9 @@ def parse_time(time_str):
                 1, 24 * 60 * 60
             ))
         elif rand < 98.9:
-            # 7 to 28 days
+            # 1 to 28 days
             return timedelta(seconds=random.randint(
-                7 * 24 * 60 * 60,
+                24 * 60 * 60,
                 28 * 24 * 60 * 60
             ))
         else:
