@@ -68,3 +68,25 @@ All `!keyword` subcommands require Administrator permission.
 | `!keyword removekeyword <id> <word>` | ✅ `/keyword removekeyword` | Removes a trigger keyword from a set. |
 | `!keyword addresponse <id> <text>` | ✅ `/keyword addresponse` | Adds a candidate response text to a set. |
 | `!keyword removeresponse <id> <index>` | ✅ `/keyword removeresponse` | Removes a response by its index. |
+
+## CHUNITHM charts (`cogs/rating_cog.py`)
+
+| Command | Slash? | Description |
+|---|---|---|
+| `!rating <song> [difficulty] [detailed]` | ✅ `/rating` | Draws a song's player-population rating chart. Slash has title autocomplete; with `!`, quote titles that contain spaces. |
+| `!song_search <query>` | ✅ `/song_search` | Searches the song list and shows difficulties (no chart is generated). |
+
+## CHUNITHM scores (`cogs/score_cog.py`)
+
+Needs `data/chart_tags.json` for `pattern` and `suggest` (build it with
+`tools/build_chart_tags.py`). Replies are private with `/` and public with `!`.
+
+| Command | Slash? | Description |
+|---|---|---|
+| `!score` | 🚫 text-only | Prints the subcommand list. No bare `/score`. |
+| `!score upload <file>` | ✅ `/score upload` | Imports your `chunithm-player-data_*.json`. Use the slash version so the file isn't posted publicly. |
+| `!score me` | ✅ `/score me` | Rating, level, played charts, SSS+/SS+/FC/AJ counts. |
+| `!score song <title>` | ✅ `/score song` | Your scores on a song. Slash autocompletes from your played songs. |
+| `!score pattern [all\|best\|rating]` | ✅ `/score pattern` | Strong and weak note patterns (14+ charts): all played, Best 30, or Best 30 + New 20. |
+| `!score suggest` | ✅ `/score suggest` | Songs to push your rating (strong patterns) and to practice (weak patterns). |
+| `!score delete` | ✅ `/score delete` | Deletes your stored scores. |
