@@ -1,0 +1,1294 @@
+[
+  {
+    "path": "chuni_penguin/bot.py",
+    "sha256": "dcd4d2a913512bb5ef16aebadf9d1deef12c085d93405b0a83b85620e1b8ae26"
+  },
+  {
+    "path": "chuni_penguin/command_tree.py",
+    "sha256": "f10ac638dcda03dafc6ee28dcba0c035b22f0bd2896d5e7ab1c772f70e51ab69"
+  },
+  {
+    "path": "chuni_penguin/config.py",
+    "sha256": "2f32ffbbbce423a572ad009238436e570d44479b4fead360e37002aadbb351cb"
+  },
+  {
+    "path": "chuni_penguin/constants.py",
+    "sha256": "f2a41f020c2b722d96f23f8ef223b5755a289809088d4f5e98a6a2ee8911bb99"
+  },
+  {
+    "path": "chuni_penguin/context.py",
+    "sha256": "7be81a2a08f388d309d6b2bb7e314c92e5db5884bb86a5ea30ed9cbd1f30e6b3"
+  },
+  {
+    "path": "chuni_penguin/converters.py",
+    "sha256": "76f1a9f296bfee3c50c76f2ed9c85155b5dffd702136c4e06baf99bfeebbdcfa"
+  },
+  {
+    "path": "chuni_penguin/diagnostics.py",
+    "sha256": "0002d9b57afbb55f390259e64ad19f883906cbd2b68cc58be1eccd7c0252ed86"
+  },
+  {
+    "path": "chuni_penguin/errors.py",
+    "sha256": "d548f82ab07c59ff4e191023e0dae2f431e4372710d1486b3c102309d1db6af2"
+  },
+  {
+    "path": "chuni_penguin/identities.py",
+    "sha256": "a98b75f0866f9fb2895e3078485aa00d3cac6fc5cbcc69add4ada1adc57ced86"
+  },
+  {
+    "path": "chuni_penguin/logging.py",
+    "sha256": "97d9b2078b3fc204e2eb06e17f60d80abc608f5608cd3d0aa68dd780b1e6f498"
+  },
+  {
+    "path": "chuni_penguin/oggopus.py",
+    "sha256": "0db1cbb8b75ee97e7ff2ffec632b7da9500dd68ecf8300b51fdde91b82385cdf"
+  },
+  {
+    "path": "chuni_penguin/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "chuni_penguin/adapters/base.py",
+    "sha256": "f94c425ea090f896701b9604f0c3cd1445cd692503d40b27fa843828ca9679d7"
+  },
+  {
+    "path": "chuni_penguin/adapters/errors.py",
+    "sha256": "62c0ce0171f82d6390d46fd0adfa1618b26298235b2839751bdb6b6f82171b37"
+  },
+  {
+    "path": "chuni_penguin/adapters/utils.py",
+    "sha256": "03955f5ddf04e06e6a305bdcd65a288b5fbf27ee2e702791077d0a111f5d1d56"
+  },
+  {
+    "path": "chuni_penguin/adapters/_hooks.py",
+    "sha256": "867b71439d759a0ad7c3e949ac86449f137518470edfe152add8eea51b047c7a"
+  },
+  {
+    "path": "chuni_penguin/adapters/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "chuni_penguin/application/credentials.py",
+    "sha256": "429f9fb3c0dbbb2fde562509bb81fb2dd8b517bbc858479dfb12bf6e934f8603"
+  },
+  {
+    "path": "chuni_penguin/application/errors.py",
+    "sha256": "8493a8b8e6ba0a6676cc8d40b5567613bb68d7d3b85fb51afd285e530f96a46c"
+  },
+  {
+    "path": "chuni_penguin/application/extensions.py",
+    "sha256": "f68b2a92032bf8b2fb2d2320f4e0beb3afd325521fc8d98f1b95c7d2a11ebabe"
+  },
+  {
+    "path": "chuni_penguin/application/lifecycle.py",
+    "sha256": "b91f6b3ad56ee25034590c30df8d90870bea746da599c27dbf0fd6db7d203b6f"
+  },
+  {
+    "path": "chuni_penguin/application/mapping_check.py",
+    "sha256": "7492ce04ddee77ece4e239c52c7a6f54a65d855bf1e90ccc815e8d9bda48129c"
+  },
+  {
+    "path": "chuni_penguin/application/mapping_review.py",
+    "sha256": "4f3b417dc71a1c7bf39c1f955c9316309652bd082840144d514285b20e9722ea"
+  },
+  {
+    "path": "chuni_penguin/application/offline.py",
+    "sha256": "d4f17147bfb103b37248db327bbed5375d18b9896a58d9fa22483015682d918a"
+  },
+  {
+    "path": "chuni_penguin/application/provider_check.py",
+    "sha256": "071c19d9528fc52176c4b5d34e239077fcf7638a6f9b874c9665f9b2c8e732d9"
+  },
+  {
+    "path": "chuni_penguin/application/registration.py",
+    "sha256": "5bf4d1e13a812aff4c7132ffceba47eb8a91e2c652e336600693135e505d9199"
+  },
+  {
+    "path": "chuni_penguin/application/services.py",
+    "sha256": "a7a90efaa6cf9ba35b1c3a98671c9862dac978e860250b89250cd047f6c18cb3"
+  },
+  {
+    "path": "chuni_penguin/application/__init__.py",
+    "sha256": "7d8d1b97ff80bb12485b44551da6427c9ee1df3c08b3d39ea92935b622454c8e"
+  },
+  {
+    "path": "chuni_penguin/calculation/border.py",
+    "sha256": "7d18a177c79dfe8c58b3a612e728308a2e56025651fc1da9734b8e87c1ebad0a"
+  },
+  {
+    "path": "chuni_penguin/calculation/overpower.py",
+    "sha256": "b035cc84a3280aea750d18dd41f9425424ba1dc3e2374cf42ff9ecb7a90d4c84"
+  },
+  {
+    "path": "chuni_penguin/calculation/rating.py",
+    "sha256": "8d989ae43fbd92e2186faaf87f2a5cf2e614832b17a1ffd34e1edc462c6b2815"
+  },
+  {
+    "path": "chuni_penguin/calculation/__init__.py",
+    "sha256": "9e356a5c00c7aa7967464d43f65f12615ed6c7cf5df240d39503e5b12afd4c6b"
+  },
+  {
+    "path": "chuni_penguin/cogs/admin.py",
+    "sha256": "4d26202873b30a0ff45583f97a1234e6ec880ccf74cbab008f1d9f69fac173f5"
+  },
+  {
+    "path": "chuni_penguin/cogs/annotations.py",
+    "sha256": "4929ddf5558aa38a51476867e4680fc3a9fbdbd85404b1e3907f3dfe969cdcf3"
+  },
+  {
+    "path": "chuni_penguin/cogs/autocompleters.py",
+    "sha256": "04a72e53511417ea315474de470eb08d36b6161b2eccbaee37f76ba28982bfb3"
+  },
+  {
+    "path": "chuni_penguin/cogs/botutils.py",
+    "sha256": "87e62c96fdb0ad893acc49509e069bffad19d8f60aad9672efdc1cc84b30d96f"
+  },
+  {
+    "path": "chuni_penguin/cogs/copypasta.py",
+    "sha256": "558330becc2a926b1de35c62e70d4ccdfbb14244591dc8ea4c39390e17df938d"
+  },
+  {
+    "path": "chuni_penguin/cogs/database.py",
+    "sha256": "6c7708fe1d28c6e4f1423f936364a4d66ee53b69c2b9a32f1043e24c8b3258dc"
+  },
+  {
+    "path": "chuni_penguin/cogs/debug.py",
+    "sha256": "a004beb7ad8b9635ddedde2a845f14f449203273a0a0e6672032abf0115db3ce"
+  },
+  {
+    "path": "chuni_penguin/cogs/diagnostics.py",
+    "sha256": "74255fc2af9ff57f6a9973d2e3c86b8254d87dac0b41080cc0b0b2598fd3e64d"
+  },
+  {
+    "path": "chuni_penguin/cogs/events.py",
+    "sha256": "9e95ccdbfe26348c464935bf4710728f1746c12acf569cab4d0427980cd20b2b"
+  },
+  {
+    "path": "chuni_penguin/cogs/extensions.py",
+    "sha256": "9f34d6bf7ae166809a9478488c1d225965d6a504f881ddfb94503eeba7013b34"
+  },
+  {
+    "path": "chuni_penguin/cogs/fluff.py",
+    "sha256": "0254f9e9eb662b8cdead8acf03ad4d34ee8442299bcb8ba6e5a88b3e38261ffe"
+  },
+  {
+    "path": "chuni_penguin/cogs/fun.py",
+    "sha256": "ea357e07794c73e7c7dbfbd1f8d43ea33d3cf1b88343bc4bc665e19e2c1892ea"
+  },
+  {
+    "path": "chuni_penguin/cogs/help.py",
+    "sha256": "2f0eb4c53852b1493dee60a07c7fc7713e5369bc169cdb3b8b95b0030167ca7c"
+  },
+  {
+    "path": "chuni_penguin/cogs/misc.py",
+    "sha256": "1e00b8a85cb341c4bdec6c45e38ed54dd5fc8dfbbe0062d63531f3b15c12c1fb"
+  },
+  {
+    "path": "chuni_penguin/cogs/permissions.py",
+    "sha256": "e64a99a01bb0b2f2b8856390d9923d6c5e55aaac870235ff6206c14172aa0d30"
+  },
+  {
+    "path": "chuni_penguin/cogs/server_settings.py",
+    "sha256": "2c141ddf35df312e5b0f5695b83cb1c61e3128697b6a8fab67211b595ab8d401"
+  },
+  {
+    "path": "chuni_penguin/cogs/stats.py",
+    "sha256": "fbd98bc00c4a8b0ce397e4dc1eb3b4a72177fafbe73aeb7d990b052f161081b6"
+  },
+  {
+    "path": "chuni_penguin/cogs/voice.py",
+    "sha256": "eabd2e38a119e6ce6cc11b270093931447e2aa2521efeb3c83f31a2e3af1eeb6"
+  },
+  {
+    "path": "chuni_penguin/cogs/web.py",
+    "sha256": "c20ff1d05b3034036b8bbc93890dffe270220b5c2b699d47afd017fb3061b033"
+  },
+  {
+    "path": "chuni_penguin/cogs/__init__.py",
+    "sha256": "7e260e86cff6a730e0d0f63d87098125a0caa8d56dc61c0fdc81f92e388723c7"
+  },
+  {
+    "path": "chuni_penguin/database/base.py",
+    "sha256": "5e3d7cb625a93df71db39d377bcae3762052a74db8a1a1caf7c5465be2850b5f"
+  },
+  {
+    "path": "chuni_penguin/database/bot.py",
+    "sha256": "c369654488b8f56376a18a43ebe8c68c0638f532512276f4dcd4e2b061749a34"
+  },
+  {
+    "path": "chuni_penguin/database/characters.py",
+    "sha256": "def1b41e7f06e49c8dce58e23e56815cd5c44ca463dda39fa00d45231a6fa518"
+  },
+  {
+    "path": "chuni_penguin/database/courses.py",
+    "sha256": "686d6723a4a2854778d2fa7d4762f3f4b2a8c2c57ee06553791bc5e3e81fbb1a"
+  },
+  {
+    "path": "chuni_penguin/database/guilds.py",
+    "sha256": "7ef3d9587ccd9082d47a8afc71472f13350e54b571bfca3dba12b5845e92c3ae"
+  },
+  {
+    "path": "chuni_penguin/database/identity.py",
+    "sha256": "20cfc4b947259da3b3628aad5581b70baa43727274f6204ae88524c87ace9c1d"
+  },
+  {
+    "path": "chuni_penguin/database/kamaitachi.py",
+    "sha256": "71996998f4d27c6c95c3099d94907cbc87ba31df434c94298faa8ba496325c02"
+  },
+  {
+    "path": "chuni_penguin/database/linked_verse.py",
+    "sha256": "f93a30a92c49fe64af6c218a18848b69a7761f19ebab4423c18c2fddae7f2440"
+  },
+  {
+    "path": "chuni_penguin/database/minigames.py",
+    "sha256": "b0f63c7909b8158d527e2bc9e2028d6def4e2959ab3dfef3535263e2db4bd076"
+  },
+  {
+    "path": "chuni_penguin/database/pbs.py",
+    "sha256": "a7ba7d4a3c9d75e3695fce159a72d4d4a73eeb6391790a587a5fb7e87d3e1ec5"
+  },
+  {
+    "path": "chuni_penguin/database/songs.py",
+    "sha256": "6b3b1e02b813824bba44a1f5873089a8d8bd2a4136450e471b58fc475a67c86e"
+  },
+  {
+    "path": "chuni_penguin/database/users.py",
+    "sha256": "824657851dc33a0d899f3d49539fa79bc930a04b7fd940156ce5825bcf84c7a1"
+  },
+  {
+    "path": "chuni_penguin/database/__init__.py",
+    "sha256": "d3780f5edd2c8a2b06b026cb9fc3d41181758f113a97025366bb6bb56cfca269"
+  },
+  {
+    "path": "chuni_penguin/flags/_command.py",
+    "sha256": "d380bbb3baaf4979482ca4abd25124f87ddbf37a32dfdd5e9e2ec23a5f4735de"
+  },
+  {
+    "path": "chuni_penguin/flags/_parser.py",
+    "sha256": "4194d0d1a88f063da89ec0f19e0d7f6246fe5b958f6c0e94bb52a6fe91156d02"
+  },
+  {
+    "path": "chuni_penguin/flags/_types.py",
+    "sha256": "3e396334a1413fded9e55d61abcc2d3c167609546a0c8d74c5eff0d9f5a7e3a4"
+  },
+  {
+    "path": "chuni_penguin/flags/__init__.py",
+    "sha256": "cdb312b6872b411adbbee8a011214a0f29b29abfa71fce75b9fc96982f288e67"
+  },
+  {
+    "path": "chuni_penguin/providers/chunilib_public.py",
+    "sha256": "56002fbb9df3c40c71c6142f0f03f4cb368147b65e2aa1974829f1d407cb13f6"
+  },
+  {
+    "path": "chuni_penguin/providers/chunilib_snapshot.py",
+    "sha256": "449f9e9039e6775dd74fc3855799173b70ff8471150ff134abeb89ac9e7dafe8"
+  },
+  {
+    "path": "chuni_penguin/providers/local_catalog.py",
+    "sha256": "4a08e847a30d89d96140bf61ee8531df858a3b401dd9aca2ed00bbc4f501fd9d"
+  },
+  {
+    "path": "chuni_penguin/providers/models.py",
+    "sha256": "1229a82402e8873a27d2e761bda08e3967c95c57a41e1967551fc121911e50b8"
+  },
+  {
+    "path": "chuni_penguin/providers/registry.py",
+    "sha256": "a3ccb5f3c6880dff98f44bc44d94e3dd6952f0c182202909b34613bcb47d90a7"
+  },
+  {
+    "path": "chuni_penguin/providers/__init__.py",
+    "sha256": "013947bf716f8f1e8c2c62884961ab0531a478389302cc9b6bae291d7a72b710"
+  },
+  {
+    "path": "chuni_penguin/renderers/b50.py",
+    "sha256": "984e7bf2476532c689e9fffbd54c07c61095b47114b5c896777524214a8fc4da"
+  },
+  {
+    "path": "chuni_penguin/renderers/b50_ongeki.py",
+    "sha256": "cc4422c08dfbe3473715e06f29421fac159ed3ffaed37fb575394fda2f4470a6"
+  },
+  {
+    "path": "chuni_penguin/renderers/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "chuni_penguin/repositories/chart_knowledge.py",
+    "sha256": "02a50a37ac11f630dcfee0d9fc5156508cf9990f806e4acda708b52c243302b7"
+  },
+  {
+    "path": "chuni_penguin/repositories/chart_search.py",
+    "sha256": "d004e2e2b38eb6cc70791c1867895eb65a684ad42a0bd5380446c6a164a4cd08"
+  },
+  {
+    "path": "chuni_penguin/repositories/copypasta.py",
+    "sha256": "b3e9792029d84b923cd94c75271a4d862d9b98ee1c22a1dd0ad3335c6cb0d70d"
+  },
+  {
+    "path": "chuni_penguin/repositories/courses.py",
+    "sha256": "b7e1b288dbd96d1e859f6ffef7a7618ccbf523cda89d97dddbc7ab06fbbae6bc"
+  },
+  {
+    "path": "chuni_penguin/repositories/folder_statistics.py",
+    "sha256": "0b2a9bd928a768e143acf8678e2e74ce1cbb396aac2cd431992e78e988ce702d"
+  },
+  {
+    "path": "chuni_penguin/repositories/identity.py",
+    "sha256": "a31cd9b3c7616ca1151fb0e1decb3fbf40ba1465eebce8f4ed68eb8ba4d5eda4"
+  },
+  {
+    "path": "chuni_penguin/repositories/linked_verse.py",
+    "sha256": "35de0b4f37201791087875873aaeb099d3f4decd5440eceddc8ed4344a89bd3c"
+  },
+  {
+    "path": "chuni_penguin/repositories/mapped_catalog.py",
+    "sha256": "2246a759f3a6636403991619e733dffb490229aac42895908b12145b852d1866"
+  },
+  {
+    "path": "chuni_penguin/repositories/rating_snapshots.py",
+    "sha256": "0e9096bf1a79adca729879c3128bb741647efb76b62a1bb111e3e2f40e2e8eaf"
+  },
+  {
+    "path": "chuni_penguin/repositories/recommendations.py",
+    "sha256": "9a23b6f227d5e8b6f64a016227b12bcd736f1e8f241b4b7ae7f30249660cbf42"
+  },
+  {
+    "path": "chuni_penguin/repositories/runtime_info.py",
+    "sha256": "3cc00df4884f2389ca1de7c0a06bee2581035923efe7fe4465df7fed71948300"
+  },
+  {
+    "path": "chuni_penguin/repositories/score_queries.py",
+    "sha256": "fe283d214148a2bba4a08b35e52a7fdffaac69b96baead82f1599c46001d1e68"
+  },
+  {
+    "path": "chuni_penguin/repositories/semantic_knowledge.py",
+    "sha256": "ce8d77608edc5b948c8da8f5f5a9091db314ad8731d7dad7f95d9bb34614371b"
+  },
+  {
+    "path": "chuni_penguin/repositories/__init__.py",
+    "sha256": "e8db5b0c2252599d80d39cdc30b707b7ec0914a4bde8ee3e4ba592557426cd82"
+  },
+  {
+    "path": "chuni_penguin/services/accounts.py",
+    "sha256": "d7e5cdac0694de82a5936d74a93017ad40fd27de7344104906a2d60e2af264bb"
+  },
+  {
+    "path": "chuni_penguin/services/account_context.py",
+    "sha256": "1026f7bcf9e8cf7fb83f65a9ec1f8d1b5320192e49d752b3b4b12dbcf91e2251"
+  },
+  {
+    "path": "chuni_penguin/services/autocomplete.py",
+    "sha256": "52df4d71340374979fed6636ea558cb75a4de547556683c0d8070f185e578da8"
+  },
+  {
+    "path": "chuni_penguin/services/card_cache.py",
+    "sha256": "8724f78bceb5f35a0b69f632d667146450386a9b5de8241cf1937ce982822afa"
+  },
+  {
+    "path": "chuni_penguin/services/catalog.py",
+    "sha256": "f52230b9ce9645526e52695f05d2171b781d5097af041b7ca28c08340ae55503"
+  },
+  {
+    "path": "chuni_penguin/services/catalog_query.py",
+    "sha256": "75d30befb34730647239f285714924de0dc0dd8045896c81a1033c5bbf228476"
+  },
+  {
+    "path": "chuni_penguin/services/chart_knowledge.py",
+    "sha256": "b5dba22374124558ee5a312e5739db5f5d4add15088e2aacda6a40e23a27ef93"
+  },
+  {
+    "path": "chuni_penguin/services/chart_view.py",
+    "sha256": "ce77a7c8f68740a9556c9c20a60c76c19530cb7bbca07a3754ce5e9f41700747"
+  },
+  {
+    "path": "chuni_penguin/services/command_errors.py",
+    "sha256": "d5fa85e058179a0825acdc9a71c8eeadcaa528d74df782f434f9202777b3e52d"
+  },
+  {
+    "path": "chuni_penguin/services/copypasta.py",
+    "sha256": "0b9109bf5cea83dbb4ada008cef64e424377bdb75f34cad93ad7c8c408f1540e"
+  },
+  {
+    "path": "chuni_penguin/services/copypasta_sessions.py",
+    "sha256": "bf788f24bb5f6aa482039ed2bf0f54f1633b84f238b72b1c2adc64a9d1393bdf"
+  },
+  {
+    "path": "chuni_penguin/services/database.py",
+    "sha256": "1c2b45a4d97164685ac2c0435004826ce6c442970a02c36be3d9c39569c25d75"
+  },
+  {
+    "path": "chuni_penguin/services/game_sessions.py",
+    "sha256": "7b2c1941660efda4864e56d299c4d1861a4a3a92b80c7fd72fb6b7a61393012a"
+  },
+  {
+    "path": "chuni_penguin/services/identity_candidates.py",
+    "sha256": "f89d9f5245f7f3da91c26ad7a0bfc30d8456d06e0f3c824fa442c90dd16934ec"
+  },
+  {
+    "path": "chuni_penguin/services/linked_verse.py",
+    "sha256": "b4413550dc9877e67d45d753352f70f3faf1fdd86c7d154e3ec970847425b8cd"
+  },
+  {
+    "path": "chuni_penguin/services/mapped_catalog.py",
+    "sha256": "cc3fe42293a52217b8ece40ef47eb5155acc0afff87ac1d8167c081b018907cf"
+  },
+  {
+    "path": "chuni_penguin/services/mapping_review.py",
+    "sha256": "02a68bc02d2be74713c07a302db9d7d227efa660013576a7b6cae0167c8b698a"
+  },
+  {
+    "path": "chuni_penguin/services/permissions.py",
+    "sha256": "f619b534f008a7a1993b19583e32b39ee5e14b8d346de0c6a7750840bc16af96"
+  },
+  {
+    "path": "chuni_penguin/services/radio_sessions.py",
+    "sha256": "68c1d51e4788a3bf82953a6b0fdbd2f69b5cb23d337493d1c0fb29244169018e"
+  },
+  {
+    "path": "chuni_penguin/services/rating_analysis.py",
+    "sha256": "c289f7b174f03728c3e421b4a2caf4d0520ac96c1eca331e9323cee54242d41a"
+  },
+  {
+    "path": "chuni_penguin/services/rating_goals.py",
+    "sha256": "ff75ae987a5d6677dcd4b3b1a8c96d9dcd6ca2786b50a745fe7b17edcc5390e0"
+  },
+  {
+    "path": "chuni_penguin/services/rating_runtime.py",
+    "sha256": "172bd69a8edddf9d57fdd9faf3f1a3d8dc05fb851ccdfdf45954b45f30639223"
+  },
+  {
+    "path": "chuni_penguin/services/rating_search.py",
+    "sha256": "940eecaddc9de278647ef408a53529ad93eac037d22dc677053ebf203261f132"
+  },
+  {
+    "path": "chuni_penguin/services/recommendation_data.py",
+    "sha256": "0d2e62be9a3a8452b28112d82554586ceae1f27c4d2f7cc625ac760b250d5dc6"
+  },
+  {
+    "path": "chuni_penguin/services/song_details.py",
+    "sha256": "219cb36fc275edf0bf9e37da2a08ac3c9952aa2c5b3ead3dbcea58bdf7139618"
+  },
+  {
+    "path": "chuni_penguin/services/teams.py",
+    "sha256": "26bc67b5f377d432ec4301af0a3377545b29b8254ca0b1577866641bced2fd0b"
+  },
+  {
+    "path": "chuni_penguin/services/web_application.py",
+    "sha256": "35eef20a34f91b700e6954570261d3772770ea87b8f74ba3707f2b2f5a9bb3c1"
+  },
+  {
+    "path": "chuni_penguin/services/__init__.py",
+    "sha256": "924aa2166bd526488a25427262d4637e3b07e727b3e04e640071571fa06e4af3"
+  },
+  {
+    "path": "chuni_penguin/types/collections.py",
+    "sha256": "7eaba221417b5b6dfc3cdfd2ca5bcaed4b1019288131c7ade1818970c0bdbeba"
+  },
+  {
+    "path": "chuni_penguin/types/lamp.py",
+    "sha256": "6145ce9863368a43901aec1c0943ff0ba7e336b382f9a2cca7c57126b8cb4967"
+  },
+  {
+    "path": "chuni_penguin/types/leaderboard.py",
+    "sha256": "56f7fa2bcf6cfd4e9512e8ab9b84ef6679b493eb8ebe7cda6111505c58e40143"
+  },
+  {
+    "path": "chuni_penguin/types/linked_verse.py",
+    "sha256": "7556cae89f32a10d4842f254f7afb28fba72c44f75c5adb12bb215ad16259b46"
+  },
+  {
+    "path": "chuni_penguin/types/login_bonus.py",
+    "sha256": "56d90354bffbfb305b7db0bcc23d8eac3ec69833681c2a0d146ad19dc6618606"
+  },
+  {
+    "path": "chuni_penguin/types/profile.py",
+    "sha256": "34ee7536f05855c72056aa5e50303a98dcb886c347a4e32bc8cec7fba589799d"
+  },
+  {
+    "path": "chuni_penguin/types/ranking.py",
+    "sha256": "476078c5692871f944e0e1966c64c0db53e1798d8e50a90c8c96070b179ac561"
+  },
+  {
+    "path": "chuni_penguin/types/rating.py",
+    "sha256": "ccfcddeaadd0f06d29f5bd3d9d334177c0aaebf367659a7a41a7565305216a45"
+  },
+  {
+    "path": "chuni_penguin/types/score.py",
+    "sha256": "677288fe89f1a5afdcfb35c404bf1f2f7b117280ac5973a19f57c5f19e12907f"
+  },
+  {
+    "path": "chuni_penguin/types/song.py",
+    "sha256": "c94a20452d9110d09b49d5eab29d593f72e9c05b628273c1e4f79cf2a890f4e3"
+  },
+  {
+    "path": "chuni_penguin/types/team.py",
+    "sha256": "456314505250bce5f03bbd3f08ad63284ac4ecde7f2bdda5e86e76278aae3f5d"
+  },
+  {
+    "path": "chuni_penguin/types/__init__.py",
+    "sha256": "ab150f522ef0fe7bd95f3001ee5f4827e97d8c0bc2a95f322daa66d111df0ff3"
+  },
+  {
+    "path": "chuni_penguin/ui/autocomplete.py",
+    "sha256": "dfdb0b9a17cc669ca5b404c377f569ce92212a9785fb01aee089b323262b0a46"
+  },
+  {
+    "path": "chuni_penguin/ui/b30.py",
+    "sha256": "4c4662f3cba37ad46488e4453cc1534073f70fae25c09278883e9d7a8c93d238"
+  },
+  {
+    "path": "chuni_penguin/ui/b30n20.py",
+    "sha256": "f7651fb7b159808deb48cba7ca0f5182e07482220ef8affc351a7220c1a0cb09"
+  },
+  {
+    "path": "chuni_penguin/ui/confirmation.py",
+    "sha256": "158325b8157b8dbfc8331dcca68625f3b5500cb6fed57f45576a210e4e7c3e24"
+  },
+  {
+    "path": "chuni_penguin/ui/copypasta.py",
+    "sha256": "1be0df90e85b507ea767a8a09bcdb6921daa6480f98ae880b0e1ad7151d406ae"
+  },
+  {
+    "path": "chuni_penguin/ui/courses.py",
+    "sha256": "0c345da9de6e58833040049d1e095ee2123b55bd1a139f4bea505796b95e3dcc"
+  },
+  {
+    "path": "chuni_penguin/ui/embeds.py",
+    "sha256": "09bd4f5645f495bd17be314ac6e4992841c01aaf383ba5bbcefbfb5c27aca0c6"
+  },
+  {
+    "path": "chuni_penguin/ui/friend.py",
+    "sha256": "edde858e09acfd9cf2c807d5ab7e6712aa73737ce89be78bf52e4641f4ab4700"
+  },
+  {
+    "path": "chuni_penguin/ui/gaming.py",
+    "sha256": "19eefc746f0150a7246294892cff552a2637f4c2000638967e1408f8d541a83e"
+  },
+  {
+    "path": "chuni_penguin/ui/leaderboard.py",
+    "sha256": "bc33b05acb760bcaa4de11e95b6c227ac608e926a02ddc7d1a5f579df24b318d"
+  },
+  {
+    "path": "chuni_penguin/ui/login.py",
+    "sha256": "72dfcdec910203d5224978dce6b63342e6a574e381218cf04eb6bfdb5bc4ea2c"
+  },
+  {
+    "path": "chuni_penguin/ui/login_bonus.py",
+    "sha256": "c3d4edfa272ab988cb4357d39582a2f3b630e52d0496194b00a30aa29cebf056"
+  },
+  {
+    "path": "chuni_penguin/ui/permissions.py",
+    "sha256": "52c63ffd37d37deeaacfb4a143e7c9f00e8d2dd074f731d769e36b34ee2b9d01"
+  },
+  {
+    "path": "chuni_penguin/ui/profile.py",
+    "sha256": "6643c24a0f6d05fc7726a6039d221ff3feaf2209f33ce46f627bf158e409f137"
+  },
+  {
+    "path": "chuni_penguin/ui/ranking.py",
+    "sha256": "e17caee20c61169cd57bb51e9f0f2c6512ef8a02b1af1d9fdf84fb5dbde2a7b0"
+  },
+  {
+    "path": "chuni_penguin/ui/rating_chart.py",
+    "sha256": "c588abf7d1d1c08328e56a2485644484652f81f34c5f2a46d6a181112c26dc8b"
+  },
+  {
+    "path": "chuni_penguin/ui/recent.py",
+    "sha256": "db76735731ec9c84891c2b0081e0899868504fbc07f67028299bc247a5eabd01"
+  },
+  {
+    "path": "chuni_penguin/ui/select_to_compare.py",
+    "sha256": "29469b8d296bc309f16389f5fd4ac05991ea9d761553a87a7f3c7c9e9cf218bb"
+  },
+  {
+    "path": "chuni_penguin/ui/songlist.py",
+    "sha256": "40c6cb59450fb76efcc1bfdbb6ee37428fe186ed18c310fc9fdf192c938d3fbe"
+  },
+  {
+    "path": "chuni_penguin/ui/song_details.py",
+    "sha256": "1d269ecedda960b1d1a35355e954197517757e980fa04406579eb35e2bb12cc5"
+  },
+  {
+    "path": "chuni_penguin/ui/song_info.py",
+    "sha256": "539e8bd555a45a0d3a39451fca6df23a47ebc0c9db0f2e76883732bbc725488a"
+  },
+  {
+    "path": "chuni_penguin/ui/teams.py",
+    "sha256": "60d4f5d8a116839d99abed6ae3a40b49f8779a7529f54e4171e3c36246604d25"
+  },
+  {
+    "path": "chuni_penguin/ui/_base.py",
+    "sha256": "78a03874a872c88700ea24a309c6e7636914949cbed99fe45a717d71327cc479"
+  },
+  {
+    "path": "chuni_penguin/ui/_embed_pages.py",
+    "sha256": "7bf641d00386b8c9c887fc62bcfad4c289524dc705ef4c74747211f8b7495948"
+  },
+  {
+    "path": "chuni_penguin/ui/_pagination.py",
+    "sha256": "ef9dfd75545bf15644a56090058a312bc7ba9448e0b083fd722e2f05a371d972"
+  },
+  {
+    "path": "chuni_penguin/ui/__init__.py",
+    "sha256": "d17eca1082e9051e73c48de50d000e8cdcfeacf7c121485ffae8b2002e2fee22"
+  },
+  {
+    "path": "chuni_penguin/utils/event_loop.py",
+    "sha256": "7ae356a23b22ea49a5fb4913ce9c45f6b54ab97ab34d27d33859c602e3c6b879"
+  },
+  {
+    "path": "chuni_penguin/utils/formatting.py",
+    "sha256": "2fdffc762a4d0b22e1b18198db622b83e985eb0668ef2e2cad458e54021f58bf"
+  },
+  {
+    "path": "chuni_penguin/utils/hishel.py",
+    "sha256": "e37a113a6dd1766508f9d15c77e0cc0e4a13a5e7e8ae4f872d732b326d53aa3c"
+  },
+  {
+    "path": "chuni_penguin/utils/json.py",
+    "sha256": "9b286de8fe03bc0903aa58f0158bc55e669f36d82d131d0a38933dc7433e3994"
+  },
+  {
+    "path": "chuni_penguin/utils/localization.py",
+    "sha256": "bcf1e260debe7c93fdcdae64363199a5c763a2edbbdd3e4fbd0fc8bf192a6d4b"
+  },
+  {
+    "path": "chuni_penguin/utils/misc.py",
+    "sha256": "3d735f8357762bab7219f609fffe8e721d818000b57d855ec7366bf862d9e373"
+  },
+  {
+    "path": "chuni_penguin/utils/monkey.py",
+    "sha256": "feccc5db024f5d42f54f57b5a3f6f966c1178edf15e748004f4c88b15b5c10d1"
+  },
+  {
+    "path": "chuni_penguin/utils/runtime_metadata.py",
+    "sha256": "7dcfda5dca774eba1e239c3e40c3beda568f974c835e491c365f8c4de74bd4b4"
+  },
+  {
+    "path": "chuni_penguin/utils/score_messages.py",
+    "sha256": "9abedeae34cac012fd384a88849832a1e8603c5439962e7399b44561459b85d5"
+  },
+  {
+    "path": "chuni_penguin/utils/sync.py",
+    "sha256": "78c92b263a110b0e8b948b0385fa7733cc0b8f800e79442918fcd7a86905d809"
+  },
+  {
+    "path": "chuni_penguin/utils/versions.py",
+    "sha256": "55bef1b1452acf8dba4b1b87b42aabbc0f7eac6202b795ac95c2df0154f6fb42"
+  },
+  {
+    "path": "chuni_penguin/utils/__init__.py",
+    "sha256": "a4cc1a7c65f5c185a3fe0a594e643be07beb8f78e8d869df7163150f5f6608cc"
+  },
+  {
+    "path": "chuni_penguin/web/routes.py",
+    "sha256": "fe8df4e73e99f2e77530fb963d09f59b8b6369700983bf694ae810798197d8e7"
+  },
+  {
+    "path": "chuni_penguin/web/__init__.py",
+    "sha256": "3a76896a065974804883dea12e75d7aac227c1a9fff5c0afe05f297a025bbdd5"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/adapter.py",
+    "sha256": "93f8a360b5d5a1c2823c3e3347a46c6f5a3e1131a6cbc97a1ee9a24c06d02ba0"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/consts.py",
+    "sha256": "3b1adddddf3518a6bcd229ac75cb6ea03f40ec65388097802ecdd7cfd7910bab"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/errors.py",
+    "sha256": "419c995b1df51a30ed189d5c26995625dff31a36a3567f4eb7fb6e9b722f0f6b"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/parser.py",
+    "sha256": "2d5a0a5bf7cfe1c852931a1846bdffb278f315711aad4105d9d6f07808619a8c"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/utils.py",
+    "sha256": "5d1250632d42351df5d89fc1cc5d53f043e1433ab19907bd0b8819df7c7f826f"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/_hooks.py",
+    "sha256": "b4f7eb2155c3b4fbd3779d88bb37ccf8c548c6e73bb001708ebad1fefd882a79"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/__init__.py",
+    "sha256": "9b890cf85527c5e4a50bff74414c6a30d91a0a891448e2497b126f6d27e82375"
+  },
+  {
+    "path": "chuni_penguin/adapters/kamaitachi/adapter.py",
+    "sha256": "8802ccd8d2fc15754e94d1d5c8c9a0249d0d145c5e58bea2bb1404ee95f8ce0d"
+  },
+  {
+    "path": "chuni_penguin/adapters/kamaitachi/errors.py",
+    "sha256": "6916297adb887d2df99966414e06232ebc24aa030e5417dbaed05abdef701554"
+  },
+  {
+    "path": "chuni_penguin/adapters/kamaitachi/parser.py",
+    "sha256": "bdaa20e88a1e0300dc2273147632a60aec7820eeecd227529b4d32d995e225fc"
+  },
+  {
+    "path": "chuni_penguin/adapters/kamaitachi/types.py",
+    "sha256": "76c4d4c8b3efa550be6768dd3392b3c7b35faa780e28fb2acd4c9b417f1e3a1a"
+  },
+  {
+    "path": "chuni_penguin/adapters/kamaitachi/__init__.py",
+    "sha256": "a46cb7634573fbdcc4cdca3580331f0afe9336048ddf0fb5dd488a4d2ec8ebc9"
+  },
+  {
+    "path": "chuni_penguin/adapters/chunithm_net/assets/titles.json",
+    "sha256": "13dacdc8f6598958ac71d56787dffc0a3ecd56ec5900f3a0eb2dd77bd5f31256"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/aliases.py",
+    "sha256": "1b39fe0483cf4141abf55d35793b586f5ad19f4487b6cf6693ffdcdc4cb33903"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/auth.py",
+    "sha256": "93a7b867b2c58915356a18037aa9e5bea3db64cc20a249dacc63beb9d9e410c9"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/best_plays.py",
+    "sha256": "dfc76e3943b43eb66cda5e57d266e1365be868fe28bb4cefedf1c5c71cb2daea"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/calculators.py",
+    "sha256": "ce5d22b69b096cd87a17c1e6e53d1613134aa568d26184c7c30c9c5d1c78432f"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/chart_media.py",
+    "sha256": "3482ee495c6dc4af6741ed66b9558038d870af09aa730c626469bc38dfae749a"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/courses.py",
+    "sha256": "5bd3b86a85fcac9f35ed4c10f6abef54bb9b0c75efcaa440bbcb9e130aa309f5"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/guides.py",
+    "sha256": "33a8bb248884bb5f78a2e725064af285a5007f99edb1d2af01cdfad23804ae8e"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/kamaitachi.py",
+    "sha256": "63f25f4743279503aaee29ce343c6ea68f8e27d34e4ebf935cd81486dc5676b5"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/leaderboards.py",
+    "sha256": "d99a6083fc5afc119fb710ea0c76927c564cb1f90f5a64b8f7c7630814cfa94c"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/linked_verse.py",
+    "sha256": "cbf8f25b92bc2f44b8a45473c1182e86df6cb5fca9220dc8045b8b4b44be9d9a"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/login_bonus.py",
+    "sha256": "d99211c6f4bf95cd12848296517feefe0b486b33bb509059125ca8d91c35b505"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/networks.py",
+    "sha256": "6df12acd4e4f73e441beae872972710f42d144b8ce284a368a5bce6f0f6c77a2"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/player_actions.py",
+    "sha256": "e4acfdbce78969100dba16a03c8bfe1b980e8b4cc243892746b96c2eb1e7ae2b"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/player_statistics.py",
+    "sha256": "88657df45cf50e8e249890bef2602e214d7e664aedecfd1d376346edf7378baa"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/profile.py",
+    "sha256": "0086b9162ad1c1c361f6a7d7d6e43cd0d852b67641b28f52ff1a98c741e69ccf"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/profile_settings.py",
+    "sha256": "315406878ea9e79770ca6c8ec6ec6a1f67f3f0b4c72a2ae149fe5d0f280556eb"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/provider_catalog.py",
+    "sha256": "80c6d970c9bdf6db72354e2fbb2f0d19f347ec1c7d9adc085871a78375a33925"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/rating_analysis.py",
+    "sha256": "712213a3db74a6e3779f1bd20a2265a5abe21aaefbe33040de5e15ff80da211d"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/rating_goals.py",
+    "sha256": "30c6f33d54789c865f9b7f8603408dce66667d56d85d94641152de60395d8e42"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/rating_search.py",
+    "sha256": "4a4a15d6c29fa2e07b482c2b91c0ee2fe0e473a2e449fecb4953c526d1f33abc"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/recent_scores.py",
+    "sha256": "160a5c51210952778935bd0955d914cf5e4286d4e2b3c4455390279cba21c4e3"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/recommendations.py",
+    "sha256": "ca441baf47182271f99f65217d298fd20fd88cb9393e7e11cceabe77f0222261"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/records.py",
+    "sha256": "74dc229f43df8fe4cf3ced3ad8f7232395a68abf9647648af67e655b415e25ed"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/score_queries.py",
+    "sha256": "0c53c24312f6f1dcf1be48b5e8967134a5edbedfda28bc55dd8174b0eb8445e3"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/score_sync.py",
+    "sha256": "35300b1a1407ba9502ca445e36dcb0ebe6ff5b8647834403bd1c96b88451fe6b"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/search.py",
+    "sha256": "4ad3f8c5f5dc95e21dea11c2118445ad3fa2f800b7b66c0344a6da0e6ecab6b5"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/song_artwork.py",
+    "sha256": "36c1498ea1cd978f4081b2fe253a3de22f8a7ef319059e63d02034079a1f606f"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/teams.py",
+    "sha256": "b1373e66788c46e7dd43d492d98e044465d85c2ccb0496a234ca487ea714ccfd"
+  },
+  {
+    "path": "chuni_penguin/cogs/chunithm/tools.py",
+    "sha256": "73dbb15f713245ec55a7b4462567ba5997bf3d2b6d9cffc15eef55adfdaaeeb6"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/cog.py",
+    "sha256": "9c42dc6abbc48e1cb1259ca18cde3afb51e101225d29145c4a6ffadcb630410b"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/_session.py",
+    "sha256": "75e278191c34e9df86e2ade1591adc28e143f95578713f196e1dfe9b80014c55"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/__init__.py",
+    "sha256": "7fd08f38b51ec9dfafafbecacdf05b7927c38c5d96133c62dc559345076e40ee"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/base.py",
+    "sha256": "22762b36db4ffc4ce3453fa3891e2597e11805480fe329bc0e42b35c9ac03e1a"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/character_age.py",
+    "sha256": "a9244500879b1e09a465e311daf70fef91cdaccd69351a111142bdbd217c8e65"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/end_game.py",
+    "sha256": "781859cd12bc366d6eb518e429569485210c966782269b32622e9c150a54a479"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/image.py",
+    "sha256": "b0c1a033a92df736a1d13caa3149f5ab9674c7fd9cbc97c7774448a1b8c333cf"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/show_answer.py",
+    "sha256": "4008b224cbff881d4cea03b0a79b66aaaffec4872eb08ede1eed2b9110b5d1f6"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/start.py",
+    "sha256": "58b9cc3a87535f722dad7057f50bcd587a62f25d6cdf9a8f065cea1e9cc7ffab"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/voice_call.py",
+    "sha256": "300ad6105e02a0a7898f3b8e808fc3ae7a205593a859176c86a353f99a7ddcbd"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/voice_message.py",
+    "sha256": "210db1923b3f5cc81fb242916d20162a8964463c46bbcff7e3219c22869c0cb8"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/wait.py",
+    "sha256": "7dbc4c6c2a3a3f7da9b034e77674959461fec2eaf1fe0be5e76fe6d5d22a0bd7"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/wait_for_answer.py",
+    "sha256": "850dbdd9d1fcf8c9ba55ff7c7976e204a62144bed41e3fa4a69d4ba7e07700f8"
+  },
+  {
+    "path": "chuni_penguin/cogs/gaming/states/__init__.py",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/env.py",
+    "sha256": "bb054e564dc38ecf42d891139763aa0656cf5f6d23fa9ccd363c83883697c97a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/README",
+    "sha256": "51b990c7e2cc2e649b1733029e81e20a60f768c4ee848e9cf3f97fbcfb37d51d"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/script.py.mako",
+    "sha256": "d61e1a22683febad100baee605980dabd1fa4c4e933b7edf98f8ad48d5197017"
+  },
+  {
+    "path": "chuni_penguin/database/seeds/courses.json",
+    "sha256": "cf14d65674cc34c5309a220ad9e956eb5e738072fbe261f28b54f149638d70f2"
+  },
+  {
+    "path": "chuni_penguin/database/seeds/linked-gates.json",
+    "sha256": "56d637cd5c2ace4b2245f8b69335277de62bbf3f2e02d966f7f5b754a2d2b280"
+  },
+  {
+    "path": "chuni_penguin/database/seeds/songs.json",
+    "sha256": "8b71ccf07c5da0bcd8a2a8c21e56ba968bbe5aeb3240d2c3bac493b316d0992e"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_12_1244-88a887bd5d02_make_chart_constant_and_maxcombo_nullable.py",
+    "sha256": "760d5f7d32318c7cee6aafd221ac368135e425666390fc6cdc2c64e330c1a003"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_12_1323-e6d4f33f73d6_add_owner_id_to_aliases.py",
+    "sha256": "3a8befb92066053ba5b9f2830b1f4881bb7ec6077025abd06c86b8670d63b2f5"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_12_1509-50f211f12e75_make_bpm_nullable.py",
+    "sha256": "a00028f2e685106e9cd2a82c4916f3d1cc4533a67c1b798d3915c9230bfa4b96"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_12_2217-1e5d59ce579e_convert_level_into_string.py",
+    "sha256": "b59c5d22ee62994d9f8b7921faa77edbde1f064d7f2e45123039f584bc6be0e4"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_14_1157-8bc93af364bc_add_extra_chart_metadata_charter_notes_.py",
+    "sha256": "ade5e727eaa0d236cc0d7971b8d1c88a72382a46ebf562ff1cbd7ba19642ded1"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_15_2131-63f40487528e_add_kamaitachi_token_to_cookie_table.py",
+    "sha256": "7024b650e2c02a5e0441fb9eb5151853322a88e8a90f1f9b5d5f1a23b8dd212a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_08_18_0103-c475c7432a53_add_sdvxin_end_index.py",
+    "sha256": "95de43560839794cc137353531bf8e5d758ea33a2fc2430f242a1f1043f4764a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_09_28_2231-ac60aaf138a1_migrate_to_chunithm_id.py",
+    "sha256": "7200bbffdf2fc945a31b3d4d96f398c62fa37b91c0eb51f66ebc1352cbed4578"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2023_09_28_2306-8cd5df7f3bb4_use_international_cdn.py",
+    "sha256": "f31d008b033d489e0ffefbf2361ecf36bb570c0d505cb9ee8dc689632cc413c9"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_17_1312-8866455c1da9_move_jackets_to_a_different_table.py",
+    "sha256": "9e7227d4c5a868ef32a8ba0f23754b5a9e697c8b219756ecca1cc39488543a82"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_17_1343-901af18ec932_all_songs_are_international.py",
+    "sha256": "8996b933a2c4d1a0fae1d33b9239da44e83a1aead0f2524dbdc7c0a8c40df126"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_17_1418-50bb24f19a3a_use_a_proper_cookie_jar.py",
+    "sha256": "d4907928475a8e3b6c91106411166d4228917a549758259bff393478575a8e23"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_17_1722-9eb37ded9579_add_available_removed_flags_to_songs.py",
+    "sha256": "c14eb150fdf57c6cc1ce71ab7a5bbcd6785b047d2c2db4f69146a1bfe66d6a73"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_26_1449-f38b7c3d0930_separate_version_and_release_date.py",
+    "sha256": "2751792c04a3232e33015441892d651d1dbc4c5667662a32a3b55d5f0f3f931a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_03_26_1623-4d22bfbbe8a9_fixing_fucked_up_song_jackets_migration.py",
+    "sha256": "ca08059b660ad9494c4b8bfb46d47a0c0a164f31f0ef0f49557059554d6f549c"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_05_15_0751-4b3abcf223b6_min_bpm_and_max_bpm.py",
+    "sha256": "373254aa8458182a4acfe669516058613cbf2d8a5165518caa2e79fdff8a7c28"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2024_07_04_1250-d701d4d0c04b_add_chart_specific_version.py",
+    "sha256": "9e356b6aaf4a2d0ed02b6482b598e571de8e847190d9c53650c73db5a79f6bd6"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_03_14_1202-3ca7cf4f0623_partition_guess_leaderboard_by_discord_.py",
+    "sha256": "87dd51a92c83f0a70057667ea191513d82e87867a3f48a4a0b6b0411963836f9"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_03_14_1205-e8f3627eef6d_make_guess_leaderboard_unique_by_.py",
+    "sha256": "9daa5ab2917dd5718c45ff4158a60cab2d128fae7f96a29846ae0fe970d7f72c"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_03_14_2106-aecb82bf47df_section_off_guess_leaderboard_by_.py",
+    "sha256": "0c878bd7c904eba2bdd10b861bdf755a3a9b405bae4db940ffe95efcc0980a17"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_03_17_0718-47839ec2cbd5_create_database_indexes.py",
+    "sha256": "bdb07117f89d15b152cd4c2df6e1901abcee6d07a2d42162e8ad1dcc424123aa"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_03_22_1138-f0a878ad32b2_create_indexes.py",
+    "sha256": "e38c1474d16bd49db96de26e4f5722a20c18853888a6c8b84ab94c9b13c3f766"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_04_07_1642-9b0c79087522_user_config.py",
+    "sha256": "123f9b73c301f61c7fea71265ddcaf4a3bec475fb714a21400a73395b5084cc3"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_04_15_1100-ab685e768548_add_privacy_mode.py",
+    "sha256": "432518f14546ce6fe1ffc3e0a1fe2bc22575e0643c85eb1ebe9deae7f190143b"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_05_22_1326-0405631b21f3_add_chunirec_id.py",
+    "sha256": "3feb26cd29fd372a2735f9b16128a306f337c399922f6e4f4dee11ac30583649"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_05_22_1436-48e74e7cff0b_add_wikiwiki_title_override.py",
+    "sha256": "2c8220a8e4b6e1de551c52ca552ede7ffe9ecd77e46fdc97bc1bace596b75732"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_06_24_0621-6cba06215123_split_guess_leaderboard_by_game_type.py",
+    "sha256": "a4548923202308984e1d3b2f034c7b0012ae0a6a8f9c834f0442909611e7d490"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_08_01_1932-2ce91159c498_track_alias_uses.py",
+    "sha256": "06f215d76913f9b73d8cf760e32cf54542ff2631862ae096b5ab24c8aefa2ab0"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_08_10_1549-be44dbe4b4bf_denylist.py",
+    "sha256": "579bbfd86de7f7e004e488a74742c48017b310751a0082b179239737a45ccf13"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_09_26_1757-6d9947d87ec3_create_missing_indexes.py",
+    "sha256": "75d470237810f1a1fd1658fa6d5c9ede70def406897eb89e9d6cc1edb1117a5f"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_09_26_2320-f7a38a1c89a3_add_tachi_chart_id_to_charts.py",
+    "sha256": "aece47204632ffba4efd0246e6cae1f2747fe15bd5fb86f2f2a7497985b79cee"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_09_30_1829-753e71fc26da_easter_egg_tracking.py",
+    "sha256": "f9ee76948d21ede0aef0bafb6ae5109c95f34ee596e21b03512c3436a1cf3d23"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_01_1330-e7f25090f7cf_is_hidden_on_chuninet_song_flag.py",
+    "sha256": "68a1a769f064af9180e5beadcf4acc7c58c76a70a19e2a438c59f671a015eee6"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_01_1523-c9ba77d3080b_fix_song_id_datatype.py",
+    "sha256": "2ff52f98e48039907a1e72497ca108b9a1bf027b1ca84421d9636af40fda4216"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_05_1110-75ed42605cb2_courses.py",
+    "sha256": "5581fe6797bca0c937ac82eb3b0d528c6c3c2f55237a31ad9847ff1fac0655c9"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_08_1001-9e4907a4b966_lowercase_course_class.py",
+    "sha256": "c85696ab084e0daf7e10b67694f22d6ef15b9ce976557e167f8f370a6d8fbaff"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_17_1616-9f59797184ae_add_denylist_reason.py",
+    "sha256": "c1caace4a2a64de033751da7a5b35396c728521a40114db94e0baf2b4dba6cc8"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_10_31_2100-4d8020ae6521_allow_one_sdvxin_chart_view_to_be_.py",
+    "sha256": "ca643fe40f4fbdd12f14bdcecbf1bbc9d5c0128169e95f90491bb9808500d4d9"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2025_12_01_1448-f27a9e31efab_supporter_contributor_roles.py",
+    "sha256": "882dad61778c4fce179052ce0819382f3c50e58950481f9e846a142b47742d2f"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_01_1011-c1c21cbbd46f_pending_kt_imports.py",
+    "sha256": "6993da3a4b8d096caf4b5237d60f19682ca6c70da5778afa94f2d9f9d1257ec7"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_01_2201-a44dd650f884_index_for_pending_kamaitachi_imports.py",
+    "sha256": "a345e268292453cedcee9a300974b5a23484e0367805bd3e699fe285e403c8ab"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_10_1446-62eb03aabe2b_personal_bests.py",
+    "sha256": "c67a6106abf9fdc29d7e01a1d3ea27b0866a0efc5abf10f8eecb7d4bee2f6fa9"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_11_1259-6d34ec73965f_command_uses.py",
+    "sha256": "ced4d4451e8221fc0d57078da956b44f03b62604761b16408be90c860c6ebe94"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_13_0853-304e2e43729c_fix_1_in_uint64.py",
+    "sha256": "cf9a5792df72888b07bab335ca66f5d1ddbaf736b0fcc852c49df8db59f8d80a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_13_1058-d8f8c9819006_command_permissions.py",
+    "sha256": "36aaaaf4b4e28348182f6d1a18877594d95bac2626b1967fd57288e830ff2c50"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_13_1130-89641906c5d2_unique_command_permissions.py",
+    "sha256": "3b4eb6a65b8ac412b212c644b8511751cc50350289c6edad305cfd1e42473f17"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_14_0749-d1122c2cacab_specific_chart_availability.py",
+    "sha256": "72962849302e4753a96d3a3c29b24738cbd26042cf28cfc4d99ffaa32a785f14"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_01_14_0938-1f99105ae5b4_change_backing_type_of_datetimeutc.py",
+    "sha256": "b3ce142d8cd883ee488bf44b93eae10192356f1edccdffc6c6c8ee693eca2efb"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_02_04_1427-166e390c5661_linked_verse.py",
+    "sha256": "3f3d8debe7beb35d773cf962215655480e44d6297db16049cc59f77e1e37bcdf"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_02_04_1514-e2da443dc3e2_linked_gate_conditions.py",
+    "sha256": "30ed2fd0208936aab41e9ad17d9593e29fe901b5416c817072b378265d224505"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_02_25_2039-ba5be27156ff_cookie_friend_code.py",
+    "sha256": "7815eebaa37f56325de3722f1c199b4369d9b6e0f39d008839bda843e4d4f89a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_03_15_1925-c361540d731b_nullable_jacket_filename.py",
+    "sha256": "d3331bae7907d32ee06979d0bb20d8f0e80ddad9f111b868bbbbe1f100790c94"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_03_27_1505-f184cc61d80f_character_ages.py",
+    "sha256": "b1f4617404dfecd190c7e4f8c1bbf8b258cbd3d90a60eda869f0bf11f59e289e"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_04_09_2245-e44228715c2a_store_calculated_rating_in_pbs.py",
+    "sha256": "1cf457ca9178f9daf4f18593e2bad715b713949d5e5e06d459bc3079526960e4"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_04_24_2213-12d14e1c5575_add_duration_to_songs.py",
+    "sha256": "a2411aa3f954d61677c52f9300c7e396e6f89b3662c84ba7f3c4ba270b3c4d0c"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_04_26_0008-0632579fe10c_new_exciting_bullshit_linked_verse_.py",
+    "sha256": "399a8d35eee9ed64d4e509b9a63522116f373b75ba83dc9ad59b00cd2495193a"
+  },
+  {
+    "path": "chuni_penguin/database/alembic/versions/2026_10_12_0000-7e2a0c9d4b31_add_external_identity_mapping.py",
+    "sha256": "0fec1ccb6019757f14886f79690e072387022d340939e0c489ff857550101014"
+  },
+  {
+    "path": "chuni_penguin/ui/components/banned_embed.py",
+    "sha256": "a620a1a9cfb895104c575d084103cce426ee733854b660e6f576e53f781e0f19"
+  },
+  {
+    "path": "chuni_penguin/ui/components/chart_card_embed.py",
+    "sha256": "c4045ffc08672da87cebd143900518d98285fc26cc26a4d9c64d7e1f239b6c81"
+  },
+  {
+    "path": "chuni_penguin/ui/components/score_card_embed.py",
+    "sha256": "3c431b22c16f31eac0864c86c899d60d9447b6a4407258c1c5d983bc80fb11b8"
+  },
+  {
+    "path": "chuni_penguin/ui/components/__init__.py",
+    "sha256": "28c0d51c8872bfbf56785f0f2d50e9c3bada4844df2559ab0edbeab32a28070e"
+  },
+  {
+    "path": "packages/httpx-aiohttp/pyproject.toml",
+    "sha256": "3225bd6381b8b41a01142aef16b3063648c04ca9ceb8158c2a95416d547eaccc"
+  },
+  {
+    "path": "packages/httpx-aiohttp/README.md",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "packages/penguin-native/.gitignore",
+    "sha256": "82305f1814e5e5f381156c9334b7391a11f5a46f42037c5a0ed4c9a144b0a662"
+  },
+  {
+    "path": "packages/penguin-native/Cargo.lock",
+    "sha256": "0b1e7a9e944f4932b86e33228ff27b308d9639caa771975127c7e7f39d708adc"
+  },
+  {
+    "path": "packages/penguin-native/Cargo.toml",
+    "sha256": "6571be01e56a462ea3d51de223683cebebc5c96b70ee9df8dbfbdae58f7dbed8"
+  },
+  {
+    "path": "packages/penguin-native/pyproject.toml",
+    "sha256": "03042aad2111b4b6d5613533845ca2fc21d08822741b79b4929bb1a12550c161"
+  },
+  {
+    "path": "packages/httpx-aiohttp/src/httpx_aiohttp/py.typed",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "packages/httpx-aiohttp/src/httpx_aiohttp/_transport.py",
+    "sha256": "9c17d6c9a18e389748f18c399e574a972eddad6f59dfb378b6b40662d4b05191"
+  },
+  {
+    "path": "packages/httpx-aiohttp/src/httpx_aiohttp/__init__.py",
+    "sha256": "f9e9d01daaa09e34b390fbc2c3b84b540b17d140a41dbe5be9c2c73fb3624172"
+  },
+  {
+    "path": "packages/penguin-native/src/lib.rs",
+    "sha256": "9904750476dcb81b3bfe429b4dd57cf0bc1268b39c742db80d0ea4be8e1b0094"
+  },
+  {
+    "path": "packages/penguin-native/python/penguin_native/_native.pyi",
+    "sha256": "05893dc217cf47edb9cb02fa3e712d87333d8a28d0b463695bc8204d70e9ff5e"
+  },
+  {
+    "path": "packages/penguin-native/python/penguin_native/__init__.py",
+    "sha256": "16599de59f1834fbb4e4f5f5c7a7f458aa23d2b59063cf5fce22474f8b95097b"
+  },
+  {
+    "path": "assets/fonts/Inter_24pt-Regular.ttf",
+    "sha256": "d2a4911506ea4e124a47ca044e5e79f671ddf8f1a55f1ab9a56c58d088124b63"
+  },
+  {
+    "path": "assets/fonts/Inter_28pt-Bold.ttf",
+    "sha256": "1124006b716410e262a4d4b7c7a6acf8aed0b4c9f8e698d0e33b5ed66c677226"
+  },
+  {
+    "path": "assets/fonts/Inter_28pt-Regular.ttf",
+    "sha256": "3081ede8389f3516e8616d2b2fe60cac639b341640dff0250d253d3aac5e613f"
+  },
+  {
+    "path": "assets/fonts/NotoSans-Bold.ttf",
+    "sha256": "13a813c49624ae3ba3c5c6e72c5ebffc4b9e1e6ea32f421c04069b037c6ad431"
+  },
+  {
+    "path": "assets/fonts/NotoSansJP-Bold.ttf",
+    "sha256": "9e4e354e728cfc32e04bbc0bf686c7285a1cf47f64ce2ac27c1d813ad1dc9d63"
+  },
+  {
+    "path": "assets/fonts/NotoSansJP-Medium.ttf",
+    "sha256": "ac709de8022562e1218a41518440eddc7d35dd4896730587a8b4a4c80c98dbd8"
+  },
+  {
+    "path": "assets/fonts/NotoSansJP-Regular.ttf",
+    "sha256": "7c8597677e9fac0f54d7848ad18bc6a708dfb5baa4ebf4bd91e66efcca313bf3"
+  },
+  {
+    "path": "assets/fonts/NotoSansJP-SemiBold.ttf",
+    "sha256": "4881d1b63b7300452b9385f69a70d00c3607ff0728c35a0c5ce99705b97c2b2a"
+  },
+  {
+    "path": "dbutils/chunirec.py",
+    "sha256": "eed19bf74f849a9a7ee79b4199d39155307d610d19ac01ac8db8e020cd43ee9b"
+  },
+  {
+    "path": "dbutils/jackets.py",
+    "sha256": "bf2319a18c1d0ecb299a45319d2779455931e6754348027271615b6902c5a5f2"
+  },
+  {
+    "path": "dbutils/merge_options.py",
+    "sha256": "37fada6fe4d79da454f9f32343b5457e55f0845575b02c6f42e369fa07d9173c"
+  },
+  {
+    "path": "dbutils/sdvxin.py",
+    "sha256": "bf10f76513f3b51dbd985441723946e4c52200071a0e6f3d66c136aa9a016104"
+  },
+  {
+    "path": "dbutils/seeds.py",
+    "sha256": "55f6953358ad02cd7846575fc055f65056310a07dcca04410f5eead61bd799e1"
+  },
+  {
+    "path": "dbutils/tachi.py",
+    "sha256": "2bec445419a1f6e214ed6752f1a19e263898dbae9f3d1473059373347fecc78e"
+  },
+  {
+    "path": "dbutils/__main__.py",
+    "sha256": "b42475cf962e126605d9d4f8d2c907d563465cb396d2e6aed8594b6b42bb6931"
+  },
+  {
+    "path": "LICENSES/Poopenguin-MIT.txt",
+    "sha256": "32e94c97f3675bc9b77d6de55636e13eb3461c5a39d30fb71d0d661bc0034e28"
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+  "requested_title": "XL TECHNO -More Dance Remix-",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T13:25:53.101930+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+      "final_url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:25:53.472788+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\01\\source_snapshot\\source.html",
+      "sha256": "2c92b784a1c64b44047f2363e6958662621a23db21068ecc17c5fb494df955de"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:25:53.546886+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\01\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "XL TECHNO -More Dance Remix-",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "14+",
+    "const": "14.5",
+    "const_confirmed": false,
+    "notes": "1230",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 9061,
+    "end": 12337
+  },
+  "total_players": 21707,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\01\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 31,
+  "rank_csv_sha256": "1bebcff3dd40d70038378118e8ed6e27eeca4ef6b2d4c5c5f893d226e2ab95e9",
+  "status": "complete",
+  "completed_at": "2026-10-04T13:25:53.579477+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\01\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "f3ee534b58bd0958254a8dfb76bb41c808e369209edbf0dfa9b57fddcd45f3dd",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

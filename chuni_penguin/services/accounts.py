@@ -1,0 +1,576 @@
+import asyncio
+import contextlib
+import sys
+from collections import defaultdict
+from collections.abc import AsyncGenerator, Callable
+from typing import TYPE_CHECKING
+
+import aiolimiter
+import discord
+import httpx
+import httpx_aiohttp
+import msgspec
+from discord.ext import commands, tasks
+from sqlalchemy import select, update
+
+import chuni_penguin.adapters.utils
+from chuni_penguin.adapters.base import NetworkAdapter
+from chuni_penguin.adapters.chunithm_net import ChuniNetError, ChunithmNetAdapter
+from chuni_penguin.adapters.errors import (
+    AlreadyFriends,
+    AuthenticationError,
+    InvalidFriendCode,
+    NetworkError,
+)
+from chuni_penguin.adapters.kamaitachi import KamaitachiAdapter
+from chuni_penguin.application.lifecycle import cancel_loop
+from chuni_penguin.config import Config
+from chuni_penguin.context import PenguinContext
+from chuni_penguin.database import Chart, Cookie
+from chuni_penguin.logging import logger
+from chuni_penguin.services.account_context import AccountContext
+from chuni_penguin.types import Difficulty, PersonalBest
+from chuni_penguin.ui import FriendRequestWaitView
+from chuni_penguin.utils import AsyncRcContextManager, AsyncRWLockMapping
+
+if TYPE_CHECKING:
+    from chuni_penguin.services.catalog import UserSettingsService
+    from chuni_penguin.services.database import DatabaseService
+
+
+class KeiyoushiUserAgents(msgspec.Struct):
+    recommended: str
+    desktop: list[str]
+    mobile: list[str]
+
+
+class AccountService:
+    def __init__(
+        self,
+        database: "DatabaseService",
+        users: "UserSettingsService",
+        settings: Config,
+        current_user: Callable[[], discord.ClientUser | None],
+        *,
+        offline: bool = False,
+    ):
+        self.database = database
+        self.users = users
+        self.settings = settings
+        self.current_user = current_user
+        self.offline = offline
+        self._closing = False
+        self._closed = False
+        self._close_lock = asyncio.Lock()
+        self._contexts: set[AccountContext[NetworkAdapter]] = set()
+        self._requests: dict[asyncio.Task, int] = {}
+        self.user_locks = defaultdict(asyncio.Lock)
+        self.active_users = defaultdict(int)
+        self.user_agents: KeiyoushiUserAgents | None = None
+        self.chunithm_net_limiter = aiolimiter.AsyncLimiter(10, 1)  # 10 reqs/sec
+
+        self._chuni_net_sessions: AsyncRWLockMapping[
+            int, AsyncRcContextManager[ChunithmNetAdapter]
+        ] = AsyncRWLockMapping()
+
+    async def start(self) -> None:
+        if self._closing:
+            msg = "Account service is closing."
+            raise RuntimeError(msg)
+        if not self.offline:
+            self._update_user_agents.start()
+
+    async def close(self) -> None:
+        self._closing = True
+        async with self._close_lock:
+            if self._closed:
+                return
+            cleanup = asyncio.create_task(self._close_contexts(asyncio.current_task()))
+            try:
+                cancelled = None
+                while True:
+                    try:
+                        await asyncio.shield(cleanup)
+                        break
+                    except asyncio.CancelledError as exc:
+                        if cleanup.cancelled():
+                            raise
+                        cancelled = exc
+                if cancelled is not None:
+                    raise cancelled
+            finally:
+                self._closed = True
+
+    async def _close_contexts(self, caller: asyncio.Task | None) -> None:
+        await cancel_loop(self._update_user_agents)
+        current = asyncio.current_task()
+        pending = [
+            task
+            for task in self._requests
+            if task is not current and task is not caller and not task.done()
+        ]
+        for task in pending:
+            task.cancel()
+        if pending:
+            await asyncio.gather(*pending, return_exceptions=True)
+        results = await asyncio.gather(
+            *(manager.__aexit__(None, None, None) for manager in tuple(self._contexts)),
+            return_exceptions=True,
+        )
+        failures = [result for result in results if isinstance(result, BaseException)]
+        if failures:
+            msg = "Account context cleanup failed."
+            raise BaseExceptionGroup(msg, failures)
+
+    @contextlib.asynccontextmanager
+    async def _request_scope(self):
+        if self._closing:
+            msg = "Account service is closing."
+            raise RuntimeError(msg)
+        task = asyncio.current_task()
+        assert task is not None
+        self._requests[task] = self._requests.get(task, 0) + 1
+        try:
+            yield
+        finally:
+            count = self._requests[task] - 1
+            if count:
+                self._requests[task] = count
+            else:
+                del self._requests[task]
+
+    @tasks.loop(hours=24, reconnect=True)
+    async def _update_user_agents(self):
+        async with httpx.AsyncClient(
+            transport=httpx_aiohttp.AIOHTTPTransport(retries=5)
+        ) as client:
+            resp = await client.get(
+                "https://keiyoushi.github.io/user-agents/user-agents.min.json"
+            )
+
+            if resp.status_code != 200:
+                logger.warning(
+                    "could not update user agents",
+                    tag="update_user_agent_failed",
+                    status_code=resp.status_code,
+                )
+                return
+
+            try:
+                self.user_agents = msgspec.json.decode(
+                    resp.content, type=KeiyoushiUserAgents
+                )
+                logger.debug(
+                    "updated user agents",
+                    tag="update_user_agent_success",
+                    count=len(self.user_agents.desktop)
+                    + len(self.user_agents.mobile)
+                    + 1,  # for recommended UA
+                )
+            except msgspec.DecodeError as e:
+                await logger.aexception(
+                    "could not parse user agents",
+                    tag="update_user_agent_failed",
+                    exc_info=e,
+                )
+                return
+
+    @_update_user_agents.error
+    async def _update_user_agents_error(self, exc: BaseException):
+        await logger.aexception(
+            "unhandled exception updating user agents",
+            tag="update_useragent_failed",
+            exc_info=exc,
+        )
+
+    async def _get_kt_chart_id(self, song_id: int, difficulty: Difficulty):
+        async with self.database.read_sessionmaker() as session:
+            query = select(Chart).where(
+                (Chart.song_id == song_id) & (Chart.difficulty == difficulty.short())
+            )
+            result = (await session.execute(query)).scalar_one_or_none()
+
+        return result.tachi_chart_id if result is not None else None
+
+    async def _get_kt_chart_ids(self, song_id: int):
+        async with self.database.read_sessionmaker() as session:
+            query = select(Chart).where(Chart.song_id == song_id)
+            results = await session.execute(query)
+
+        return [
+            result.tachi_chart_id
+            for result in results.scalars()
+            if result.tachi_chart_id is not None
+        ]
+
+    def kamaitachi(
+        self, discord_id: int, token: str
+    ) -> AccountContext[KamaitachiAdapter]:
+        return AccountContext(self, self._kamaitachi(discord_id, token))
+
+    @contextlib.asynccontextmanager
+    async def _kamaitachi(
+        self, discord_id: int, token: str
+    ) -> AsyncGenerator[KamaitachiAdapter, None]:
+        async with (
+            self._request_scope(),
+            KamaitachiAdapter(self.database, discord_id, token) as client,
+        ):
+            yield client
+
+    def chunithm_net(
+        self,
+        user_id: int,
+        lwp_cookies: str,
+        *,
+        username: str | None = None,
+        password: str | None = None,
+    ) -> AccountContext[ChunithmNetAdapter]:
+        return AccountContext(
+            self,
+            self._chunithm_net(
+                user_id, lwp_cookies, username=username, password=password
+            ),
+        )
+
+    @contextlib.asynccontextmanager
+    async def _chunithm_net(
+        self,
+        user_id: int,
+        lwp_cookies: str,
+        *,
+        username: str | None = None,
+        password: str | None = None,
+    ) -> AsyncGenerator[ChunithmNetAdapter, None]:
+        async with self._request_scope():
+            async with self._chuni_net_sessions.read() as sessions:
+                rc = sessions.get(user_id)
+
+            if rc is not None and rc.refcount > 0:
+                await logger.adebug(
+                    "using cached chunithm-net session",
+                    tag="cached_chunithm_net_session",
+                    user_id=user_id,
+                    refcount=rc.refcount,
+                )
+
+                # In case it got removed between the read and here.
+                async with self._chuni_net_sessions.write() as sessions:
+                    sessions[user_id] = rc
+
+                async with rc as session:
+                    yield session
+
+                return
+
+            session = ChunithmNetAdapter(
+                self.database,
+                user_id,
+                lwp_cookies,
+                username=username,
+                password=password,
+                limiter=self.chunithm_net_limiter,
+            )
+
+            if self.user_agents is not None:
+                session.user_agent = self.user_agents.desktop[
+                    (user_id >> 22) % len(self.user_agents.desktop)
+                ]
+
+            async def on_exit(session: ChunithmNetAdapter):
+                async with self._chuni_net_sessions.write() as sessions:
+                    with contextlib.suppress(KeyError):
+                        del sessions[user_id]
+
+                await self.database.writer.execute(
+                    update(Cookie)
+                    .where(Cookie.discord_id == user_id)
+                    .values(cookie=session.lwp_cookie_jar)
+                )
+
+            rc = AsyncRcContextManager(session, on_exit=[on_exit])
+
+            async with self._chuni_net_sessions.write() as sessions:
+                sessions[user_id] = rc
+
+            async with rc as session:
+                yield session
+
+    def _get_not_logged_in_message(
+        self,
+        network: type[NetworkAdapter] | None,
+        author_id: int,
+        target_id: int,
+        *,
+        is_interaction: bool,
+    ):
+        network_name = "" if network is None else f" to {network.NAME}"
+        command_name = (
+            "kamaitachi link"
+            if network is not None and issubclass(network, KamaitachiAdapter)
+            else "login"
+        )
+        prefix = "/" if is_interaction else self.settings.bot.default_prefix
+        cta = " to log in." if is_interaction else " in my DMs to log in."
+
+        if author_id == target_id:
+            return f"You are not logged in{network_name}. Please send `{prefix}{command_name}`{cta}"
+
+        return f"<@{target_id}> is not logged in{network_name}."
+
+    @contextlib.asynccontextmanager
+    async def network(self, ctx, id=None, *, kamaitachi=False, chunithm_net=False):
+        author_id = ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        target_id = id or author_id
+        async with self.user_locks[target_id]:
+            manager = self._network_unlocked(
+                ctx, id, kamaitachi=kamaitachi, chunithm_net=chunithm_net
+            )
+            client = await manager.__aenter__()
+            self.active_users[target_id] += 1
+        # Recent-score views keep their account context open. Do not hold an
+        # exclusive mutation lock throughout a read/view's entire lifetime.
+        try:
+            try:
+                yield client
+            except BaseException:
+                if not await manager.__aexit__(*sys.exc_info()):
+                    raise
+            else:
+                await manager.__aexit__(None, None, None)
+        finally:
+            self.active_users[target_id] -= 1
+
+    @contextlib.asynccontextmanager
+    async def _network_unlocked(
+        self,
+        ctx: commands.Context | discord.Interaction,
+        id: int | None = None,
+        *,
+        kamaitachi: bool = False,
+        chunithm_net: bool = False,
+    ) -> AsyncGenerator[NetworkAdapter, None]:
+        author_id = ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        target_id = id or author_id
+        is_interaction = (
+            isinstance(ctx, discord.Interaction) or ctx.interaction is not None
+        )
+        user_config = await self.users.fetch_user_config(target_id)
+
+        if user_config.privacy_mode and author_id != target_id:
+            msg = f"<@{target_id}> is not logged in."
+            raise commands.CommandError(msg)
+
+        async with self.database.read_sessionmaker() as session:
+            stmt = select(Cookie).where(Cookie.discord_id == target_id)
+            cookie = (await session.execute(stmt)).scalar_one_or_none()
+
+        if cookie is None:
+            msg = self._get_not_logged_in_message(
+                None, author_id, target_id, is_interaction=is_interaction
+            )
+            raise commands.CommandError(msg)
+
+        if kamaitachi:
+            if cookie.kamaitachi_token is None:
+                msg = self._get_not_logged_in_message(
+                    KamaitachiAdapter,
+                    author_id,
+                    target_id,
+                    is_interaction=is_interaction,
+                )
+                raise commands.CommandError(msg)
+
+            async with self.kamaitachi(target_id, cookie.kamaitachi_token) as client:
+                yield client
+
+            return
+
+        if chunithm_net:
+            if not cookie.cookie:
+                msg = self._get_not_logged_in_message(
+                    ChunithmNetAdapter,
+                    author_id,
+                    target_id,
+                    is_interaction=is_interaction,
+                )
+                raise commands.CommandError(msg)
+
+            async with self.chunithm_net(target_id, cookie.cookie) as client:
+                yield client
+
+            return
+
+        if cookie.cookie.startswith("#LWP-Cookies-2.0"):
+            async with self.chunithm_net(target_id, cookie.cookie) as client:
+                yield client
+
+            return
+
+        if cookie.kamaitachi_token is not None:
+            async with self.kamaitachi(target_id, cookie.kamaitachi_token) as client:
+                yield client
+
+            return
+
+        msg = self._get_not_logged_in_message(
+            None, author_id, target_id, is_interaction=is_interaction
+        )
+        raise commands.CommandError(msg)
+
+    @contextlib.asynccontextmanager
+    async def bot_network(self, *, kamaitachi: bool = False):
+        user = self.current_user()
+        if user is None:
+            msg = "Bot user is not initialized"
+            raise RuntimeError(msg)
+
+        if kamaitachi:
+            if self.settings.credentials.kamaitachi_api_key is None:
+                msg = "Bot does not have a Kamaitachi API key configured."
+                raise AuthenticationError(msg)
+
+            async with self.kamaitachi(
+                user.id, self.settings.credentials.kamaitachi_api_key
+            ) as client:
+                yield client
+
+            return
+
+        async with self.database.read_sessionmaker() as session:
+            stmt = select(Cookie).where(Cookie.discord_id == user.id)
+            cookie = (await session.execute(stmt)).scalar_one_or_none()
+
+        if (
+            cookie is None
+            and self.settings.credentials.sega_id_username is not None
+            and self.settings.credentials.sega_id_password is not None
+        ):
+            cookie = Cookie(
+                discord_id=user.id,
+                cookie="#LWP-Cookies-2.0\n",
+                kamaitachi_token=None,
+                is_contributor=False,
+                is_supporter=False,
+            )
+
+            await self.database.writer.add(cookie)
+        elif cookie is None:
+            msg = "Bot does not have a SEGA ID account configured."
+            raise AuthenticationError(msg)
+
+        async with self.chunithm_net(
+            user.id,
+            cookie.cookie,
+            username=self.settings.credentials.sega_id_username,
+            password=self.settings.credentials.sega_id_password,
+        ) as client:
+            yield client
+
+    async def fetch_chunithm_net_from_friend_code(
+        self, ctx: PenguinContext, friend_code: str
+    ):
+        pbs: list[PersonalBest] = []
+
+        async with self.bot_network(kamaitachi=False) as client:
+            assert isinstance(client, ChunithmNetAdapter)
+
+            bot_profile = await client.get_minimal_profile()
+            friends = await client.get_friends()
+            friend = next(
+                (friend for friend in friends if friend.friend_code == friend_code),
+                None,
+            )
+
+            if friend is None:
+                try:
+                    await client.send_friend_request(friend_code)
+                except AlreadyFriends:
+                    # This can also happen if we've submitted a friend request before
+                    # but the user hasn't accepted it.
+                    pass
+                except InvalidFriendCode:
+                    # unset the friend code if it was set in the database
+                    await self.database.writer.execute(
+                        update(Cookie)
+                        .values(friend_code=None)
+                        .where(Cookie.friend_code == friend_code)
+                    )
+
+                    msg = "Could not find any users with the provided Discord user ID or friend code."
+                    raise commands.BadArgument(msg) from None
+
+                view = FriendRequestWaitView(ctx, bot_profile, timeout=180)
+
+                await view.start()
+                await view.wait()
+
+                friends = await client.get_friends()
+                friend = next(
+                    (friend for friend in friends if friend.friend_code == friend_code),
+                    None,
+                )
+
+                if friend is None:
+                    with contextlib.suppress(NetworkError):
+                        await client.remove_friend_request(friend_code)
+
+                    msg = "Friend request was not accepted. Please try again."
+                    raise commands.CommandError(msg)
+
+            friend_code = friend.friend_code
+
+            if not friend.is_favorite:
+                if sum(friend.is_favorite or False for friend in friends) >= 10:
+                    await ctx.respond_or_edit(
+                        "The bot has no favorite friend slots left. Please wait..."
+                    )
+                    tries = 0
+
+                    while (
+                        sum(friend.is_favorite or False for friend in friends) >= 10
+                        and tries <= 3
+                    ):
+                        friends = await client.get_friends()
+                        tries += 1
+                        await asyncio.sleep(30)
+
+                    if sum(friend.is_favorite or False for friend in friends) >= 10:
+                        with contextlib.suppress(NetworkError):
+                            await client.remove_friend(friend_code)
+
+                        msg = "Could not free up a favorite friend slot. Please try again later."
+                        raise commands.CommandError(msg)
+
+                await client.add_favorite_friend(friend_code)
+
+            for difficulty in Difficulty:
+                if difficulty == Difficulty.worlds_end:
+                    continue
+
+                await ctx.respond_or_edit(f"Fetching {difficulty} personal bests...")
+
+                try:
+                    # OPTIMIZATION: the bot's card should have no scores on it (or at least
+                    # no scores above 0), so enable lose_only to fetch fewer scores.
+                    difficulty_pbs = (
+                        await client.get_rival_personal_bests_by_difficulty(
+                            friend_code, difficulty, lose_only=True
+                        )
+                    )
+                except ChuniNetError as e:
+                    if e.code == 140101:
+                        msg = "Bot was unfriended before score fetch completed."
+                        raise commands.CommandError(msg) from None
+
+                    raise
+
+                pbs.extend(difficulty_pbs)
+
+            await client.remove_friend(friend_code)
+
+        pbs = await chuni_penguin.adapters.utils.process_records(
+            self.database, ctx.author.id, client.NAME, pbs
+        )
+
+        return friend.profile, pbs

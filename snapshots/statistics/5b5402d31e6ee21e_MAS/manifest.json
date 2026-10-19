@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/%E3%81%9A%E3%82%93%E3%81%9A%E3%82%93%E3%82%B5%E3%83%95%E3%82%A1%E3%83%AA/5b5402d31e6ee21e",
+  "requested_title": "ずんずんサファリ",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T13:33:47.436906+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/%E3%81%9A%E3%82%93%E3%81%9A%E3%82%93%E3%82%B5%E3%83%95%E3%82%A1%E3%83%AA/5b5402d31e6ee21e",
+      "final_url": "https://db.chunirec.net/music/%E3%81%9A%E3%82%93%E3%81%9A%E3%82%93%E3%82%B5%E3%83%95%E3%82%A1%E3%83%AA/5b5402d31e6ee21e",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:33:47.817999+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_133346\\01\\source_snapshot\\source.html",
+      "sha256": "d759b4da8732a2d0cd66f71854ff9c5a27df7a164fe95c32e49f3076a17444ed"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:33:47.884759+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_133346\\01\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "ずんずんサファリ",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "14+",
+    "const": "14.8",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8105,
+    "end": 11168
+  },
+  "total_players": 9952,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_133346\\01\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 29,
+  "rank_csv_sha256": "3058318fab44bab00809d1a6d42ba9a152f2af42bec89038473fc286d3bb84ff",
+  "status": "complete",
+  "completed_at": "2026-10-04T13:33:47.940087+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_133346\\01\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "d750c847175e0e50d403317aef2bbcda1b4edc834747bd03e2b07be4a7a4b649",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

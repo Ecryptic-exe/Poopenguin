@@ -1,0 +1,211 @@
+"""
+Everything that used to live inside the single giant on_message() in
+vto.py, split into named steps:
+
+  1. auto-react to messages in configured channels
+  2. bot-mention -> show help
+  3. process !commands
+  4. keyword-triggered copypasta responses (now data-driven, see
+     keyword_manager.py, instead of the old hardcoded if/elif chain)
+  5. "three different users said the same thing in a row" repeat echo
+
+Kept as one on_message listener (rather than 5 separate ones) because
+steps 2-5 are mutually exclusive-ish and ordered the same way the
+original bot behaved - splitting them into independent listeners would
+change behaviour subtly (e.g. commands firing at the same time as
+keyword matches).
+"""
+import discord
+from discord.ext import commands
+
+from .config import load_settings, save_settings
+from .i18n import get_guild_language
+from .keyword_manager import KeywordManager
+
+# How many identical consecutive messages (from different authors) in a
+# channel triggers the bot to repeat it back.
+REPEAT_THRESHOLD = 3
+
+
+class MessagesCog(commands.Cog, name="messages"):
+    def __init__(self, bot):
+        self.bot = bot
+        self.keywords = KeywordManager()
+        # channel_id -> list[{'content': str, 'author': int}], most recent last
+        self.recent_messages = {}
+
+    async def _handle_autoban(self, message) -> bool:
+        """Bans the author if this channel has autoban enabled.
+
+        Returns True if the message was handled (author banned / attempt
+        made) so on_message can stop processing that message any further -
+        there's no point auto-reacting to or keyword-matching a message
+        from someone who's being banned for having sent it.
+
+        Server admins are always exempt, even if a channel is
+        misconfigured - this is a safety net so a bad !autoban call can't
+        lock the people who'd need to fix it out of their own server.
+        """
+        settings = load_settings()
+        autoban = settings.get("autoban", {})
+        channel_id = str(message.channel.id)
+        if channel_id not in autoban:
+            return False
+
+        member = message.author
+        if isinstance(member, discord.Member) and member.guild_permissions.administrator:
+            return False
+
+        entry = autoban[channel_id]
+        reason = entry.get("reason", "Autoban: posted in a restricted channel")
+        delete_days = entry.get("delete_days", 0)
+
+        try:
+            await message.delete()
+        except (discord.Forbidden, discord.NotFound):
+            pass
+
+        try:
+            await message.guild.ban(
+                member, reason=reason, delete_message_seconds=delete_days * 86400)
+            print(f"[Autoban] Banned {member} ({member.id}) for posting in channel {channel_id}")
+        except discord.Forbidden:
+            print(f"[Autoban] Failed to ban {member} in channel {channel_id}: Missing permissions")
+        except discord.HTTPException as e:
+            print(f"[Autoban] Failed to ban {member} in channel {channel_id}: {e}")
+        return True
+
+    async def _handle_autoreact(self, message):
+        settings = load_settings()
+        channel_id = str(message.channel.id)
+        autoreact = settings.get("autoreact", {})
+        if channel_id not in autoreact:
+            return
+
+        entry = autoreact[channel_id]
+        # Handle legacy format (bare emoji string instead of a dict).
+        if isinstance(entry, str):
+            entry = {"emoji": entry, "user_id": None}
+            settings["autoreact"][channel_id] = entry
+            save_settings(settings)
+
+        emoji = entry["emoji"]
+        user_id = entry.get("user_id")
+        if user_id is None or str(message.author.id) == user_id:
+            try:
+                await message.add_reaction(emoji)
+            except discord.Forbidden:
+                print(f"Failed to auto-react in channel {channel_id}: Missing permissions")
+            except discord.HTTPException:
+                print(f"Failed to auto-react in channel {channel_id}: Invalid emoji")
+
+    async def _handle_mention(self, message) -> bool:
+        """Returns True if this message was a bot-mention and has been handled."""
+        if not (self.bot.user.mentioned_in(message) and not message.mention_everyone):
+            return False
+
+        raw_content = message.content.strip()
+        content = raw_content.lower()
+        command = (
+            content.replace(f"<@!{self.bot.user.id}>", "")
+            .replace(f"<@{self.bot.user.id}>", "")
+            .strip()
+        )
+        # Same stripping as `command` above, but case-preserved - this is
+        # what actually gets sent to the AI model, not the lowercased version.
+        raw_prompt = (
+            raw_content.replace(f"<@!{self.bot.user.id}>", "")
+            .replace(f"<@{self.bot.user.id}>", "")
+            .strip()
+        )
+        ctx = await self.bot.get_context(message)
+
+        # A mention with only an image attached (no text) goes to the AI
+        # (vision) instead of showing help.
+        has_image = any(
+            (a.content_type or "").startswith("image/") for a in message.attachments)
+        if (not command and not has_image) or command in ("poop penguin", "help"):
+            await self.bot.get_command("help")(ctx)
+            return True
+
+        valid_commands = [c.name for c in self.bot.commands]
+        if command in valid_commands:
+            await self.bot.get_command("help")(ctx, command=command)
+            return True
+
+        # Anything else @-mentioned at the bot goes to the local AI model
+        # (see cogs/ai_cog.py) instead of a "no command found" error.
+        ai_cog = self.bot.get_cog("AICog")
+        if ai_cog:
+            await ai_cog.respond_to_mention(message, raw_prompt)
+        else:
+            language = get_guild_language(load_settings(), message.guild.id)
+            from .i18n import t
+            await message.channel.send(t(language,
+                f"No command named `{command}` found. Use `!help` to see all available commands.",
+                f"未找到名為 `{command}` 的命令。使用 `!help` 查看所有可用命令。"))
+        return True
+
+    async def _handle_keywords(self, message):
+        # Keyword responses are server-only; stay silent in DMs.
+        if message.guild is None:
+            return
+        content = message.content.strip()
+        if not content:
+            return
+        match = self.keywords.find_match(content)
+        if not match:
+            return
+        set_id, response = match
+        try:
+            await message.channel.send(response)
+            print(f"Bot sent response from keyword set '{set_id}' in channel {message.channel.id}")
+        except discord.Forbidden:
+            print(f"Failed to send keyword response in channel {message.channel.id}: Missing permissions")
+
+    async def _handle_repeats(self, message):
+        content = message.content.strip()
+        if not content:
+            return
+        channel_id = message.channel.id
+        history = self.recent_messages.setdefault(channel_id, [])
+        history.append({"content": content, "author": message.author.id})
+        del history[:-REPEAT_THRESHOLD]  # keep only the last REPEAT_THRESHOLD
+
+        if len(history) == REPEAT_THRESHOLD:
+            same_content = len({m["content"].lower() for m in history}) == 1
+            distinct_authors = len({m["author"] for m in history}) == REPEAT_THRESHOLD
+            if same_content and distinct_authors:
+                try:
+                    await message.channel.send(content)
+                    self.recent_messages[channel_id] = []
+                except discord.Forbidden:
+                    print(f"Failed to send repeat message in channel {channel_id}: Missing permissions")
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot or message.guild is None:
+            return
+        ctx = await self.bot.get_context(message)
+        if ctx.valid:
+            return
+
+        if await self._handle_autoban(message):
+            return
+
+        await self._handle_autoreact(message)
+
+        if await self._handle_mention(message):
+            return
+
+        # NOTE: don't call self.bot.process_commands(message) here.
+        # commands.Bot already runs process_commands() from its own
+        # built-in on_message handler, and Cog listeners are added
+        # *alongside* that (not as a replacement for it). Calling it
+        # again here made every "!" command fire twice.
+        await self._handle_keywords(message)
+        await self._handle_repeats(message)
+
+
+async def setup(bot):
+    await bot.add_cog(MessagesCog(bot))

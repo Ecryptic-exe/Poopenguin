@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/L%27%C3%A9pisode/d661823a5d82ae83",
+  "requested_title": "L'épisode",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T13:23:27.574121+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/L%27%C3%A9pisode/d661823a5d82ae83",
+      "final_url": "https://db.chunirec.net/music/L%27%C3%A9pisode/d661823a5d82ae83",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:23:27.982804+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\02\\source_snapshot\\source.html",
+      "sha256": "281038c2790c02911cf50d65eb5661e576ea3f19f05e6a67b7415132991bd46a"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T13:23:28.049361+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\02\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "L'épisode",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "14+",
+    "const": "14.8",
+    "const_confirmed": false,
+    "notes": "1372",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8920,
+    "end": 11999
+  },
+  "total_players": 18897,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\02\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 29,
+  "rank_csv_sha256": "e9381738a7e007fff11621dfbe179f62cdf5a6b18a4c6558ffa37ca9fc1e6897",
+  "status": "complete",
+  "completed_at": "2026-10-04T13:23:28.109028+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\named_numeric_20261004_132326\\02\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "2abe6af5c3daf8a163af5d42ea11b2b6c886605c3758854bb76b677d659e72c9",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

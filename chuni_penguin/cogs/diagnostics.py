@@ -1,0 +1,221 @@
+import asyncio
+import os
+import platform
+import time
+from random import random
+from typing import TYPE_CHECKING
+
+import discord
+import httpx
+import yarl
+from discord.ext import commands, tasks
+from discord.ext.commands import Context
+from discord.utils import oauth_url
+from httpx_aiohttp import AIOHTTPTransport
+
+from chuni_penguin.application.lifecycle import cancel_loop
+from chuni_penguin.constants import VERSION_NAMES
+from chuni_penguin.context import PenguinContext
+from chuni_penguin.logging import logged_prefix_command
+from chuni_penguin.utils.runtime_metadata import (
+    get_version_from_pyproject as _get_version_from_pyproject,
+)
+
+if TYPE_CHECKING:
+    from chuni_penguin.bot import ChuniBot
+
+
+class DiagnosticsCog(commands.Cog, name="Diagnostics"):
+    def __init__(self, bot: "ChuniBot"):
+        self.bot = bot
+        self.settings = bot.settings
+        self.database = bot.database
+        self.runtime_info = bot.services.runtime_info
+
+    async def cog_load(self) -> None:
+        if not self.bot.offline:
+            self.listening.start()
+
+    async def cog_unload(self) -> None:
+        await cancel_loop(self.listening)
+
+    @commands.hybrid_command("source", aliases=["src"])
+    @logged_prefix_command
+    async def source(self, ctx: PenguinContext):
+        """Get the source code for this bot."""
+
+        if random() <= 0.1:
+            await self.database.user_found_easter_egg(
+                ctx.author.id, "i-made-it-the-fuck-up"
+            )
+            reply = "https://tenor.com/view/metal-gear-rising-metal-gear-rising-revengeance-senator-armstrong-revengeance-i-made-it-the-fuck-up-gif-25029602"
+        else:
+            reply = "<https://github.com/beer-psi/chuni-penguin>"
+
+        await ctx.reply(reply, mention_author=False)
+
+    @commands.hybrid_command("invite")
+    @logged_prefix_command
+    async def invite(self, ctx: Context):
+        """Invite this bot to your server!"""
+
+        if self.bot.user is None:
+            msg = "The bot is not logged in."
+            raise commands.CommandError(msg)
+
+        permissions = discord.Permissions(
+            read_messages=True,
+            send_messages=True,
+            send_messages_in_threads=True,
+            manage_messages=True,
+            read_message_history=True,
+        )
+
+        await ctx.reply(
+            oauth_url(self.bot.user.id, permissions=permissions), mention_author=False
+        )  # type: ignore[reportGeneralTypeIssues]
+
+    @commands.hybrid_command("botinfo")
+    @logged_prefix_command
+    async def botinfo(self, ctx: Context):
+        """Shows information about the bot."""
+
+        embed = discord.Embed(color=discord.Color.yellow())
+
+        about = (
+            "This is [chuni-penguin](https://github.com/beer-psi/chuni-penguin), a Discord bot created by "
+            "[beerpsi](https://github.com/beer-psi) and [contributors](https://github.com/beer-psi/chuni-penguin/graphs/contributors) "
+            "for CHUNITHM International version. "
+        )
+
+        if self.settings.bot.support_server_invite:
+            about += (
+                f"If you have any questions or problems, join the [support server]({self.settings.bot.support_server_invite}) "
+                "for help!"
+            )
+
+        embed.add_field(
+            name="About the bot",
+            value=about,
+            inline=False,
+        )
+        if self.bot.user is not None and self.bot.user.avatar is not None:
+            embed.set_thumbnail(url=self.bot.user.avatar.url)
+
+        version = await asyncio.to_thread(_get_version_from_pyproject)
+        revision = os.environ.get("GIT_SHA", "unknown")
+
+        version_name = VERSION_NAMES.get(version)
+
+        version_field = version
+
+        if version_name is not None:
+            version_field += f" ({version_name})"
+
+        if revision != "unknown":
+            version_field += f" [{revision}]"
+
+        users = await self.runtime_info.registered_users()
+
+        embed.add_field(name="Version", value=version_field, inline=False)
+        embed.add_field(
+            name="Python",
+            value=f"[{platform.python_version()}](https://www.python.org/)",
+        )
+        embed.add_field(
+            name="discord.py",
+            value=f"[{discord.__version__}](https://github.com/Rapptz/discord.py#readme)",
+        )
+        embed.add_field(name="Uptime", value=f"<t:{int(self.bot.launch_time)}:R>")
+        embed.add_field(name="Total servers", value=len(self.bot.guilds))
+        embed.add_field(name="Total users", value=str(users))
+        embed.add_field(name="\u200b", value="\u200b")
+
+        await ctx.reply(embed=embed, mention_author=False)
+
+    @commands.hybrid_command("ping")
+    @logged_prefix_command
+    async def ping(self, ctx: PenguinContext):
+        start = time.perf_counter_ns()
+
+        await ctx.respond_or_edit("Ping...")
+
+        end = time.perf_counter_ns()
+        duration = (end - start) / 1_000_000
+        guild_shard_id = ctx.guild.shard_id if ctx.guild is not None else 0
+        latency: float = next(
+            latency
+            for shard_id, latency in self.bot.latencies
+            if shard_id == guild_shard_id
+        )
+
+        if (proxy := os.environ.get("DISCORD_GATEWAY_PROXY")) is not None:
+            url = yarl.URL(proxy).with_scheme("http").with_path("metrics")
+
+            async with httpx.AsyncClient(transport=AIOHTTPTransport()) as client:
+                try:
+                    resp = await client.get(str(url))
+                    resp.raise_for_status()
+                except httpx.HTTPError:
+                    pass
+                else:
+                    for line in resp.text.splitlines():
+                        if line.startswith(
+                            f'gateway_shard_latency{{shard="{guild_shard_id}"}}'
+                        ):
+                            latency = float(line.split(" ")[1])
+                            break
+
+        await ctx.respond_or_edit(
+            (
+                f"Pong! Took {duration:.2f}ms\n"
+                f"Gateway latency (shard {guild_shard_id}): {latency * 1000:.2f}ms"
+            )
+        )
+
+    @commands.hybrid_command("legal")
+    @logged_prefix_command
+    async def legal(self, ctx: Context):
+        """Links to the bot's privacy policy and terms of service
+
+        Satisfies Discord lawyers.
+        """
+
+        embed = discord.Embed(color=discord.Color.yellow())
+
+        if self.settings.legal.privacy_policy is not None:
+            embed.add_field(
+                name="Privacy policy",
+                value=f"[Link]({self.settings.legal.privacy_policy})",
+                inline=False,
+            )
+
+        if self.settings.legal.terms_of_service is not None:
+            embed.add_field(
+                name="Terms of service",
+                value=f"[Link]({self.settings.legal.terms_of_service})",
+                inline=False,
+            )
+
+        await ctx.reply(embed=embed, mention_author=False)
+
+    @tasks.loop(minutes=3, reconnect=True)
+    async def listening(self):
+        song = await self.runtime_info.presence_song()
+        if song is None:
+            return
+
+        await self.bot.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.listening,
+                name=f"{song.artist} - {song.title}",
+            )
+        )
+
+    @listening.before_loop
+    async def before_listening(self):
+        await self.bot.wait_until_ready()
+
+
+async def setup(bot: "ChuniBot"):
+    await bot.add_cog(DiagnosticsCog(bot))

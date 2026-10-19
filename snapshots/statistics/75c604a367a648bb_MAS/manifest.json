@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85/75c604a367a648bb",
+  "requested_title": "輪廻玲々",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:13.553599+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85/75c604a367a648bb",
+      "final_url": "https://db.chunirec.net/music/%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85/75c604a367a648bb",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:14.952466+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\04\\source_snapshot\\source.html",
+      "sha256": "e2cdacc3c8e42c681964cb578f4d9e9af6581e2eda77dc5b0f36e91ce13eec27"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:15.020474+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\04\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "輪廻玲々",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.4",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8802,
+    "end": 11725
+  },
+  "total_players": 6179,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\04\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 28,
+  "rank_csv_sha256": "51e97d067f641f4eb38c1d77dba89cf31c9d4b0f64c0c4ea12d02fd4ea34cd78",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:15.071991+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\04\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "1448ac410cf1578dc1ea48ae6c97cb66070d4d7529c3b09690c087fab901a962",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 1,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

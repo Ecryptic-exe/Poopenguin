@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/%E3%82%AD%E3%83%9F%E3%81%A8%E3%83%9C%E3%82%AF%E3%81%B8%E3%81%AE%E8%91%AC%E9%80%81%E6%AD%8C/18f873c982981e92",
+  "requested_title": "キミとボクへの葬送歌",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:11.980813+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/%E3%82%AD%E3%83%9F%E3%81%A8%E3%83%9C%E3%82%AF%E3%81%B8%E3%81%AE%E8%91%AC%E9%80%81%E6%AD%8C/18f873c982981e92",
+      "final_url": "https://db.chunirec.net/music/%E3%82%AD%E3%83%9F%E3%81%A8%E3%83%9C%E3%82%AF%E3%81%B8%E3%81%AE%E8%91%AC%E9%80%81%E6%AD%8C/18f873c982981e92",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:12.353557+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\03\\source_snapshot\\source.html",
+      "sha256": "c5b9872f4d0a919dbbb9941997d00f3acb7c0b9ad78743b1a6ab20581ab5cd3a"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:12.420790+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\03\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "キミとボクへの葬送歌",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.3",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8604,
+    "end": 11557
+  },
+  "total_players": 12168,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\03\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 28,
+  "rank_csv_sha256": "f21174a57a5eddadf88f375c496a96512407ad8a676ca07306f76f50bbc0bf3c",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:12.453733+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\03\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "4a423ae9f5eece3abbd3cdc1827f1fb46f2b196478e6b35e66de5217376cbb1c",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

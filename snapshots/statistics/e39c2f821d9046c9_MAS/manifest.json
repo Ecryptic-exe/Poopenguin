@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/AiAe/e39c2f821d9046c9",
+  "requested_title": "AiAe",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:17.619661+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/AiAe/e39c2f821d9046c9",
+      "final_url": "https://db.chunirec.net/music/AiAe/e39c2f821d9046c9",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:17.986337+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\09\\source_snapshot\\source.html",
+      "sha256": "eec4203cc1eaffc1594b8db850d44019fbfe5d7c582ce96bab014b8ccc950eb2"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:18.053250+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\09\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "AiAe",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.2",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8353,
+    "end": 11311
+  },
+  "total_players": 9248,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\09\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 28,
+  "rank_csv_sha256": "80a7549f84b31317bf98b3dd44da06af0e414704d08ad053874695243e3c0f6c",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:18.102865+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\09\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "fe83469b7be9c66088ad6dfa14a72f1be6d9d67f24f352a60062fa8198a45b63",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

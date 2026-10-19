@@ -1,0 +1,293 @@
+import asyncio
+import contextlib
+from dataclasses import dataclass
+from io import BytesIO
+from typing import TYPE_CHECKING, override
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+from PIL import Image
+
+from chuni_penguin import flags
+from chuni_penguin.context import PenguinContext
+from chuni_penguin.converters import MemberOrUserConverter
+from chuni_penguin.logging import logged_app_command, logged_prefix_command
+from chuni_penguin.ui import (
+    PersistentHideFriendCodeButton,
+    PersistentSendFriendRequestButton,
+    ProfileView,
+)
+
+if TYPE_CHECKING:
+    from chuni_penguin.bot import ChuniBot
+
+
+@dataclass(slots=True)
+class DrawCoordinates:
+    sx: int = 0
+    sy: int = 0
+    dx_offset: int = 0
+    dy: int = 0
+    width: int = 0
+    height: int = 0
+    rotate: int = 0
+
+
+AVATAR_COORDS = {
+    "skinfoot_r": DrawCoordinates(
+        sy=204,
+        dx_offset=84,
+        dy=260,
+        width=42,
+        height=52,
+    ),
+    "skinfoot_l": DrawCoordinates(
+        sx=42,
+        sy=204,
+        dx_offset=147,
+        dy=260,
+        width=42,
+        height=52,
+    ),
+    "skin": DrawCoordinates(
+        dx_offset=72,
+        dy=73,
+        width=128,
+        height=204,
+    ),
+    "wear": DrawCoordinates(
+        dx_offset=7,
+        dy=86,
+        width=258,
+        height=218,
+    ),
+    "face": DrawCoordinates(
+        dx_offset=107,
+        dy=80,
+        width=58,
+        height=64,
+    ),
+    "face_cover": DrawCoordinates(dx_offset=78, dy=76, width=116, height=104),
+    "head": DrawCoordinates(
+        width=200,
+        height=150,
+        dx_offset=37,
+        dy=8,
+    ),
+    "hand_r": DrawCoordinates(
+        width=36,
+        height=72,
+        dx_offset=52,
+        dy=158,
+    ),
+    "hand_l": DrawCoordinates(
+        width=36,
+        height=72,
+        dx_offset=184,
+        dy=158,
+    ),
+    "item_r": DrawCoordinates(width=100, height=272, dx_offset=-3, dy=26, rotate=5),
+    "item_l": DrawCoordinates(
+        sx=100, width=100, height=272, dx_offset=151, dy=26, rotate=-5
+    ),
+    "front": DrawCoordinates(dy=10, width=272, height=294),
+}
+
+
+def render_avatar(items: dict[str, bytes]) -> BytesIO:
+    with (
+        BytesIO(items["base"]) as bio,
+        Image.open(bio) as avatar,
+        contextlib.closing(avatar),
+    ):
+        # crop out the USER AVATAR text at the top
+        avatar = avatar.crop((0, 20, avatar.width, avatar.height))
+
+    with (
+        BytesIO(items["back"]) as bio,
+        Image.open(bio) as back,
+        contextlib.closing(back),
+    ):
+        base_x = (avatar.width - back.width) // 2
+        avatar.paste(back, (base_x, 5), back)
+
+    for name, coords in AVATAR_COORDS.items():
+        with BytesIO(items[name]) as bio, Image.open(bio) as image:
+            with contextlib.closing(image):
+                image = image.crop(
+                    (
+                        coords.sx,
+                        coords.sy,
+                        coords.sx + coords.width,
+                        coords.sy + coords.height,
+                    )
+                )
+
+            with contextlib.closing(image):
+                image = image.rotate(
+                    coords.rotate, expand=True, resample=Image.Resampling.BICUBIC
+                )
+
+            with contextlib.closing(image):
+                avatar.paste(image, (base_x + coords.dx_offset, coords.dy), image)
+
+    buffer = BytesIO()
+
+    avatar.save(buffer, "png", optimize=True)
+    avatar.close()
+    buffer.seek(0)
+
+    return buffer
+
+
+class ProfileCog(commands.Cog, name="Profile"):
+    def __init__(self, bot: "ChuniBot") -> None:
+        self.bot = bot
+        self.accounts = bot.services.accounts
+        self.users = bot.services.users
+        self._dynamic_items_registered = False
+
+    @override
+    async def cog_load(self) -> None:
+        try:
+            self.bot.add_dynamic_items(
+                PersistentHideFriendCodeButton, PersistentSendFriendRequestButton
+            )
+        except BaseException:
+            self.bot.remove_dynamic_items(
+                PersistentHideFriendCodeButton, PersistentSendFriendRequestButton
+            )
+            raise
+        self._dynamic_items_registered = True
+
+    @override
+    async def cog_unload(self) -> None:
+        if self._dynamic_items_registered:
+            self.bot.remove_dynamic_items(
+                PersistentHideFriendCodeButton, PersistentSendFriendRequestButton
+            )
+            self._dynamic_items_registered = False
+
+    @commands.hybrid_command(name="avatar")
+    @commands.bot_has_permissions(attach_files=True)
+    @logged_prefix_command
+    async def avatar(
+        self,
+        ctx: PenguinContext,
+        *,
+        user: discord.User | discord.Member = commands.Author,
+    ):
+        """View your CHUNITHM avatar."""
+        async with (
+            ctx.typing(),
+            self.accounts.network(ctx, user.id, chunithm_net=True) as client,
+        ):
+            basic_data = await client.get_minimal_profile()
+            avatar_urls = basic_data.user_avatar
+
+            if avatar_urls is None:
+                msg = f"Network {client.NAME} does not support penguin avatars."
+                raise commands.CommandError(msg)
+
+            assert avatar_urls is not None
+
+            async def task(url):
+                resp = await self.bot.caching_http_client.get(url)
+
+                async with contextlib.aclosing(resp) as resp:
+                    return await resp.aread()
+
+            tasks = [
+                task(avatar_urls.base),
+                task(avatar_urls.back),
+            ]
+            tasks.extend(task(getattr(avatar_urls, name)) for name in AVATAR_COORDS)
+            results = await asyncio.gather(*tasks)
+            items: dict[str, bytes] = dict(
+                zip(  # noqa: B905
+                    ["base", "back", *AVATAR_COORDS],
+                    results,
+                )
+            )
+
+        buffer = await asyncio.to_thread(render_avatar, items)
+        await ctx.reply(
+            content=f"Avatar of {basic_data.username}",
+            file=discord.File(buffer, filename="avatar.png"),
+            mention_author=False,
+        )
+
+    async def _chunithm_inner(
+        self,
+        ctx: PenguinContext,
+        user: discord.User | discord.Member | None = None,
+        *,
+        kamaitachi: bool = False,
+    ):
+        target = user or ctx.author
+
+        async with (
+            ctx.typing(),
+            self.accounts.network(ctx, target.id, kamaitachi=kamaitachi) as client,
+        ):
+            profile = await client.get_profile()
+
+        badges = await self.users.account_badges(target.id)
+
+        view = ProfileView(
+            ctx,
+            target,
+            profile,
+            client.ACCENT_COLOR,
+            is_supporter=badges.is_supporter,
+            is_contributor=badges.is_contributor,
+        )
+        await view.start()
+
+    @flags.command(name="chunithm", aliases=["chuni", "profile"])
+    @flags.argument("-k", "--kamaitachi", action="store_true")
+    @flags.argument("user", nargs="?", default=None, type=MemberOrUserConverter)
+    @logged_prefix_command
+    async def chunithm(
+        self,
+        ctx: PenguinContext,
+        *,
+        kamaitachi: bool = False,
+        user: discord.Member | discord.User | None = None,
+    ):
+        """View your CHUNITHM profile.
+
+        **Parameters**:
+        `user`: The user to view the profile of.
+        `-k, --kamaitachi`: Whether to view their Kamaitachi CHUNITHM profile instead.
+        """
+
+        await self._chunithm_inner(ctx, user=user, kamaitachi=kamaitachi)
+
+    @app_commands.command(name="chunithm", description="View your CHUNITHM profile.")
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.describe(
+        user="The user to view the profile of",
+        kamaitachi="Whether to view their Kamaitachi CHUNITHM profile instead",
+    )
+    @logged_app_command
+    async def chunithm_slash(
+        self,
+        interaction: discord.Interaction["ChuniBot"],
+        user: discord.User | discord.Member | None = None,
+        *,
+        kamaitachi: bool = False,
+    ):
+        ctx = await PenguinContext.from_interaction(interaction)
+
+        await self._chunithm_inner(ctx, user, kamaitachi=kamaitachi)
+
+
+async def setup(bot: "ChuniBot"):
+    cog = ProfileCog(bot)
+    try:
+        await bot.add_cog(cog)
+    except BaseException:
+        await cog.cog_unload()
+        raise

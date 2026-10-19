@@ -1,0 +1,22 @@
+# Player Chart Review Schema Work Plan
+
+- [x] Implement a safe dry-run/apply installer that creates only the review tables and validates exact schema, foreign keys, and integrity.
+  - Result: Added `install_review_schema` with read-only dry-run by default, atomic `BEGIN IMMEDIATE` installation, exact columns/foreign-key/index/check validation, integrity checks, and rollback on any exception.
+  - Changed: `penguin/review_schema.py`
+  - Verified: Isolated tests confirm dry-run byte preservation, install scope, repeat-install data preservation, partial/malformed rejection, and injected DDL rollback.
+  - Notes: The installer accepts only an existing SQLite file whose `chunirec_charts.id` is a primary key.
+- [x] Add a frozen Alembic migration with exact pre-installed-schema acceptance and guarded downgrade behavior.
+  - Result: Added revision `9d3a1f7c2b60` after `4c6f8b1a0d92`; its DDL is self-contained, accepts only an exact already-installed schema, and permits downgrade only for empty review tables.
+  - Changed: `chuni_penguin/database/alembic/versions/2026_10_16_2100-9d3a1f7c2b60_player_chart_reviews.py`
+  - Verified: Migration tests cover fresh creation, preinstalled-schema acceptance, populated downgrade refusal, and empty downgrade. Alembic reports `9d3a1f7c2b60` as the head.
+  - Notes: The migration does not import mutable review models.
+- [x] Add isolated database and migration tests for dry runs, installation, repeat installs, schema failures, rollback, and importer compatibility.
+  - Result: Added eight tests using temporary SQLite files, including annotation-import-first compatibility with retained annotation and review history, and refusal of a conflicting view name.
+  - Changed: `tests/test_review_schema.py`
+  - Verified: All eight focused tests passed.
+  - Notes: Fixtures use explicit temporary databases and do not access live configuration or processes.
+- [x] Run focused tests and lint, then record the verified outcomes here.
+  - Result: Focused tests and Ruff passed.
+  - Changed: `workspace/review-schema/PLAN.md`
+  - Verified: `python -m pytest tests/test_review_schema.py -q` — 8 passed; Ruff 0.13.3 — all checks passed; Alembic heads — `9d3a1f7c2b60`.
+  - Notes: Ruff ran in an isolated offline tool environment because it is not installed in the project virtual environment.

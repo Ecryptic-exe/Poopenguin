@@ -1,0 +1,22 @@
+# Annotation source reader work plan
+
+- [x] Inspect the workbook, mapping manifest, review evidence, and legacy snapshot contracts.
+  - Result: Confirmed 834 ordered source rows, 826 automatic matches, 8 Luna-reviewed matches, and that the review base hash belongs to the sibling pre-review workbook.
+  - Changed: `workspace/annotation-source/PLAN.md`
+  - Verified: Checked source row/title/difficulty/constant/notes alignment, source tab layout, links, tags, and the actual base/reviewed file hashes.
+  - Notes: Keep A:J values and hyperlink targets in raw source data; `tags` and `flags` use the legacy normalized fields after source alignment checks.
+- [x] Implement a read-only, standard-library XLSX source reader with source and safety validation.
+  - Result: Added `load_source()` with deterministic input-hash revisioning, manifest/legacy/review/base-workbook alignment checks, workbook ID checks, bounded ZIP/XML parsing, duplicate/path-traversal rejection, preserved A:J values/rich-text metadata/hyperlink targets, and safe public HTTP(S)-only link output. Unmapped source rows are retained in `provenance.excluded_unmapped_rows`; any extra L:R value or formula is rejected.
+  - Changed: `penguin/annotation_source.py`
+  - Verified: Loaded the real reviewed source successfully: 834 rows, all chart IDs unique, 826 `automatic_exact`, 8 `agent_reviewed`; `revision=3c4cbd49f22279525ccb5523903d7995a2036b1c15cea79d70ee30d1e826c89f`.
+  - Notes: `review.base_workbook_sha256` is checked against the sibling pre-review workbook (`f4952894...b5a`); the reviewed XLSX has its own hash (`8295110e...164b`). The review and manifest source hashes both match (`664752cc...94d7`).
+- [x] Add focused tests for actual source data and controlled synthetic XLSX packages.
+  - Result: Added actual-source coverage plus synthetic cases for safe/unsafe links, preserving unmanifested rows, rejecting mapped titleless rows, changed IDs, duplicate worksheet rows, and ZIP path traversal.
+  - Changed: `tests/test_annotation_source.py`
+  - Verified: All 6 focused tests passed.
+  - Notes: Unsafe `javascript:` and loopback HTTP targets remain in raw hyperlink metadata and are absent from clickable `links`.
+- [x] Run the source tests and record counts, source discrepancies, and verification results.
+  - Result: Actual output contains 765 tag tokens across 462 tagged rows, 600 nonempty legacy notes, 117 source note counts, and 103 safe workbook links. It preserves two unmapped workbook rows with full A:J values and metadata.
+  - Changed: `workspace/annotation-source/PLAN.md`
+  - Verified: `.venv/Scripts/python.exe -m pytest tests/test_annotation_source.py -q` reported `6 passed`; Ruff 0.13.3 lint and format checks passed for the reader and tests.
+  - Notes: `14!335` Imprinting has no A rating constant, no N difficulty, and no legacy row; its C/E/F/H source text and empty D/I/J are retained, with no links. `15以上!38` PhenomenoN has A text `■ 15.0`, including an A rich-text purple square (`FF9900FF`), but N is empty; the legacy title has a different-constant match (14.9) at the mapped `14+!206` row. It has no links. Neither row receives an inferred difficulty or ID.

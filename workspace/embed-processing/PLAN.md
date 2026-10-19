@@ -1,0 +1,31 @@
+# Delayed processing embed helper
+
+- [x] Add `processing_response` as a context manager that serializes the progress edit with final responses and restores the original responder.
+  - Result: Added a scoped responder wrapper that edits the existing response after the delay, stops pending progress on the first regular response, waits for an in-flight progress edit before later responses, and restores the captured responder on exit.
+  - Changed: `chuni_penguin/ui/processing.py`
+  - Verified: Covered by the focused async suite and Ruff checks.
+  - Notes: Ordinary progress-edit exceptions are suppressed without logging so progress cannot replace the caller's result/error. Cancellation is preserved; started progress is shielded and drained, while a sleeping timer is canceled and awaited. A prompt-first test found and fixed repeated cleanup of a timer already canceled by the first response.
+- [x] Extend async tests for response races, prompt-first flows, errors, cancellation, and responder restoration.
+  - Result: Added mocked-context tests for fast exits, progress/final ordering, an interactive prompt before work completion, a failed progress edit, raised work, cancellation before delay, cancellation during progress, responder restoration, and no newly pending background tasks after cancellation.
+  - Changed: `tests/test_processing.py`
+  - Verified: `pytest tests/test_processing.py -q` passed (15 tests).
+- [x] Re-run focused tests and Ruff checks; record results for this extension.
+  - Result: The expanded suite, lint, and formatting checks pass.
+  - Changed: `workspace/embed-processing/PLAN.md`
+  - Verified: `python -m pytest tests/test_processing.py -q` (15 passed); Ruff check passed; Ruff format check passed.
+  - Notes: The project virtual environment does not include Ruff, so Ruff 0.13.3 was run through `uvx`.
+
+- [x] Add `processing_embed` and `run_with_processing` in `chuni_penguin/ui/processing.py`.
+  - Result: Added a short Traditional Chinese processing embed and a delayed runner that starts work immediately, shows progress at most once, and awaits progress before returning.
+  - Changed: `chuni_penguin/ui/processing.py`
+  - Verified: Covered by the focused async test suite and Ruff checks.
+  - Notes: If `show` raises, the runner still waits for work; a work exception takes precedence, otherwise the show exception is raised after work settles.
+- [x] Add focused async lifecycle tests in `tests/test_processing.py`.
+  - Result: Added tests for embed content, fast and slow work ordering, work errors, show errors and precedence, and cancellation before and during progress with cleanup assertions.
+  - Changed: `tests/test_processing.py`
+  - Verified: `pytest tests/test_processing.py -q` passed (8 tests).
+- [x] Run the focused tests and applicable lint/type checks; record the verified result here.
+  - Result: Focused tests, lint, and formatting checks all pass.
+  - Changed: `workspace/embed-processing/PLAN.md`
+  - Verified: `python -m pytest tests/test_processing.py -q` (8 passed); Ruff check passed; Ruff format check passed.
+  - Notes: The project virtual environment does not include Ruff, so Ruff 0.13.3 was run through `uvx`.

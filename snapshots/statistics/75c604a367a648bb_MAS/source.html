@@ -1,0 +1,264 @@
+<!doctype html>
+<html class="urec-unidb" lang="ja_JP">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <title>輪廻玲々 · ウニ DB</title>
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="@chunirec" />
+    <meta property="og:title" content="輪廻玲々 · ウニ DB" />
+    <meta property="og:site_name" content="chunirec UniDB" />
+    <meta property="og:description" content="チュウニズム非公式楽曲データベース" />
+    <meta property="og:image" content="https://db.chunirec.net/apple-touch-icon.png" />
+    <script src="https://chunirec.net/js/bootstrap.bundle.min.js?v=2"></script>
+    <script src="https://chunirec.net/assets/js/common.js?v=2_50_0015"></script>
+    <script src="/assets/js/common.js?v=2_50_0015"></script>
+    <script src="https://chunirec.net/assets/js/lang/ja_JP.js?v=2_50_0015"></script>
+        <meta name="color-scheme"	content="light">
+    <meta name="theme-color" content="">
+    <link href="https://chunirec.net/css/bootstrap.min.css?v=10" rel="preload" as="style">
+    <link href="https://chunirec.net/css/bootstrap.dark.min.css?v=10" rel="preload" as="style">
+    <link href="https://chunirec.net/css/bootstrap.min.css?v=10" rel="stylesheet" rel="preload"  id="style_bs_l" media="not print" />
+    <link href="https://chunirec.net/css/bootstrap.dark.min.css?v=10" rel="stylesheet" rel="preload" disabled id="style_bs_d" media="not print"/>
+    <link href="https://chunirec.net/css/bootstrap.min.css?v=10" rel="stylesheet" rel="preload" media="print" />
+    <script>urec_fn.theme.init()</script>
+    <link href="https://chunirec.net/assets/css/common.css?v=2_50_0015" rel="stylesheet" />
+    <link href="https://use.fontawesome.com/releases/v5.15.3/webfonts/fa-solid-900.woff2" rel="preload" as="font">
+    <link href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" rel="stylesheet" />
+      <link href="/css/Chart.min.css" rel="stylesheet" />
+    <script>
+    var urec_stg = {
+      loggedin: false,
+      site: "web_db",
+      wp_enabled: localStorage.getItem("urec_bgwp") === "1"
+    };
+  </script>
+</head>
+<body>
+  <noscript>
+    <div class="my-5 py-3 px-2 mx-auto border rounded text-center" style="max-width:620px">
+      <h1 class="h3">JavaScript が無効になっています。</h1>
+      <p>ブラウザーの設定で JavaScript を有効にして閲覧してください。</p>
+    </div>
+  </noscript>
+
+  <div class="position-absolute tb-0 lr-0 bg-white d-none" style="z-index:1040;" id="urec_mobi_serch_view">
+    <nav class="navbar navbar-light bg-blur shadow-sm" style="height: 52px;z-index:1;">
+      <div class="d-flex justify-content-between align-items-center w-100 px-3">
+        <div class="me-auto pe-2">
+          <a class="text-dark urec-cmd-mobi-search-escape" href="javascript:void(0)" title="前へ" data-urec-target="#urec_mobi_serch_view"><i class="fas fa-arrow-left fa-fw mx-2"></i></a>
+        </div>
+        <form action="/search" method="GET" class="w-100">
+          <div class="input-group">
+            <input type="search" class="form-control music-mobi-search-input shadow-sm" data-urec-target="#urec_mobi_serch_list" data-urec-target-empty="#urec_mobi_serch_list_empty" name="q" placeholder="検索" aria-label="Search" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" value=""  required />
+            <button class="btn btn-light border shadow-sm" type="submit"><i class="fas fa-search"></i></button>
+          </div>
+        </form>
+      </div>
+    </nav>
+    <div class="list-group list-group-flush" id="urec_mobi_serch_list"></div>
+    <div class="mt-5 text-muted text-center" id="urec_mobi_serch_list_empty">検索キーワードを入力してください</div>
+  </div>
+
+  <nav class="navbar d-md-none navbar-light bg-blur shadow-sm" style="height: 52px;" id="urec_navmenu_static">
+    <div class="d-flex justify-content-between align-items-center w-100 px-3">
+      <div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="modal" data-bs-target="#navbarMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand p-0" href="/">
+          <img src="/img/unidb_1.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-light" style="height:2.25rem;pointer-events:none" />
+          <img src="/img/unidb_2.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-dark" style="height:2.25rem;pointer-events:none" />
+        </a>
+      </div>
+      <div class="ms-auto">
+        <a class="text-dark urec-cmd-mobi-search-show" href="javascript:void(0)" title="検索" data-urec-target="#urec_mobi_serch_view"><i class="fas fa-search fa-fw mx-2"></i></a>
+        <a class="text-dark appearance-settings" href="javascript:void(0)" title="外観の設定"><i class="fas fa-palette fa-fw mx-2"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="modal fade offcanvas" id="navbarMenu">
+    <div class="modal-dialog" style="width:280px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <a class="modal-title" href="/">
+            <img src="/img/unidb_1.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-light" style="height:2.25rem;pointer-events:none" />
+            <img src="/img/unidb_2.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-dark" style="height:2.25rem;pointer-events:none" />
+          </a>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body px-2">
+          <nav class="nav flex-column">
+            <a class="nav-link text-dark" href="/"><i class="fas fa-home fa-fw me-2"></i>ホーム</a>
+            <a class="nav-link text-dark" href="/list/artists"><i class="fas fa-user fa-fw me-2"></i>全アーティスト</a>
+            <div class="my-2 border-bottom"></div>
+            <a class="nav-link text-dark" href="/about"><i class="fas fa-question fa-fw me-2"></i>このサイトについて</a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-absolute top-0 end-0 p-3" id="urec_toast_container"></div>
+<main class="m-0 h-100">
+  <div class="bg-atmosphere"></div>
+  <div class="d-flex align-items-stretch mx-0 min-h-100">
+    <div class="flex-shrink-0 d-none d-md-block bg-blur border-end" style="width:300px">
+      <nav class="nav flex-column position-sticky p-3" style="top:0">
+        <a class="nav-link" href="/">
+          <img src="/img/unidb_1.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-light" style="height:2.25rem;pointer-events:none" />
+          <img src="/img/unidb_2.png" alt="ウニ DB" class="no-select d-none d-inline-urec-theme-dark" style="height:2.25rem;pointer-events:none" />
+        </a>
+        <a class="nav-link text-dark" href="/"><i class="fas fa-home fa-fw me-2"></i>ホーム</a>
+        <a class="nav-link text-dark" href="/list/artists"><i class="fas fa-user fa-fw me-2"></i>全アーティスト</a>
+        <div class="mb-2"></div>
+        <a class="nav-link text-dark" href="/about"><i class="fas fa-question fa-fw me-2"></i>このサイトについて</a>
+      </nav>
+    </div>
+    <div class="d-flex flex-column min-w-0 w-100">
+      <nav class="position-sticky d-none d-md-flex justify-content-between align-items-center p-2 bg-blur border-bottom shadow-sm" style="top:0;z-index:1000;">
+        <div class="me-auto"></div>
+        <form action="/search" method="GET" class="px-4 w-100" style="max-width:800px">
+          <div class="input-group">
+            <input type="search" class="form-control music-search-input shadow-sm" name="q" placeholder="検索" aria-label="Search" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" value=""  required />
+            <button class="btn btn-light border shadow-sm" type="submit"><i class="fas fa-search"></i></button>
+          </div>
+        </form>
+        <div class="ms-auto">
+          <a class="text-dark appearance-settings" href="javascript:void(0)" title="外観の設定"><i class="fas fa-palette fa-fw me-2"></i></a>
+        </div>
+      </nav>
+      <script>urec_fn.init_navmenu()</script>
+      <div class="px-2 px-md-3 px-lg-5 w-100 mb-4 pt-5 pt-md-0">
+        <div class="container-xl">
+<div class="bg-wallpaper fade"><div style="background-image:url('/lmg/music/jkt/bfzfEl46AyA3ve--H6ZxXgMO9Ueq4vbGOvG8rwep5LY=.jpg')"></div><div></div></div>
+<div class="mt-5">
+  <div class="d-flex align-items-stretch"> <!-- 楽曲情報 -->
+    <div class="unidb-jacket unidb-jacket-lg shadow rounded align-self-start" style="background-image:url('/lmg/music/jkt/bfzfEl46AyA3ve--H6ZxXgMO9Ueq4vbGOvG8rwep5LY=.jpg')"></div>
+    <div class="ps-3 ps-md-5 w-100">
+      <div class="d-flex flex-column h-100">
+        <div class="flex-shrink-0">
+          <h3 class="mb-1 mb-md-2" lang="ja">輪廻玲々</h3>
+          <p class="mb-1" lang="ja"><a href="/search?q=artist%3A%22suzu%22">suzu</a></p>
+          <p class="text-muted mb-1" lang="ja">ORIGINAL</p>
+          <p class="text-muted small mb-1">追加日 2025/11/06 (CHUNITHM X-VERSE)</p>
+          <p class="text-muted small mb-1">BPM 不明</p>
+        </div>
+        <div class="mt-auto">
+          <a class="btn btn-light border me-1 mt-2 btn-sm shadow-sm" role="button" href="https://www.youtube.com/results?q=chunithm+%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85" target="_blank">
+            <i class="fab fa-youtube me-1"></i>YouTube          </a>
+          <a class="btn btn-light border me-1 mt-2 btn-sm shadow-sm" role="button" href="https://www.nicovideo.jp/search/chunithm%20%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85" target="_blank">
+          <i class="custom-icon ci-niconico me-1"></i>ニコニコ動画          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-5"> <!-- 譜面情報 -->
+    <h2 class="mb-3">譜面情報</h2>
+    <div class="mb-3" style="max-width:680px;">
+      <div class="d-flex px-2 px-lg-5 py-2 rounded shadow-sm small text-muted">
+        <div style="width:25%" class="text-center"></div>
+        <div style="width:25%" class="text-center">レベル</div>
+        <div style="width:25%" class="text-center">譜面定数</div>
+        <div style="width:25%" class="text-center">ノーツ数</div>
+      </div>
+              <div class="d-flex px-2 px-lg-5 py-2 my-1 rounded shadow-sm">
+          <div style="width:25%" class="fw-bold text-center"><span class="BAS">BAS</span></div>
+          <div style="width:25%" class="text-center">6</div>
+          <div style="width:25%" class="text-center">
+                      <span class=""><span>6.0</span></span>
+                    </div>
+          <div style="width:25%" class="text-center">-</div>
+        </div>
+              <div class="d-flex px-2 px-lg-5 py-2 my-1 rounded shadow-sm">
+          <div style="width:25%" class="fw-bold text-center"><span class="ADV">ADV</span></div>
+          <div style="width:25%" class="text-center">11</div>
+          <div style="width:25%" class="text-center">
+                      <span class="fst-italic fw-bold text-danger unknown-const "><span>11.0</span></span>
+                    </div>
+          <div style="width:25%" class="text-center">-</div>
+        </div>
+              <div class="d-flex px-2 px-lg-5 py-2 my-1 rounded shadow-sm">
+          <div style="width:25%" class="fw-bold text-center"><span class="EXP">EXP</span></div>
+          <div style="width:25%" class="text-center">14</div>
+          <div style="width:25%" class="text-center">
+                      <span class="fst-italic fw-bold text-danger unknown-const "><span>14.3</span></span>
+                    </div>
+          <div style="width:25%" class="text-center">-</div>
+        </div>
+              <div class="d-flex px-2 px-lg-5 py-2 my-1 rounded shadow-sm">
+          <div style="width:25%" class="fw-bold text-center"><span class="MAS">MAS</span></div>
+          <div style="width:25%" class="text-center">15</div>
+          <div style="width:25%" class="text-center">
+                      <span class="fst-italic fw-bold text-danger unknown-const "><span>15.4</span></span>
+                    </div>
+          <div style="width:25%" class="text-center">-</div>
+        </div>
+          </div>
+    <p class="small text-muted">※譜面定数が斜体は、未確定状態<br />-: 未調査</p>
+  </div>
+  <div class="mt-5"> <!-- レコード統計 -->
+    <h2 class="mb-3">レコード統計</h2>
+    <div class="shadow-sm rounded mt-2 mb-4">
+      <div class="nav-scroller container px-0">
+        <nav class="nav nav-underline" role="tablist" id="record_stat_diff">
+                      <a class="nav-link " href="#" role="tab" data-tab-id="BAS">BASIC</a>
+                      <a class="nav-link " href="#" role="tab" data-tab-id="ADV">ADVANCED</a>
+                      <a class="nav-link " href="#" role="tab" data-tab-id="EXP">EXPERT</a>
+                      <a class="nav-link active" href="#" role="tab" data-tab-id="MAS">MASTER</a>
+                  </nav>
+      </div>
+    </div>
+    <div class="px-3 py-2 d-none" id="record_stat_nodata">
+      データがありません。    </div>
+    <div class="row d-none" id="record_stat_charts">
+      <div class="col-6 mb-4">
+        <p class="text-center">ランプ</p>
+        <div style="height: 300px;" class="position-relative">
+          <canvas id="chart_area_lamp"></canvas>
+        </div>
+      </div>
+      <div class="col-6 mb-4">
+        <p class="text-center">ランク</p>
+        <div style="height: 300px;" class="position-relative">
+          <canvas id="chart_area_rank"></canvas>
+        </div>
+      </div>
+      <div class="col-12 mb-4">
+        <p class="text-center">BEST 枠平均別平均スコア</p>
+        <div style="height: 400px;" class="position-relative">
+          <canvas id="chart_area_avg_score" style="background:#fff"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script id="urec_pdx" type="text/plain">
+B{"rank":{"max":194,"sssp":224,"sss":6,"ssp":12,"ss":4,"s":4},"lamp":{"aj":408,"fc":16},"avg_score":[["15.00",1009943],["15.10",1009535],["15.20",null],["15.30",1009864],["15.40",1009821],["15.50",1009643],["15.60",1008928],["15.70",1009961],["15.80",1009963],["15.90",1009844],["16.00",1009479],["16.10",1009602],["16.20",1009270],["16.30",1008738],["16.40",1009302],["16.50",1009871],["16.60",1009821],["16.70",1009592],["16.80",1009313],["16.90",971090],["17.00",1009987],["17.10",1009989],["17.20",1009516],["17.30",897423],["17.40",1009945],["17.50",974504],["17.60",1008721],["17.70",1009997]],"players":451,"byr":[{"cls":150,"rank":{"max":0,"sssp":2,"sss":0,"ssp":0,"ss":0,"s":0},"players":2},{"cls":151,"rank":{"max":0,"sssp":3,"sss":0,"ssp":0,"ss":0,"s":0},"players":3},{"cls":152,"rank":{"max":0,"sssp":1,"sss":0,"ssp":0,"ss":0,"s":0},"players":1},{"cls":153,"rank":{"max":0,"sssp":3,"sss":0,"ssp":0,"ss":0,"s":0},"players":3},{"cls":154,"rank":{"max":0,"sssp":2,"sss":0,"ssp":0,"ss":0,"s":0},"players":2},{"cls":155,"rank":{"max":0,"sssp":3,"sss":0,"ssp":0,"ss":0,"s":0},"players":3},{"cls":156,"rank":{"max":1,"sssp":3,"sss":0,"ssp":0,"ss":1,"s":0},"players":5},{"cls":157,"rank":{"max":1,"sssp":4,"sss":0,"ssp":0,"ss":0,"s":0},"players":5},{"cls":158,"rank":{"max":0,"sssp":3,"sss":0,"ssp":0,"ss":0,"s":0},"players":3},{"cls":159,"rank":{"max":0,"sssp":9,"sss":0,"ssp":0,"ss":0,"s":0},"players":9},{"cls":160,"rank":{"max":3,"sssp":8,"sss":0,"ssp":2,"ss":0,"s":0},"players":13},{"cls":161,"rank":{"max":3,"sssp":5,"sss":0,"ssp":1,"ss":0,"s":0},"players":9},{"cls":162,"rank":{"max":7,"sssp":12,"sss":1,"ssp":0,"ss":2,"s":0},"players":22},{"cls":163,"rank":{"max":4,"sssp":20,"sss":2,"ssp":0,"ss":0,"s":2},"players":28},{"cls":164,"rank":{"max":11,"sssp":12,"sss":0,"ssp":0,"ss":0,"s":0},"players":23},{"cls":165,"rank":{"max":6,"sssp":14,"sss":1,"ssp":0,"ss":0,"s":0},"players":21},{"cls":166,"rank":{"max":5,"sssp":11,"sss":0,"ssp":0,"ss":0,"s":0},"players":16},{"cls":167,"rank":{"max":1,"sssp":20,"sss":1,"ssp":2,"ss":0,"s":0},"players":24},{"cls":168,"rank":{"max":7,"sssp":10,"sss":0,"ssp":2,"ss":1,"s":0},"players":20},{"cls":169,"rank":{"max":9,"sssp":7,"sss":0,"ssp":3,"ss":0,"s":0},"players":20},{"cls":170,"rank":{"max":8,"sssp":9,"sss":0,"ssp":0,"ss":0,"s":0},"players":17},{"cls":171,"rank":{"max":18,"sssp":10,"sss":0,"ssp":0,"ss":0,"s":0},"players":28},{"cls":172,"rank":{"max":15,"sssp":9,"sss":0,"ssp":0,"ss":0,"s":1},"players":25},{"cls":173,"rank":{"max":11,"sssp":1,"sss":0,"ssp":1,"ss":0,"s":0},"players":16},{"cls":174,"rank":{"max":10,"sssp":9,"sss":0,"ssp":0,"ss":0,"s":0},"players":19},{"cls":175,"rank":{"max":17,"sssp":11,"sss":0,"ssp":0,"ss":0,"s":0},"players":30},{"cls":176,"rank":{"max":36,"sssp":6,"sss":0,"ssp":0,"ss":0,"s":0},"players":43},{"cls":177,"rank":{"max":15,"sssp":4,"sss":0,"ssp":0,"ss":0,"s":0},"players":19}]}'A{"rank":{"max":142,"sssp":549,"sss":136,"ssp":38,"ss":12,"s":4},"lamp":{"aj":508,"fc":240},"avg_score":[["15.00",1008919],["15.10",1002394],["15.20",1008354],["15.30",1006945],["15.40",1003738],["15.50",1008220],["15.60",1007984],["15.70",1009088],["15.80",1008401],["15.90",1008540],["16.00",1009337],["16.10",1008969],["16.20",1009045],["16.30",1009125],["16.40",1009327],["16.50",1009557],["16.60",1009214],["16.70",1009558],["16.80",1009638],["16.90",1009576],["17.00",1009671],["17.10",1009888],["17.20",1009953],["17.30",1009857],["17.40",1009166],["17.50",1009891],["17.60",1009981],["17.70",1009995]],"players":881,"byr":[{"cls":149,"rank":{"max":0,"sssp":0,"sss":0,"ssp":1,"ss":0,"s":0},"players":1},{"cls":151,"rank":{"max":0,"sssp":0,"sss":1,"ssp":0,"ss":0,"s":1},"players":2},{"cls":152,"rank":{"max":0,"sssp":1,"sss":0,"ssp":1,"ss":0,"s":0},"players":2},{"cls":153,"rank":{"max":0,"sssp":1,"sss":1,"ssp":0,"ss":2,"s":0},"players":4},{"cls":154,"rank":{"max":0,"sssp":0,"sss":0,"ssp":2,"ss":0,"s":1},"players":3},{"cls":155,"rank":{"max":0,"sssp":1,"sss":3,"ssp":1,"ss":0,"s":0},"players":5},{"cls":156,"rank":{"max":0,"sssp":6,"sss":5,"ssp":0,"ss":2,"s":0},"players":13},{"cls":157,"rank":{"max":0,"sssp":8,"sss":4,"ssp":0,"ss":0,"s":0},"players":12},{"cls":158,"rank":{"max":0,"sssp":11,"sss":3,"ssp":5,"ss":1,"s":0},"players":20},{"cls":159,"rank":{"max":0,"sssp":9,"sss":5,"ssp":3,"ss":1,"s":0},"players":18},{"cls":160,"rank":{"max":0,"sssp":26,"sss":7,"ssp":0,"ss":0,"s":0},"players":33},{"cls":161,"rank":{"max":0,"sssp":42,"sss":21,"ssp":7,"ss":0,"s":0},"players":70},{"cls":162,"rank":{"max":2,"sssp":41,"sss":16,"ssp":2,"ss":1,"s":1},"players":63},{"cls":163,"rank":{"max":2,"sssp":39,"sss":16,"ssp":4,"ss":0,"s":0},"players":61},{"cls":164,"rank":{"max":4,"sssp":37,"sss":11,"ssp":3,"ss":0,"s":0},"players":55},{"cls":165,"rank":{"max":3,"sssp":43,"sss":6,"ssp":1,"ss":0,"s":0},"players":53},{"cls":166,"rank":{"max":2,"sssp":37,"sss":9,"ssp":3,"ss":1,"s":0},"players":52},{"cls":167,"rank":{"max":1,"sssp":40,"sss":6,"ssp":0,"ss":0,"s":0},"players":47},{"cls":168,"rank":{"max":4,"sssp":39,"sss":3,"ssp":1,"ss":0,"s":0},"players":47},{"cls":169,"rank":{"max":5,"sssp":33,"sss":3,"ssp":0,"ss":0,"s":0},"players":41},{"cls":170,"rank":{"max":9,"sssp":34,"sss":2,"ssp":0,"ss":1,"s":0},"players":46},{"cls":171,"rank":{"max":22,"sssp":23,"sss":1,"ssp":0,"ss":0,"s":0},"players":46},{"cls":172,"rank":{"max":15,"sssp":13,"sss":0,"ssp":0,"ss":0,"s":0},"players":28},{"cls":173,"rank":{"max":13,"sssp":5,"sss":1,"ssp":0,"ss":0,"s":0},"players":19},{"cls":174,"rank":{"max":12,"sssp":12,"sss":0,"ssp":0,"ss":0,"s":1},"players":25},{"cls":175,"rank":{"max":12,"sssp":14,"sss":1,"ssp":0,"ss":0,"s":0},"players":27},{"cls":176,"rank":{"max":23,"sssp":16,"sss":0,"ssp":0,"ss":0,"s":0},"players":39},{"cls":177,"rank":{"max":12,"sssp":9,"sss":0,"ssp":0,"ss":0,"s":0},"players":21}]}'E{"rank":{"max":27,"sssp":1662,"sss":1661,"ssp":1089,"ss":533,"s":239},"lamp":{"aj":716,"fc":1127},"avg_score":[["15.00",983622],["15.10",978643],["15.20",985782],["15.30",980935],["15.40",989417],["15.50",993043],["15.60",970991],["15.70",992804],["15.80",994765],["15.90",973132],["16.00",993266],["16.10",992452],["16.20",997736],["16.30",1001673],["16.40",1001173],["16.50",1000965],["16.60",1002924],["16.70",1004022],["16.80",1006228],["16.90",1005780],["17.00",1007308],["17.10",1008132],["17.20",1008334],["17.30",1008486],["17.40",1006519],["17.50",1009199],["17.60",1007692],["17.70",1009750]],"players":5264,"byr":[{"cls":149,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":1},{"cls":150,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":3},"players":3},{"cls":151,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":4},"players":6},{"cls":152,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":1},{"cls":153,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":4},"players":5},{"cls":154,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":1,"s":6},"players":7},{"cls":155,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":1,"s":4},"players":5},{"cls":156,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":1,"s":9},"players":12},{"cls":157,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":3,"s":12},"players":15},{"cls":158,"rank":{"max":0,"sssp":0,"sss":0,"ssp":1,"ss":5,"s":15},"players":22},{"cls":159,"rank":{"max":0,"sssp":0,"sss":0,"ssp":1,"ss":7,"s":17},"players":28},{"cls":160,"rank":{"max":0,"sssp":0,"sss":1,"ssp":4,"ss":19,"s":26},"players":52},{"cls":161,"rank":{"max":0,"sssp":0,"sss":2,"ssp":15,"ss":48,"s":27},"players":94},{"cls":162,"rank":{"max":0,"sssp":0,"sss":3,"ssp":23,"ss":41,"s":32},"players":103},{"cls":163,"rank":{"max":0,"sssp":1,"sss":6,"ssp":25,"ss":57,"s":23},"players":114},{"cls":164,"rank":{"max":0,"sssp":2,"sss":11,"ssp":40,"ss":62,"s":15},"players":133},{"cls":165,"rank":{"max":0,"sssp":1,"sss":20,"ssp":55,"ss":51,"s":7},"players":141},{"cls":166,"rank":{"max":0,"sssp":2,"sss":34,"ssp":66,"ss":40,"s":10},"players":155},{"cls":167,"rank":{"max":0,"sssp":11,"sss":36,"ssp":112,"ss":43,"s":2},"players":208},{"cls":168,"rank":{"max":0,"sssp":14,"sss":88,"ssp":98,"ss":40,"s":3},"players":244},{"cls":169,"rank":{"max":0,"sssp":39,"sss":140,"ssp":101,"ss":29,"s":4},"players":315},{"cls":170,"rank":{"max":0,"sssp":68,"sss":220,"ssp":120,"ss":21,"s":1},"players":431},{"cls":171,"rank":{"max":0,"sssp":186,"sss":306,"ssp":139,"ss":17,"s":0},"players":648},{"cls":172,"rank":{"max":0,"sssp":236,"sss":252,"ssp":99,"ss":15,"s":1},"players":603},{"cls":173,"rank":{"max":0,"sssp":271,"sss":200,"ssp":78,"ss":8,"s":1},"players":559},{"cls":174,"rank":{"max":0,"sssp":257,"sss":148,"ssp":41,"ss":4,"s":1},"players":454},{"cls":175,"rank":{"max":1,"sssp":245,"sss":89,"ssp":17,"ss":2,"s":1},"players":355},{"cls":176,"rank":{"max":13,"sssp":249,"sss":58,"ssp":13,"ss":3,"s":0},"players":337},{"cls":177,"rank":{"max":13,"sssp":48,"sss":5,"ssp":1,"ss":0,"s":0},"players":67}]}'M{"rank":{"max":3,"sssp":809,"sss":1625,"ssp":1301,"ss":1342,"s":1034},"lamp":{"aj":241,"fc":1657},"avg_score":[["15.00",947096],["15.10",960198],["15.20",null],["15.30",759321],["15.40",972773],["15.50",801526],["15.60",975872],["15.70",973956],["15.80",977158],["15.90",947373],["16.00",983203],["16.10",970126],["16.20",969050],["16.30",989320],["16.40",982578],["16.50",990793],["16.60",991569],["16.70",991662],["16.80",997702],["16.90",999381],["17.00",1002141],["17.10",1002237],["17.20",1004979],["17.30",1006822],["17.40",1007478],["17.50",1008213],["17.60",1009180],["17.70",1009828]],"players":6179,"byr":[{"cls":150,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":0},"players":1},{"cls":151,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":0},"players":1},{"cls":152,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":1},{"cls":153,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":4},{"cls":154,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":2},{"cls":155,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":1},"players":3},{"cls":156,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":3},"players":7},{"cls":157,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":3},"players":4},{"cls":158,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":10},"players":13},{"cls":159,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":15},"players":17},{"cls":160,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":29},"players":33},{"cls":161,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":59},"players":64},{"cls":162,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":0,"s":45},"players":50},{"cls":163,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":2,"s":78},"players":81},{"cls":164,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":4,"s":92},"players":98},{"cls":165,"rank":{"max":0,"sssp":0,"sss":0,"ssp":0,"ss":10,"s":83},"players":96},{"cls":166,"rank":{"max":0,"sssp":0,"sss":1,"ssp":0,"ss":20,"s":108},"players":130},{"cls":167,"rank":{"max":0,"sssp":0,"sss":0,"ssp":1,"ss":35,"s":128},"players":169},{"cls":168,"rank":{"max":0,"sssp":0,"sss":0,"ssp":1,"ss":91,"s":118},"players":212},{"cls":169,"rank":{"max":0,"sssp":0,"sss":0,"ssp":13,"ss":167,"s":103},"players":284},{"cls":170,"rank":{"max":0,"sssp":0,"sss":1,"ssp":55,"ss":296,"s":70},"players":423},{"cls":171,"rank":{"max":0,"sssp":0,"sss":16,"ssp":251,"ss":401,"s":35},"players":710},{"cls":172,"rank":{"max":0,"sssp":0,"sss":70,"ssp":439,"ss":196,"s":10},"players":718},{"cls":173,"rank":{"max":0,"sssp":7,"sss":308,"ssp":362,"ss":61,"s":3},"players":742},{"cls":174,"rank":{"max":0,"sssp":33,"sss":501,"ssp":102,"ss":13,"s":2},"players":652},{"cls":175,"rank":{"max":0,"sssp":115,"sss":493,"ssp":22,"ss":6,"s":2},"players":639},{"cls":176,"rank":{"max":0,"sssp":521,"sss":185,"ssp":9,"ss":2,"s":0},"players":717},{"cls":177,"rank":{"max":3,"sssp":119,"sss":1,"ssp":0,"ss":0,"s":0},"players":123}]}'</script>
+<script src="/js/chart.min.js"></script>
+<script src="/js/chartjs-plugin-annotation.min.js"></script>
+<script src="/js/chartjs-plugin-labels.min.js"></script>
+<script src="/js/color-thief.umd.js"></script>
+<script src="/assets/js/music.js?v=2_50_0015"></script>
+    </div> <!-- container -->
+  </div> <!-- px-2 -->
+  <footer>
+    <div class="container">
+      <ul class="ps-0 mb-0 footer-links">
+        <li class="text-muted">chunirec</li>
+        <li><a href="https://twitter.com/chunirec" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+        <li><a href="https://chunirec.net">スコア ツール</a></li>
+        <li><a href="/about">このサイトについて</a></li>
+        <li class="ms-auto"><a href="#" class="ft-change-language"><i class="fas fa-globe me-1"></i>Language / 言語</a></li>
+      </ul>
+    </div>
+  </footer>
+  </div> <!-- pt-5 -->
+</div> <!-- d-flex -->
+</main>
+</body>
+</html>

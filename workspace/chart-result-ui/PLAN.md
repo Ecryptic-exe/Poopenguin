@@ -1,0 +1,22 @@
+# Canonical chart results UI
+
+- [x] Inspect panel and chart model conventions for a same-message result browser.
+  - Result: Confirmed `Chart` carries a stable canonical ID and loaded `song`; the panel owns same-message edits, route state, and stale-view handling.
+  - Changed: No source files.
+  - Verified: Read the panel lifecycle, chart ORM, and existing song labels.
+  - Notes: Result controls own navigation so the global panel menu is not appended.
+- [x] Implement `ChartResultsView` with paged canonical chart selection, labels, and panel navigation callbacks.
+  - Result: Added a 10-chart page browser with exact current-page IDs, level/difficulty/title descriptions, source version and availability labels, pagination, condition editing, and song-search return callbacks.
+  - Changed: `chuni_penguin/ui/chart_results.py`
+  - Verified: Focused UI tests, Ruff, and basedpyright pass.
+  - Notes: Off-page IDs are rejected so delayed controls cannot open another page's chart.
+- [x] Add focused UI tests for page options, chart identity, component limits, and owner/inactive handling.
+  - Result: Added eight tests covering rendering, exact selection, off-page rejection, same-message pagination, component limits, ownership, inactivity/expiry, and panel route callbacks.
+  - Changed: `tests/test_chart_results.py`
+  - Verified: `pytest tests/test_chart_results.py -q` — 8 passed.
+  - Notes: Parent integration callbacks are mocked where they are outside this view's ownership.
+- [x] Run the focused test file and record the outcome.
+  - Result: The focused test suite passed, and static checks reported no issues.
+  - Changed: `workspace/chart-result-ui/PLAN.md`
+  - Verified: `pytest tests/test_chart_results.py -q` — 8 passed; Ruff check on the implementation and test file — passed; basedpyright on the implementation — 0 errors.
+  - Notes: No remaining limitation identified in the assigned scope.

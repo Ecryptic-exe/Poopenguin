@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/hyperreality/54d0313d8b11d3bc",
+  "requested_title": "hyperreality",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:16.086427+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/hyperreality/54d0313d8b11d3bc",
+      "final_url": "https://db.chunirec.net/music/hyperreality/54d0313d8b11d3bc",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:16.486420+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\07\\source_snapshot\\source.html",
+      "sha256": "9fd5604a9b5b38c908ff56745e30f9352f18b0317b4a5dc6f09bd02d014ded35"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:16.553156+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\07\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "hyperreality",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.2",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8358,
+    "end": 11379
+  },
+  "total_players": 7569,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\07\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 29,
+  "rank_csv_sha256": "7e2af6633ea6d8dad1b4cb799e522d9b156e7fb6a8e9ed447a10da872bd9145a",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:16.615694+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\07\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "47f0b417f0a1b61a912ee0e103e9c9099d446d23a1424dafb8e07217e077d587",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 2,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

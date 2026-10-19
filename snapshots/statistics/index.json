@@ -1,0 +1,230 @@
+[
+  {
+    "song_id": 2919,
+    "chunirec_id": "169110c4439d3bb2",
+    "difficulty": "MAS",
+    "folder": "169110c4439d3bb2_MAS",
+    "hashes": {
+      "manifest.json": "92f5336f8e9fd4b2a5c41b9bcb1e8a7c30f6a4ae28226ec609d1830e339fde5d",
+      "selected_stats.json": "9cc261904b032114d8f51a227055b6e07dfd45da3822b7744e7b0fc277294d93",
+      "embedded_stats.txt": "2315dc97135e7130d7f16b79d30f3fc4edd2ec4eaacc3badec3c83816dab1b54",
+      "rating_score_table.csv": "06000f8c93c0817d4938b11c24c528edbd641503cf01ee56ccfc6f2a9d563407",
+      "rating_rank_counts.csv": "1b5877ab851e8cae6489a9c009c289aef156ea7b82105360d9292846e5567a53",
+      "source.html": "dbf697fe0037f316dfa9a74c9937e66805c1219a1c741bc887da642d276e3a4b",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E8%BD%86%E8%BD%A4%E9%A6%96/169110c4439d3bb2",
+    "observed_at": "2026-10-04T12:00:12.453733+08:00",
+    "players": 4904,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2799,
+    "chunirec_id": "18f873c982981e92",
+    "difficulty": "MAS",
+    "folder": "18f873c982981e92_MAS",
+    "hashes": {
+      "manifest.json": "64773c3dd200b6d443261f9d4c2ed2e3d879748fbf9c64613a6079f93a5ce405",
+      "selected_stats.json": "f95570d42105740778896f6fff99bf2fb406d77ff1ecada0b088c7ac5a1b3ff1",
+      "embedded_stats.txt": "a021b491491b84b67022121a4dac493e661577b7da131a71348a6ec259c19f63",
+      "rating_score_table.csv": "4a423ae9f5eece3abbd3cdc1827f1fb46f2b196478e6b35e66de5217376cbb1c",
+      "rating_rank_counts.csv": "f21174a57a5eddadf88f375c496a96512407ad8a676ca07306f76f50bbc0bf3c",
+      "source.html": "c5b9872f4d0a919dbbb9941997d00f3acb7c0b9ad78743b1a6ab20581ab5cd3a",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E3%82%AD%E3%83%9F%E3%81%A8%E3%83%9C%E3%82%AF%E3%81%B8%E3%81%AE%E8%91%AC%E9%80%81%E6%AD%8C/18f873c982981e92",
+    "observed_at": "2026-10-04T12:00:12.453733+08:00",
+    "players": 12168,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2880,
+    "chunirec_id": "75c604a367a648bb",
+    "difficulty": "MAS",
+    "folder": "75c604a367a648bb_MAS",
+    "hashes": {
+      "manifest.json": "e1bd0a800dc26c56443af433f77f2e911b7cbaffc06455764645b295f325a9d8",
+      "selected_stats.json": "e9b3ec457888d038d9b0516c3c233db5796331889c09d41d1c94bc17097ba01a",
+      "embedded_stats.txt": "b7326edc78a0e9a0526715c69eaf4548ec68439c85bdbe63a00a16e4223ee5e2",
+      "rating_score_table.csv": "1448ac410cf1578dc1ea48ae6c97cb66070d4d7529c3b09690c087fab901a962",
+      "rating_rank_counts.csv": "51e97d067f641f4eb38c1d77dba89cf31c9d4b0f64c0c4ea12d02fd4ea34cd78",
+      "source.html": "e2cdacc3c8e42c681964cb578f4d9e9af6581e2eda77dc5b0f36e91ce13eec27",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E8%BC%AA%E5%BB%BB%E7%8E%B2%E3%80%85/75c604a367a648bb",
+    "observed_at": "2026-10-04T12:00:15.071991+08:00",
+    "players": 6179,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2660,
+    "chunirec_id": "379e125c378792dd",
+    "difficulty": "MAS",
+    "folder": "379e125c378792dd_MAS",
+    "hashes": {
+      "manifest.json": "6b56eaf3d7a191e260605c85cc6896ccef057579a04f77186de6c5e3a9c5e4fa",
+      "selected_stats.json": "97fb779008a8cc73c2f54cb004093c1092325467f3274fed75d1a5b81c32a132",
+      "embedded_stats.txt": "aa23d9c95e4e48051deae087fcdce7ca78554f6eb2349458002b31949da4796e",
+      "rating_score_table.csv": "13d9473212b32fb8361d34d10d1ce744e779154b608b393b413585c4fa36d103",
+      "rating_rank_counts.csv": "1dea89f9ed760f2386fbb9d1516e5dc392da045b0cdcdb3dfdc1cd68e7f11cce",
+      "source.html": "42e8c0ea31b87b1f61a7f02aa83825da17ae587e2f6eede21e09e66600320ed7",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/What%27s+up%3F+Pop%21/379e125c378792dd",
+    "observed_at": "2026-10-04T12:00:14.236045+08:00",
+    "players": 13733,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 972,
+    "chunirec_id": "c3303447de557bb2",
+    "difficulty": "MAS",
+    "folder": "c3303447de557bb2_MAS",
+    "hashes": {
+      "manifest.json": "9c8811dd3dad352f4f9044c692070fc88c66630a6b4480141de0d665ba4bd016",
+      "selected_stats.json": "8ac3091c03fe6e17e2c0edb6c4935d6b17131929bb10bd31044c9612338453e4",
+      "embedded_stats.txt": "5ece06ff55142ac1a8582885db3be411c9f8f43db0b9ebf2704e4d9910368148",
+      "rating_score_table.csv": "3e33d33245367e9219cb82e53c35e77cf578a602a1f7b6e847c9c8a7c33564d5",
+      "rating_rank_counts.csv": "68796cc0342722b2bf32ec436805045b3f7a16dfb49be72e7ecdd439cafbf55a",
+      "source.html": "64dffd4f75498cb222823fa595c054df349fb46230f83e9b5bd0b94441aa5386",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E5%AE%BF%E6%98%9F%E5%AF%A9%E5%88%A4/c3303447de557bb2",
+    "observed_at": "2026-10-04T12:00:15.716718+08:00",
+    "players": 20702,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2888,
+    "chunirec_id": "54d0313d8b11d3bc",
+    "difficulty": "MAS",
+    "folder": "54d0313d8b11d3bc_MAS",
+    "hashes": {
+      "manifest.json": "1f63db35b0ec1572fd34034884c0bfdb1f259b9979a7cef494bfc716a0efb009",
+      "selected_stats.json": "632073eb1bd45a82c1c5379149841f1d9cd5f2cc143c6fe9f9fd85213ffb3c37",
+      "embedded_stats.txt": "ed0a1ccc9e6bd0457a4b7f275ba7058ff81ca69a8f615fd75313748f0182a8d4",
+      "rating_score_table.csv": "47f0b417f0a1b61a912ee0e103e9c9099d446d23a1424dafb8e07217e077d587",
+      "rating_rank_counts.csv": "7e2af6633ea6d8dad1b4cb799e522d9b156e7fb6a8e9ed447a10da872bd9145a",
+      "source.html": "9fd5604a9b5b38c908ff56745e30f9352f18b0317b4a5dc6f09bd02d014ded35",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/hyperreality/54d0313d8b11d3bc",
+    "observed_at": "2026-10-04T12:00:16.615694+08:00",
+    "players": 7569,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2966,
+    "chunirec_id": "47ee8e8878f5fb30",
+    "difficulty": "MAS",
+    "folder": "47ee8e8878f5fb30_MAS",
+    "hashes": {
+      "manifest.json": "552b7fe58738d207c5d6127ed47afc53db14798768408ceeaad24629688252a6",
+      "selected_stats.json": "0e34ff6a9babd7f7ea0ee86d38f45619d134b9d1bb11ea7d9be397fa4f36aaba",
+      "embedded_stats.txt": "484bf7883a0b66b333befa08ba02f8e3f0ec0af58c56ddae086675b2f78c8643",
+      "rating_score_table.csv": "7ad7eb627a98e40a3d7682403f22aec1a52abfb73f8dd1b93f6ce61648c6f888",
+      "rating_rank_counts.csv": "acf4e024ae0f0af86be4c7ef1c9e5d2d84ef0682ac4f24d5cb4f0195978fc1e1",
+      "source.html": "04f232c609719b3a6de65e7e02fc26e120142ca9973cd5507bf1fc5004d5bec0",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E6%9C%88%E8%91%AC/47ee8e8878f5fb30",
+    "observed_at": "2026-10-04T12:00:17.206563+08:00",
+    "players": 2967,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2907,
+    "chunirec_id": "e39c2f821d9046c9",
+    "difficulty": "MAS",
+    "folder": "e39c2f821d9046c9_MAS",
+    "hashes": {
+      "manifest.json": "fc64ddfc156b105d2b7031e6e4d2c7c9264917a219668e4fe89c9b4782603916",
+      "selected_stats.json": "dbea0a06f0a03635c4be7de0192ab456842afc21e2e073152516f844c746707d",
+      "embedded_stats.txt": "a58a53eb63b6d298e37f268af847bbaefa316ac718a8ab86fc8560a9b3d10ee2",
+      "rating_score_table.csv": "fe83469b7be9c66088ad6dfa14a72f1be6d9d67f24f352a60062fa8198a45b63",
+      "rating_rank_counts.csv": "80a7549f84b31317bf98b3dd44da06af0e414704d08ad053874695243e3c0f6c",
+      "source.html": "eec4203cc1eaffc1594b8db850d44019fbfe5d7c582ce96bab014b8ccc950eb2",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/AiAe/e39c2f821d9046c9",
+    "observed_at": "2026-10-04T12:00:18.102865+08:00",
+    "players": 9248,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2892,
+    "chunirec_id": "5ca773f93eddfada",
+    "difficulty": "MAS",
+    "folder": "5ca773f93eddfada_MAS",
+    "hashes": {
+      "manifest.json": "688c059464fca03d2cc42a1aa4c622b09327e5c75e6e4784b4da66304399a937",
+      "selected_stats.json": "9c08f04ef2edc00461a4915ede55802666e1e2e558800fa0a97ada65b6c7fe3d",
+      "embedded_stats.txt": "7263acabfc590c67703ce3b41fc738b66fb0dbee6af03e38ffc79822b9d90504",
+      "rating_score_table.csv": "7405accb116a2e903a4c4d6660143359d9929d52d34414a77c18bbcb4f181a2d",
+      "rating_rank_counts.csv": "974d9078aafed96631201fb5d894a95fec708976d7ffb4540cf939ab0a8b2e74",
+      "source.html": "78821994a90bfd45f79d6677d2ede7887657da793e975e1a99b9f8c48cca891b",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/Kaleidoscope/5ca773f93eddfada",
+    "observed_at": "2026-10-04T12:00:18.706156+08:00",
+    "players": 8122,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2035,
+    "chunirec_id": "819a7247b0f6ef65",
+    "difficulty": "MAS",
+    "folder": "819a7247b0f6ef65_MAS",
+    "hashes": {
+      "manifest.json": "ee667323baea82cba67cff4599932427348fdd05dcdbed436909ea058006c53a",
+      "selected_stats.json": "ed94da9516c945264ae2e42b199a767ac1e8143d711088cf8089aa5adfb4c115",
+      "embedded_stats.txt": "8975fd9032ab50e68f9b4e0359816a8eae28c601302339d713b125627d541418",
+      "rating_score_table.csv": "f3ee534b58bd0958254a8dfb76bb41c808e369209edbf0dfa9b57fddcd45f3dd",
+      "rating_rank_counts.csv": "1bebcff3dd40d70038378118e8ed6e27eeca4ef6b2d4c5c5f893d226e2ab95e9",
+      "source.html": "2c92b784a1c64b44047f2363e6958662621a23db21068ecc17c5fb494df955de",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+    "observed_at": "2026-10-04T13:25:53.579477+08:00",
+    "players": 21707,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 90,
+    "chunirec_id": "d661823a5d82ae83",
+    "difficulty": "MAS",
+    "folder": "d661823a5d82ae83_MAS",
+    "hashes": {
+      "manifest.json": "69bb64825aa5065453ac1c5c88b83ee4c17daa2324b216c52b0a3bfe1f0aa112",
+      "selected_stats.json": "5c185b757614d15457261db8a2664fb996c6611d371441b6b22698b246093d48",
+      "embedded_stats.txt": "fdd8fbdeb3fdb54c39d152a6a47ee4abb7e70eeed5c2235293e007bc82ceaf1f",
+      "rating_score_table.csv": "2abe6af5c3daf8a163af5d42ea11b2b6c886605c3758854bb76b677d659e72c9",
+      "rating_rank_counts.csv": "e9381738a7e007fff11621dfbe179f62cdf5a6b18a4c6558ffa37ca9fc1e6897",
+      "source.html": "281038c2790c02911cf50d65eb5661e576ea3f19f05e6a67b7415132991bd46a",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/L%27%C3%A9pisode/d661823a5d82ae83",
+    "observed_at": "2026-10-04T13:23:28.109028+08:00",
+    "players": 18897,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  },
+  {
+    "song_id": 2765,
+    "chunirec_id": "5b5402d31e6ee21e",
+    "difficulty": "MAS",
+    "folder": "5b5402d31e6ee21e_MAS",
+    "hashes": {
+      "manifest.json": "5c31e2da517cb26ae35048140c94bacb393f022273202f20462c554af93a3b25",
+      "selected_stats.json": "e528f7d264b3d0b82bdc9049533ab5878d5e1fc31479560653a5d525daf21081",
+      "embedded_stats.txt": "f6f9ab05e29a5147083576bdd89777a84ce383e9a7fb4e0d6bbbb3b766f37710",
+      "rating_score_table.csv": "d750c847175e0e50d403317aef2bbcda1b4edc834747bd03e2b07be4a7a4b649",
+      "rating_rank_counts.csv": "3058318fab44bab00809d1a6d42ba9a152f2af42bec89038473fc286d3bb84ff",
+      "source.html": "d759b4da8732a2d0cd66f71854ff9c5a27df7a164fe95c32e49f3076a17444ed",
+      "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    },
+    "source_url": "https://db.chunirec.net/music/%E3%81%9A%E3%82%93%E3%81%9A%E3%82%93%E3%82%B5%E3%83%95%E3%82%A1%E3%83%AA/5b5402d31e6ee21e",
+    "observed_at": "2026-10-04T13:33:47.940087+08:00",
+    "players": 9952,
+    "mapping_evidence": "exact A Song.chunirec_id equals source_url native ID; difficulty from captured manifest"
+  }
+]

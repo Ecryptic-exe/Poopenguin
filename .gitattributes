@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+# Source evidence is verified by raw SHA-256; preserve its original bytes.
+/snapshots/** -text
+/outputs/chart-mapping-20261015/** -text
+/vendor/rating_bot/** -text
+*.xlsx binary
+*.png binary
+*.webp binary
+*.ttf binary
+*.otf binary

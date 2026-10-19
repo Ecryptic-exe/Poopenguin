@@ -1,0 +1,12 @@
+# Reused source records
+
+- A: `D:/WorkSpace/Codex_WorkSpace/chunilib_L_ver/workspace/chuni-penguin-refactor/bot` at the start of this task, including the existing song-card integration. This was copied as a source; its outstanding refactor checklist was not adopted as a delivery requirement. Original public repository: [beer-psi/chuni-penguin](https://github.com/beer-psi/chuni-penguin).
+- A renderer assets: 128 public `assets/b50` WebP files read from the reference Git tree at HEAD, without changing the source checkout or its sparse-checkout configuration.
+- B: `D:/WorkSpace/Codex_WorkSpace/chunilib_L_ver/workspace/Poopenguin-reference/Pooping Penguin`. Reused Cogs, original managers, i18n and the community manual-tag source. No runtime account, score, moderation or private content settings copied.
+- C: `D:/WorkSpace/Codex_WorkSpace/chunilib_L_ver/rating_bot`. Public code, numerical engine and required static assets are bundled in `vendor/rating_bot`; its `.env`, Discord client startup, generated player files and data directory are not imported.
+- Statistics: selected charts now acquire public Chunirec statistics on demand using the catalog's exact native ID, validating identity and preserving evidence in `data/cache/statistics/`. The 12 complete captured snapshots from `v3/table_probes/**/source_snapshot` remain dated offline fallback inputs in `snapshots/statistics/index.json`, rather than the supported-chart list. Numerical engine/formulas remain unchanged; the full view prevents empirical lines from being clipped by the old focus view.
+- v3: inspected `data/workflow.sqlite` using SQLite read-only mode for schema/counts; zero semantic analysis rows were available. The workflow database was not copied.
+
+`REUSE_MANIFEST.json` records the initial A copy's content hashes. `reports/source-changes.json` identifies the reused files changed for this task. Existing A and B license texts are preserved in the root LICENSE and LICENSES directory; C provenance remains alongside the original engine.
+
+UI interaction reference: [Loli45D/LittleDragonMeowDCBOT](https://github.com/Loli45D/LittleDragonMeowDCBOT), read through the connected GitHub integration. Inspected main-menu and navigation files/hashes are recorded in `INTERACTION_PANELS.md`. The reference informed related Embed groups, common buttons, secondary menus and bounded per-message navigation; its underlying architecture was not copied.

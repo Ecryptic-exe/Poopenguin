@@ -1,0 +1,500 @@
+import asyncio
+import contextlib
+from collections.abc import Sequence
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Literal, Self, overload, override
+
+import discord
+import discord.context_managers
+from discord.ext import commands, songbird
+from discord.ext.commands.context import DeferTyping
+from discord.ext.track_edits import EditTrackableContext
+from discord.utils import MISSING, escape_markdown
+from discord.webhook.async_ import WebhookMessage
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
+
+from chuni_penguin.constants import SIMILARITY_THRESHOLD
+from chuni_penguin.database import Alias, Chart, Song, UserConfig
+from chuni_penguin.privacy import private_command
+from chuni_penguin.types import Difficulty
+from chuni_penguin.utils import did_you_mean_text
+
+if TYPE_CHECKING:
+    from .bot import ChuniBot
+    from .services.catalog import SongSearchResult
+
+
+def _typing_done_callback(fut: asyncio.Future) -> None:
+    # just retrieve any exception and call it a day
+    with contextlib.suppress(asyncio.CancelledError, Exception):
+        fut.exception()
+
+
+class Typing(discord.context_managers.Typing):
+    async def wrapped_typer(self) -> None:
+        with contextlib.suppress(discord.HTTPException):
+            return await super().wrapped_typer()
+
+    async def do_typing(self) -> None:
+        channel = await self._get_channel()
+        typing = channel._state.http.send_typing
+
+        await typing(channel.id)
+
+        while True:
+            await asyncio.sleep(9.5)
+            await typing(channel.id)
+
+    async def __aenter__(self) -> None:
+        self.task: asyncio.Task[None] = self.loop.create_task(self.do_typing())
+        self.task.add_done_callback(_typing_done_callback)
+
+
+class PenguinContext(EditTrackableContext["ChuniBot"]):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.response: discord.Message | None = None
+        self.user_config: UserConfig = MISSING
+
+    @override
+    async def reply(self, content: str | None = None, **kwargs: Any) -> discord.Message:
+        from chuni_penguin.ui.dismiss import response_closed
+
+        if response_closed(self):
+            raise asyncio.CancelledError
+        from chuni_penguin.ui.panel import (
+            bind_panel_message,
+            panel_message,
+            prepare_response,
+        )
+
+        if (
+            getattr(self, "_panel_edit", False)
+            and not getattr(self, "_panel_new_private", False)
+            and self.response is None
+        ):
+            self.response = panel_message(self)
+        if getattr(self, "_panel_edit", False) and self.response is not None:
+            return await self.respond_or_edit(content, **kwargs)
+
+        content, kwargs = prepare_response(self, content, kwargs)
+        if self.interaction is not None and private_command(self.command):
+            kwargs["ephemeral"] = True
+        # Ensure that if the original message was deleted somewhere in-between, we can still
+        # safely put out the response
+
+        try:
+            msg = await super().reply(content, **kwargs)
+        except discord.errors.HTTPException:
+            msg = await self.send(content, **kwargs)
+
+        self.response = msg
+        bind_panel_message(self, msg)
+
+        return msg
+
+    async def send(self, content=None, **kwargs):
+        from chuni_penguin.ui.dismiss import response_closed
+
+        if response_closed(self):
+            raise asyncio.CancelledError
+        from chuni_penguin.ui.panel import (
+            bind_panel_message,
+            panel_message,
+            prepare_response,
+        )
+
+        if (
+            getattr(self, "_panel_edit", False)
+            and not getattr(self, "_panel_new_private", False)
+            and self.response is None
+        ):
+            self.response = panel_message(self)
+        if getattr(self, "_panel_edit", False) and self.response is not None:
+            return await self.respond_or_edit(content, **kwargs)
+
+        content, kwargs = prepare_response(self, content, kwargs)
+        if self.interaction is not None and private_command(self.command):
+            kwargs["ephemeral"] = True
+        message = await super().send(content, **kwargs)
+        if isinstance(kwargs.get("view"), discord.ui.View):
+            kwargs["view"].message = message
+        bind_panel_message(self, message)
+        return message
+
+    @classmethod
+    async def from_interaction(
+        cls, interaction: discord.Interaction["ChuniBot"], /
+    ) -> Self:
+        ctx = await super().from_interaction(interaction)
+
+        if interaction.response.type in (
+            discord.InteractionResponseType.channel_message,
+            discord.InteractionResponseType.deferred_channel_message,
+        ):
+            ctx.response = await interaction.original_response()
+
+        ctx.user_config = await interaction.client.fetch_user_config(
+            interaction.user.id
+        )
+
+        return ctx
+
+    @overload
+    async def respond_or_edit(
+        self,
+        content: str | None = ...,
+        *,
+        files: Sequence[discord.File] = ...,
+        suppress_embeds: bool = ...,
+        delete_after: float | None = ...,
+        allowed_mentions: discord.AllowedMentions = ...,
+        view: discord.ui.LayoutView,
+        ephemeral: bool = ...,
+    ) -> discord.Message: ...
+
+    @overload
+    async def respond_or_edit(
+        self,
+        content: str | None = ...,
+        *,
+        embed: discord.Embed = ...,
+        files: Sequence[discord.File] = ...,
+        suppress_embeds: bool = ...,
+        delete_after: float | None = ...,
+        allowed_mentions: discord.AllowedMentions = ...,
+        view: discord.ui.View | None = ...,
+        ephemeral: bool = ...,
+    ) -> discord.Message: ...
+
+    @overload
+    async def respond_or_edit(
+        self,
+        content: str | None = ...,
+        *,
+        embeds: Sequence[discord.Embed] = ...,
+        files: Sequence[discord.File] = ...,
+        suppress_embeds: bool = ...,
+        delete_after: float | None = ...,
+        allowed_mentions: discord.AllowedMentions = ...,
+        view: discord.ui.View | None = ...,
+        ephemeral: bool = ...,
+    ) -> discord.Message: ...
+
+    async def respond_or_edit(
+        self, content: str | None = None, **kwargs: Any
+    ) -> discord.Message:
+        """Reply to the message referenced by this context, or update
+        the response if we've replied before."""
+
+        from chuni_penguin.ui.dismiss import response_closed
+
+        if response_closed(self):
+            raise asyncio.CancelledError
+
+        from chuni_penguin.ui.panel import (
+            bind_panel_message,
+            panel_message,
+            prepare_response,
+        )
+
+        if (
+            getattr(self, "_panel_edit", False)
+            and not getattr(self, "_panel_new_private", False)
+            and self.response is None
+        ):
+            self.response = panel_message(self)
+
+        content, kwargs = prepare_response(self, content, kwargs)
+        kwargs.pop("mention_author", None)
+
+        if self.response is not None:
+            edit_kwargs = {
+                "content": content,
+                "attachments": kwargs.get("files", MISSING),
+                "view": kwargs.get("view", MISSING),
+                "allowed_mentions": kwargs.get("allowed_mentions", MISSING),
+            }
+
+            embed = kwargs.get("embed", MISSING)
+            embeds = kwargs.get("embeds", MISSING)
+            file = kwargs.get("file", MISSING)
+            files = kwargs.get("files", MISSING)
+
+            if embed is not MISSING and embeds is not MISSING:
+                msg = "Cannot mix embed and embeds keyword arguments."
+                raise TypeError(msg)
+
+            if file is not MISSING and files is not MISSING:
+                msg = "Cannot mix file and files keyword arguments."
+                raise TypeError(msg)
+
+            if edit_kwargs["view"] is MISSING:
+                edit_kwargs["view"] = None
+
+            if file is not MISSING:
+                files = [file]
+            elif files is MISSING:
+                files = []
+
+            if embed is not MISSING:
+                embeds = [embed]
+            elif embeds is MISSING:
+                embeds = []
+
+            edit_kwargs["embeds"] = embeds
+            edit_kwargs["attachments"] = files
+
+            if isinstance(self.response, discord.InteractionMessage):
+                edit_kwargs["delete_after"] = kwargs.get("delete_after")
+            elif not isinstance(self.response, WebhookMessage):
+                edit_kwargs["suppress"] = kwargs.get("suppress_embeds", False)
+                edit_kwargs["delete_after"] = kwargs.get("delete_after")
+
+            with contextlib.suppress(discord.errors.NotFound):
+                self.response = await self.response.edit(**edit_kwargs)
+                bind_panel_message(self, self.response)
+                if isinstance(kwargs.get("view"), discord.ui.View):
+                    kwargs["view"].message = self.response
+
+                return self.response
+
+        self.response = None
+        return await self.reply(content=content, mention_author=False, **kwargs)
+
+    @override
+    def typing(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self, *, ephemeral: bool = False
+    ) -> Typing | DeferTyping["ChuniBot"]:
+        if self.interaction is None:
+            return Typing(self)
+
+        return DeferTyping(self, ephemeral=ephemeral or private_command(self.command))
+
+    async def resolve_message_reference(self) -> discord.Message | None:
+        if (reference := self.message.reference) is not None:
+            if isinstance(reference.resolved, discord.Message):
+                return reference.resolved
+
+            if (cached_message := reference.cached_message) is not None:
+                return cached_message
+
+            if reference.message_id is not None:
+                try:
+                    return await self.channel.fetch_message(reference.message_id)
+                except discord.HTTPException:
+                    msg = "Could not fetch the message that was replied to. Is it deleted?"
+                    raise commands.CommandError(msg) from None
+            else:
+                msg = "The message reference did not point to a valid message."
+                raise commands.BadArgument(msg)
+
+        return None
+
+    async def find_song(
+        self,
+        query: str,
+        *,
+        worlds_end: bool = False,
+    ) -> tuple[Song, Alias | None, float] | tuple[None, None, Literal[0]]:
+        from chuni_penguin.ui import ConfirmationYesView
+
+        song, alias, similarity = await self.bot.utils.find_song(
+            query,
+            guild_id=self.guild.id if self.guild is not None else None,
+            worlds_end=worlds_end,
+        )
+
+        if song is None:
+            await self.reply(
+                did_you_mean_text(self.clean_prefix, song, alias), mention_author=False
+            )
+            return (None, None, 0)
+
+        if similarity < SIMILARITY_THRESHOLD:
+            view = ConfirmationYesView(self)
+
+            await view.start(content=did_you_mean_text(self.clean_prefix, song, alias))
+            await view.wait()
+
+            if not view.result:
+                return (None, None, 0)
+
+        return (song, alias, similarity)
+
+    async def find_songs(
+        self,
+        query: str,
+        *,
+        available: bool | None = None,
+        load_charts: bool = False,
+        load_global_aliases: bool = False,
+    ) -> "SongSearchResult | None":
+        from chuni_penguin.ui import ConfirmationYesView
+
+        result = await self.bot.utils.find_songs(
+            query,
+            guild_id=self.guild.id if self.guild is not None else None,
+            available=available,
+            load_charts=load_charts,
+            load_global_aliases=load_global_aliases,
+        )
+
+        if result.similarity < SIMILARITY_THRESHOLD:
+            view = ConfirmationYesView(self)
+
+            await view.start(
+                content=did_you_mean_text(
+                    self.clean_prefix, result.songs[0], result.matched_alias
+                )
+            )
+            await view.wait()
+
+            if not view.result:
+                return None
+
+        return result
+
+    async def find_chart(
+        self,
+        difficulty: Difficulty,
+        query: str,
+        select_prompt: str = "Select a chart:",
+    ) -> Chart | None:
+        """Finds a chart with the given difficulty and query, prompting the user if there are multiple
+        options.
+
+        Returns a 2-tuple, where the first item is the select message sent if the user was prompted, and
+        the second item is the chart.
+        """
+
+        from chuni_penguin.ui import ConfirmationYesView, SelectToCompareView
+
+        guild_id = self.guild.id if self.guild else None
+        result = await self.bot.utils.find_songs(query, guild_id=guild_id)
+
+        if result.similarity < SIMILARITY_THRESHOLD:
+            view = ConfirmationYesView(self)
+            msg = did_you_mean_text(self.prefix, result.songs[0], result.matched_alias)
+
+            await view.start(content=msg)
+            await view.wait()
+
+            if not view.result:
+                return None
+
+        song_ids = {s.id for s in result.songs}
+
+        async with self.bot.begin_db_read() as session:
+            stmt = (
+                select(Chart)
+                .where(
+                    (Chart.song_id.in_(song_ids))
+                    & (Chart.difficulty == difficulty.short())
+                )
+                .options(joinedload(Chart.song), joinedload(Chart.sdvxin_chart_view))
+            )
+            charts = (await session.execute(stmt)).scalars().all()
+
+        if len(charts) == 0:
+            msg = f"No charts found for {escape_markdown(result.songs[0].title)} [{difficulty}]."
+            raise commands.CommandError(msg)
+
+        if len(charts) == 1:
+            return charts[0]
+
+        view = SelectToCompareView(
+            self,
+            [
+                (
+                    f"{x.song.title} [{Difficulty(x.difficulty)} {x.const or x.level}]",
+                    i,
+                )
+                for i, x in enumerate(charts)
+            ],
+            placeholder="Select a chart...",
+        )
+        await self.respond_or_edit(select_prompt, view=view)
+
+        await view.wait()
+
+        if view.value is None:
+            msg = "Timed out before selecting a chart."
+            raise commands.CommandError(msg)
+
+        return charts[int(view.value)]
+
+
+class PenguinGuildContext(PenguinContext):
+    """Utility context class used when we know that we're in a Discord guild; for instance,
+    when using @commands.guild_only()."""
+
+    author: discord.Member  # pyright: ignore[reportIncompatibleVariableOverride]
+    guild: discord.Guild  # pyright: ignore[reportIncompatibleVariableOverride]
+    channel: discord.VoiceChannel | discord.TextChannel | discord.Thread  # pyright: ignore[reportIncompatibleVariableOverride]
+    me: discord.Member  # pyright: ignore[reportIncompatibleVariableOverride]
+    prefix: str  # pyright: ignore[reportIncompatibleVariableOverride]
+
+    async def ensure_voice(self) -> songbird.SongbirdClient:
+        if self.voice_client is not None:
+            msg = "Another voice activity is already ongoing in this server. Only one voice activity can run at a time."
+            raise commands.CommandError(msg)
+
+        if (
+            self.author.voice is None
+            or (voice_channel := self.author.voice.channel) is None
+        ):
+            msg = "You must connect to a voice channel to start a voice activity."
+            raise commands.CommandError(msg)
+
+        voice_channel_permissions = voice_channel.permissions_for(self.me)
+        missing = [
+            p for p in ("connect", "speak") if not getattr(voice_channel_permissions, p)
+        ]
+
+        if missing:
+            raise commands.BotMissingPermissions(missing)
+
+        voice_client = await voice_channel.connect(
+            cls=songbird.SongbirdClient, self_deaf=True
+        )
+
+        if (
+            isinstance(voice_channel, discord.StageChannel)
+            and self.me not in voice_channel.speakers
+        ):
+            if self.me in voice_channel.moderators:
+                await self.me.edit(suppress=False)
+            else:
+                await self.bot.http.edit_my_voice_state(
+                    self.guild.id,
+                    {
+                        "channel_id": voice_channel.id,
+                        "request_to_speak_timestamp": datetime.now(UTC).isoformat(),
+                    },
+                )
+                await self.respond_or_edit(
+                    embed=discord.Embed(
+                        color=discord.Color.yellow(),
+                        title="Suppressed",
+                        description="Please allow me to speak in the stage channel.",
+                    )
+                )
+                try:
+                    await self.bot.wait_for(
+                        "voice_state_update",
+                        check=(
+                            lambda member, _, after: member == self.me
+                            and not after.suppress
+                        ),
+                        timeout=60,
+                    )
+                except asyncio.TimeoutError:
+                    await voice_client.disconnect(force=False)
+
+                    msg = "I was not allowed to speak in the stage channel."
+                    raise commands.CommandError(msg) from None
+
+        return voice_client

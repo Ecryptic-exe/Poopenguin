@@ -1,0 +1,599 @@
+[
+  {
+    "file": "admin_cog.py",
+    "function": "setperms",
+    "decorators": [
+      "commands.hybrid_command(name='setperms', description='Grants permissions to a specific role in a specific channel (Admin only).')",
+      "discord.app_commands.describe(channel_id='ID of the channel to grant access to', role_id='ID of the role to grant access to')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "admin_cog.py",
+    "function": "autoreact",
+    "decorators": [
+      "commands.hybrid_command(name='autoreact', description='Sets or disables auto-reactions for messages in this channel.')",
+      "discord.app_commands.describe(emoji='Emoji to auto-react with (omit to disable auto-reactions in this channel)', user=\"Only auto-react to this user's messages (omit for everyone in the channel)\")"
+    ]
+  },
+  {
+    "file": "admin_cog.py",
+    "function": "autoban",
+    "decorators": [
+      "commands.hybrid_command(name='autoban', description='Bans anyone who sends a message in this channel (Admin only).')",
+      "discord.app_commands.describe(reason='Ban reason shown in the audit log (omit to disable autoban in this channel)', delete_days=\"Days of that member's message history to delete on ban, 0-7 (default 0)\")",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "admin_cog.py",
+    "function": "lang",
+    "decorators": [
+      "commands.hybrid_command(name='lang', description=\"Toggles the language of the bot's help panel between English and Chinese.\")"
+    ]
+  },
+  {
+    "file": "admin_cog.py",
+    "function": "sync",
+    "decorators": [
+      "commands.command(name='sync', hidden=True)",
+      "commands.is_owner()"
+    ]
+  },
+  {
+    "file": "ai_cog.py",
+    "function": "chat_command",
+    "decorators": [
+      "commands.hybrid_command(name='chat', description='Ask the local AI model a question.')"
+    ]
+  },
+  {
+    "file": "ai_cog.py",
+    "function": "chatreset",
+    "decorators": [
+      "commands.hybrid_command(name='chatreset', description=\"Clear this channel's shared AI conversation.\")"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "chunithm",
+    "decorators": [
+      "commands.hybrid_group(name='chunithm', invoke_without_command=True, description='CHUNITHM tools: song charts and your imported scores')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "upload",
+    "decorators": [
+      "chunithm.command(name='upload', description='Upload your CHUNITHM player-data JSON')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "me",
+    "decorators": [
+      "chunithm.command(name='me', description='Summary of your imported scores')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "song",
+    "decorators": [
+      "chunithm.command(name='song', description='Your scores on a song')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "pattern",
+    "decorators": [
+      "chunithm.command(name='pattern', description='Which note patterns you are strong/weak at')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "suggest",
+    "decorators": [
+      "chunithm.command(name='suggest', description='Songs to push your rating / to practice')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "delete",
+    "decorators": [
+      "chunithm.command(name='delete', description='Delete your stored scores')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "rating",
+    "decorators": [
+      "chunithm.command(name='rating', description='Look up a song and draw its player-population rating chart (only the chosen chart is processed).')",
+      "app_commands.describe(song='Song title or fragment (slash: pick from autocomplete)', difficulty='Chart difficulty', detailed='Full score and player range instead of the default SS-to-MAX focus')",
+      "app_commands.choices(difficulty=[app_commands.Choice(name=d, value=d) for d in DIFFICULTIES])",
+      "commands.cooldown(1, 5, commands.BucketType.user)"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "song_search",
+    "decorators": [
+      "chunithm.command(name='song_search', description='Search CHUNITHM songs and their available difficulties (no chart is generated).')",
+      "app_commands.describe(query='Song title, alias or fragment')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "login",
+    "decorators": [
+      "chunithm.command(name='login', description='Link your CHUNITHM-NET account (a cookie session is saved).')",
+      "app_commands.describe(clal='Only if you already have a token; leave empty to get instructions')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "logout",
+    "decorators": [
+      "chunithm.command(name='logout', description='Remove your saved CHUNITHM-NET login')",
+      "app_commands.describe(invalidate='Also sign out of CHUNITHM-NET so the token stops working')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "token",
+    "decorators": [
+      "chunithm.command(name='token', description='Show your saved CHUNITHM-NET token (private)')"
+    ]
+  },
+  {
+    "file": "chunithm_cog.py",
+    "function": "sync",
+    "decorators": [
+      "chunithm.command(name='sync', description='Import your scores straight from CHUNITHM-NET')"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta",
+    "decorators": [
+      "commands.hybrid_group(name='copypasta', aliases=['cp'], invoke_without_command=True, description=\"Posts a random copypasta from a chosen type's template pool.\")"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_list",
+    "decorators": [
+      "copypasta.command(name='list', description='Lists all copypasta types in a browsable, searchable menu.')"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_info",
+    "decorators": [
+      "copypasta.command(name='info', aliases=['show'], description='Shows every template in one copypasta type.')",
+      "app_commands.describe(type='Copypasta type to show')",
+      "app_commands.autocomplete(type=type_autocomplete)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_create",
+    "decorators": [
+      "copypasta.command(name='create', description='Creates a new, empty copypasta type.')",
+      "app_commands.describe(type='Name for the new copypasta type')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_delete",
+    "decorators": [
+      "copypasta.command(name='delete', description='Deletes a copypasta type entirely.')",
+      "app_commands.describe(type='Copypasta type to delete')",
+      "app_commands.autocomplete(type=type_autocomplete)",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_enable",
+    "decorators": [
+      "copypasta.command(name='enable', description='Enables a copypasta type so !copypasta can pick it again.')",
+      "app_commands.describe(type='Copypasta type to enable')",
+      "app_commands.autocomplete(type=type_autocomplete)",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_disable",
+    "decorators": [
+      "copypasta.command(name='disable', description='Disables a copypasta type without deleting it.')",
+      "app_commands.describe(type='Copypasta type to disable')",
+      "app_commands.autocomplete(type=type_autocomplete)",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_add",
+    "decorators": [
+      "copypasta.command(name='add', description='Adds a template to a type. Must contain a {text} placeholder.')",
+      "app_commands.describe(type='Copypasta type to add a template to', template=\"Template text, containing at least one {placeholder}, e.g. '{text} is handsome'\")",
+      "app_commands.autocomplete(type=type_autocomplete)",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "copypasta_cog.py",
+    "function": "copypasta_remove",
+    "decorators": [
+      "copypasta.command(name='remove', description='Removes a template by its index (see `!copypasta info <type>`).')",
+      "app_commands.describe(type='Copypasta type to remove a template from', index='Index of the template to remove (see /copypasta info)')",
+      "app_commands.autocomplete(type=type_autocomplete)",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "feed_cog.py",
+    "function": "feed",
+    "decorators": [
+      "commands.hybrid_group(name='feed', invoke_without_command=True, description='Track social media accounts.')",
+      "app_commands.default_permissions(manage_guild=True)",
+      "commands.has_permissions(manage_guild=True)",
+      "commands.guild_only()"
+    ]
+  },
+  {
+    "file": "feed_cog.py",
+    "function": "feed_add",
+    "decorators": [
+      "feed.command(name='add', description='Track an account in a channel.')",
+      "app_commands.describe(account='Profile URL or handle, e.g. performaien.bsky.social', channel='Where new posts go (default: this channel)', platform='Which site the account is on')",
+      "commands.has_permissions(manage_guild=True)",
+      "commands.guild_only()"
+    ]
+  },
+  {
+    "file": "feed_cog.py",
+    "function": "feed_remove",
+    "decorators": [
+      "feed.command(name='remove', description='Stop tracking an account.')",
+      "app_commands.describe(account='Profile URL or handle you added')",
+      "commands.has_permissions(manage_guild=True)",
+      "commands.guild_only()"
+    ]
+  },
+  {
+    "file": "feed_cog.py",
+    "function": "feed_list",
+    "decorators": [
+      "feed.command(name='list', description='Show tracked accounts.')",
+      "commands.has_permissions(manage_guild=True)",
+      "commands.guild_only()"
+    ]
+  },
+  {
+    "file": "feed_cog.py",
+    "function": "feed_check",
+    "decorators": [
+      "feed.command(name='check', description='Poll now instead of waiting.')",
+      "commands.has_permissions(manage_guild=True)",
+      "commands.guild_only()"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha",
+    "decorators": [
+      "commands.hybrid_group(name='gacha', invoke_without_command=True, description='Pulls from the gacha banner - choose single or 10x pull.')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_pull",
+    "decorators": [
+      "gacha.command(name='pull', description='Opens the gacha menu - pull for free with Single Pull or 10x Pull.')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_target",
+    "decorators": [
+      "gacha.command(name='target', description='View, set, or clear YOUR OWN personal pity target (independent of other users).')",
+      "discord.app_commands.describe(character='A 3-star character to pity toward - leave blank to view, or use \"clear\" to unset')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_stats",
+    "decorators": [
+      "gacha.command(name='stats', aliases=['results'], description=\"Shows your total pulls and every 2-star/3-star character you've obtained.\")"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_reset",
+    "decorators": [
+      "gacha.command(name='reset', description='Clears your own gacha pull history and collection.')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_browse",
+    "decorators": [
+      "gacha.command(name='browse', description='Flip through the 3-star roster with artwork before picking a target.')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_pool",
+    "decorators": [
+      "gacha.command(name='pool', description='Shows the current gacha rates and character rosters.')"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_setfeatured",
+    "decorators": [
+      "gacha.command(name='setfeatured', description=\"Sets the banner's default target for users without a personal one (Admin only).\")",
+      "discord.app_commands.describe(character='A 3-star character already in the pool')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_setimage",
+    "decorators": [
+      "gacha.command(name='setimage', description='Sets the artwork shown for a character (Admin only).')",
+      "discord.app_commands.describe(character=\"A character name - doesn't have to be in the 3-star pool\", url='Direct image URL (must end up rendering as an image, e.g. .png/.jpg/.gif/.webp)')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_removeimage",
+    "decorators": [
+      "gacha.command(name='removeimage', description=\"Removes a character's artwork (Admin only).\")",
+      "discord.app_commands.describe(character='The character to remove artwork for')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_setthumbnail",
+    "decorators": [
+      "gacha.command(name='setthumbnail', description='Sets a separate, smaller thumbnail for a character (Admin only).')",
+      "discord.app_commands.describe(character=\"A character name - doesn't have to be in the 3-star pool\", url='Direct image URL for the small thumbnail (e.g. .png/.jpg/.gif/.webp)')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_removethumbnail",
+    "decorators": [
+      "gacha.command(name='removethumbnail', description=\"Removes a character's separate thumbnail, falling back to full artwork (Admin only).\")",
+      "discord.app_commands.describe(character='The character to remove the thumbnail for')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "gacha_cog.py",
+    "function": "gacha_reload",
+    "decorators": [
+      "gacha.command(name='reload', description='Reloads the gacha pool from data/gacha_pool.json (Admin only).')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "general_cog.py",
+    "function": "ask",
+    "decorators": [
+      "commands.hybrid_command(name='ask', description='Asks a question and receives a response based on a random success rate.')",
+      "discord.app_commands.describe(question='The question you want answered')"
+    ]
+  },
+  {
+    "file": "general_cog.py",
+    "function": "pick",
+    "decorators": [
+      "commands.hybrid_command(name='pick', description='Randomly selects one option from a list of provided choices.')",
+      "discord.app_commands.describe(choices='Choices to pick from, separated by spaces (wrap multi-word choices in quotes, e.g. \"New York\" \"Los Angeles\")')"
+    ]
+  },
+  {
+    "file": "general_cog.py",
+    "function": "rng",
+    "decorators": [
+      "commands.hybrid_command(name='rng', description='Generates a random number between a specified minimum and maximum.')",
+      "discord.app_commands.describe(min_val='Minimum value (default 1)', max_val='Maximum value (default 100)', type=\"'int' or 'float' (default int)\")"
+    ]
+  },
+  {
+    "file": "general_cog.py",
+    "function": "rcg",
+    "decorators": [
+      "commands.hybrid_command(name='rcg', description='Generates a random color in hexadecimal format with a preview.')"
+    ]
+  },
+  {
+    "file": "help_cog.py",
+    "function": "help",
+    "decorators": [
+      "commands.hybrid_command(name='help', description='Displays the user manual for the bot or specific command details.')",
+      "discord.app_commands.describe(command='Get detailed help for one specific command (optional)')"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword",
+    "decorators": [
+      "commands.hybrid_group(name='keyword', invoke_without_command=True, description='Manage global keyword-triggered response sets.')"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_list",
+    "decorators": [
+      "keyword.command(name='list', description='Lists all keyword sets in a browsable, searchable menu.')"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_info",
+    "decorators": [
+      "keyword.command(name='info', aliases=['show'], description='Shows the keywords and responses for one set.')"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_create",
+    "decorators": [
+      "keyword.command(name='create', description='Creates a new, empty keyword set.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_delete",
+    "decorators": [
+      "keyword.command(name='delete', description='Deletes a keyword set entirely.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_enable",
+    "decorators": [
+      "keyword.command(name='enable', description='Enables a keyword set so it starts matching messages again.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_disable",
+    "decorators": [
+      "keyword.command(name='disable', description='Disables a keyword set without deleting it.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_addkeyword",
+    "decorators": [
+      "keyword.command(name='addkeyword', description='Adds a trigger keyword to a set.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_removekeyword",
+    "decorators": [
+      "keyword.command(name='removekeyword', description='Removes a trigger keyword from a set.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_addresponse",
+    "decorators": [
+      "keyword.command(name='addresponse', description='Adds a candidate response text to a set.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_removeresponse",
+    "decorators": [
+      "keyword.command(name='removeresponse', description='Removes a response by its index.')",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "keywords_cog.py",
+    "function": "keyword_rate",
+    "decorators": [
+      "keyword.command(name='rate', description=\"Sets a set's independent trigger chance (0-100%).\")",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "messages_cog.py",
+    "function": "on_message",
+    "decorators": [
+      "commands.Cog.listener()"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "score",
+    "decorators": [
+      "commands.hybrid_group(name='score', invoke_without_command=True, description='Your imported CHUNITHM scores')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "upload",
+    "decorators": [
+      "score.command(name='upload', description='Upload your CHUNITHM player-data JSON')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "me",
+    "decorators": [
+      "score.command(name='me', description='Summary of your imported scores')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "song",
+    "decorators": [
+      "score.command(name='song', description='Your scores on a song')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "pattern",
+    "decorators": [
+      "score.command(name='pattern', description='Which note patterns you are strong/weak at')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "suggest",
+    "decorators": [
+      "score.command(name='suggest', description='Songs to push your rating / to practice')"
+    ]
+  },
+  {
+    "file": "score_cog.py",
+    "function": "delete",
+    "decorators": [
+      "score.command(name='delete', description='Delete your stored scores')"
+    ]
+  },
+  {
+    "file": "vote_cog.py",
+    "function": "vto",
+    "decorators": [
+      "commands.hybrid_command(name='vto', description='Initiates a vote to timeout a member from the server.')",
+      "discord.app_commands.describe(member='The member to vote on timing out', time_str=\"Duration: e.g. 1d, 2h, 30m, 10s, or 'random' (default 5m)\")"
+    ]
+  },
+  {
+    "file": "vote_cog.py",
+    "function": "setvote",
+    "decorators": [
+      "commands.hybrid_command(name='setvote', description='Configures the timeout voting system (Admin only).')",
+      "discord.app_commands.describe(arg=\"A number of required votes (e.g. 5), or 'admin' for admin-only voting\")",
+      "commands.has_permissions(administrator=True)"
+    ]
+  },
+  {
+    "file": "vote_cog.py",
+    "function": "on_reaction_add",
+    "decorators": [
+      "commands.Cog.listener()"
+    ]
+  }
+]

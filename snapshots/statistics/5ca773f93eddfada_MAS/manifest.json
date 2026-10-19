@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/Kaleidoscope/5ca773f93eddfada",
+  "requested_title": "Kaleidoscope",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:18.203110+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/Kaleidoscope/5ca773f93eddfada",
+      "final_url": "https://db.chunirec.net/music/Kaleidoscope/5ca773f93eddfada",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:18.586987+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\10\\source_snapshot\\source.html",
+      "sha256": "78821994a90bfd45f79d6677d2ede7887657da793e975e1a99b9f8c48cca891b"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:18.656400+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\10\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "Kaleidoscope",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.2",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8529,
+    "end": 11479
+  },
+  "total_players": 8122,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\10\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 28,
+  "rank_csv_sha256": "974d9078aafed96631201fb5d894a95fec708976d7ffb4540cf939ab0a8b2e74",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:18.706156+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\10\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "7405accb116a2e903a4c4d6660143359d9929d52d34414a77c18bbcb4f181a2d",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 1,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

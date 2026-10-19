@@ -1,0 +1,1242 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-10-04T13:13:32.967936+00:00",
+  "decision_provider": "python",
+  "llm_analysis_used": false,
+  "reference": {
+    "title": "XL TECHNO -More Dance Remix-",
+    "difficulty": "MASTER",
+    "constant": "14.5",
+    "constant_confirmed": false,
+    "source_url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+    "statistics_generated_at": null
+  },
+  "references": {
+    "large": {
+      "reference": {
+        "title": "XL TECHNO -More Dance Remix-",
+        "difficulty": "MASTER",
+        "constant": "14.5",
+        "constant_confirmed": false,
+        "source_url": "https://db.chunirec.net/music/XL+TECHNO+-More+Dance+Remix-/819a7247b0f6ef65",
+        "statistics_generated_at": null
+      },
+      "rating_scope": [
+        15.5,
+        16.65
+      ],
+      "calibration_rows": [
+        {
+          "cls": 155,
+          "rating": 15.5,
+          "players": 105,
+          "published_group_mean_score": 949478,
+          "spread_score": 66048.16230760235,
+          "spread_lower_score": 19001.0,
+          "tail_score": 52552.30112454668,
+          "tail_lower_score": 44522.0
+        },
+        {
+          "cls": 156,
+          "rating": 15.6,
+          "players": 127,
+          "published_group_mean_score": 949693,
+          "spread_score": 69651.38761733391,
+          "spread_lower_score": 23367.14173228352,
+          "tail_score": 55009.452252406045,
+          "tail_lower_score": 48673.14173228352
+        },
+        {
+          "cls": 157,
+          "rating": 15.7,
+          "players": 158,
+          "published_group_mean_score": 950174,
+          "spread_score": 65274.846871867776,
+          "spread_lower_score": 20111.759493670892,
+          "tail_score": 52022.7930260764,
+          "tail_lower_score": 44936.75949367089
+        },
+        {
+          "cls": 158,
+          "rating": 15.8,
+          "players": 210,
+          "published_group_mean_score": 952247,
+          "spread_score": 63076.963521144,
+          "spread_lower_score": 18048.619047619053,
+          "tail_score": 49981.45542670891,
+          "tail_lower_score": 40800.61904761905
+        },
+        {
+          "cls": 159,
+          "rating": 15.9,
+          "players": 287,
+          "published_group_mean_score": 947894,
+          "spread_score": 71949.96968931495,
+          "spread_lower_score": 23833.752613240387,
+          "tail_score": 56909.779377066414,
+          "tail_lower_score": 50938.75261324039
+        },
+        {
+          "cls": 160,
+          "rating": 16.0,
+          "players": 468,
+          "published_group_mean_score": 954399,
+          "spread_score": 63852.76468785433,
+          "spread_lower_score": 23302.28205128212,
+          "tail_score": 50225.82664982893,
+          "tail_lower_score": 43902.28205128212
+        },
+        {
+          "cls": 161,
+          "rating": 16.1,
+          "players": 569,
+          "published_group_mean_score": 962874,
+          "spread_score": 56236.000923845335,
+          "spread_lower_score": 27540.543057996547,
+          "tail_score": 43508.86310583551,
+          "tail_lower_score": 39665.54305799655
+        },
+        {
+          "cls": 162,
+          "rating": 16.2,
+          "players": 581,
+          "published_group_mean_score": 959115,
+          "spread_score": 59304.045272301766,
+          "spread_lower_score": 26451.08605851978,
+          "tail_score": 46841.449180949945,
+          "tail_lower_score": 42335.08605851978
+        },
+        {
+          "cls": 163,
+          "rating": 16.3,
+          "players": 639,
+          "published_group_mean_score": 965766,
+          "spread_score": 50326.87435785495,
+          "spread_lower_score": 28698.183098591515,
+          "tail_score": 40722.578484951286,
+          "tail_lower_score": 37931.183098591515
+        },
+        {
+          "cls": 164,
+          "rating": 16.4,
+          "players": 693,
+          "published_group_mean_score": 969860,
+          "spread_score": 44796.96488310327,
+          "spread_lower_score": 27656.12265512254,
+          "tail_score": 36410.25425908202,
+          "tail_lower_score": 32795.12265512266
+        },
+        {
+          "cls": 165,
+          "rating": 16.5,
+          "players": 722,
+          "published_group_mean_score": 977914,
+          "spread_score": 34252.66111139348,
+          "spread_lower_score": 18792.551246537245,
+          "tail_score": 29832.591465185862,
+          "tail_lower_score": 28654.55955678667
+        },
+        {
+          "cls": 166,
+          "rating": 16.6,
+          "players": 792,
+          "published_group_mean_score": 977006,
+          "spread_score": 31871.39057509019,
+          "spread_lower_score": 14625.368686868693,
+          "tail_score": 30613.00932932424,
+          "tail_lower_score": 29316.601010100916
+        }
+      ],
+      "medians": {
+        "spread_score": 61190.504396722885,
+        "spread_lower_score": 23334.71189178282,
+        "tail_score": 48411.45230382943,
+        "tail_lower_score": 41567.85255306942
+      },
+      "source_groups": [
+        {
+          "cls": 150,
+          "rank": {
+            "max": 0,
+            "sssp": 1,
+            "sss": 0,
+            "ssp": 1,
+            "ss": 0,
+            "s": 3
+          },
+          "players": 17,
+          "rating": 15.0,
+          "label": "15.00",
+          "average_score": 919870,
+          "source_locator": "#urec_pdx M.byr[3]"
+        },
+        {
+          "cls": 151,
+          "rank": {
+            "max": 0,
+            "sssp": 1,
+            "sss": 1,
+            "ssp": 1,
+            "ss": 1,
+            "s": 2
+          },
+          "players": 35,
+          "rating": 15.1,
+          "label": "15.10",
+          "average_score": 940493,
+          "source_locator": "#urec_pdx M.byr[4]"
+        },
+        {
+          "cls": 152,
+          "rank": {
+            "max": 0,
+            "sssp": 1,
+            "sss": 0,
+            "ssp": 2,
+            "ss": 3,
+            "s": 10
+          },
+          "players": 60,
+          "rating": 15.2,
+          "label": "15.20",
+          "average_score": 950516,
+          "source_locator": "#urec_pdx M.byr[5]"
+        },
+        {
+          "cls": 153,
+          "rank": {
+            "max": 1,
+            "sssp": 1,
+            "sss": 2,
+            "ssp": 1,
+            "ss": 1,
+            "s": 11
+          },
+          "players": 64,
+          "rating": 15.3,
+          "label": "15.30",
+          "average_score": 951285,
+          "source_locator": "#urec_pdx M.byr[6]"
+        },
+        {
+          "cls": 154,
+          "rank": {
+            "max": 0,
+            "sssp": 3,
+            "sss": 1,
+            "ssp": 2,
+            "ss": 1,
+            "s": 16
+          },
+          "players": 83,
+          "rating": 15.4,
+          "label": "15.40",
+          "average_score": 950444,
+          "source_locator": "#urec_pdx M.byr[7]"
+        },
+        {
+          "cls": 155,
+          "rank": {
+            "max": 0,
+            "sssp": 6,
+            "sss": 2,
+            "ssp": 1,
+            "ss": 4,
+            "s": 14
+          },
+          "players": 105,
+          "rating": 15.5,
+          "label": "15.50",
+          "average_score": 949478,
+          "source_locator": "#urec_pdx M.byr[8]"
+        },
+        {
+          "cls": 156,
+          "rank": {
+            "max": 0,
+            "sssp": 9,
+            "sss": 3,
+            "ssp": 3,
+            "ss": 4,
+            "s": 21
+          },
+          "players": 127,
+          "rating": 15.6,
+          "label": "15.60",
+          "average_score": 949693,
+          "source_locator": "#urec_pdx M.byr[9]"
+        },
+        {
+          "cls": 157,
+          "rank": {
+            "max": 0,
+            "sssp": 7,
+            "sss": 3,
+            "ssp": 5,
+            "ss": 6,
+            "s": 17
+          },
+          "players": 158,
+          "rating": 15.7,
+          "label": "15.70",
+          "average_score": 950174,
+          "source_locator": "#urec_pdx M.byr[10]"
+        },
+        {
+          "cls": 158,
+          "rank": {
+            "max": 0,
+            "sssp": 12,
+            "sss": 4,
+            "ssp": 4,
+            "ss": 4,
+            "s": 37
+          },
+          "players": 210,
+          "rating": 15.8,
+          "label": "15.80",
+          "average_score": 952247,
+          "source_locator": "#urec_pdx M.byr[11]"
+        },
+        {
+          "cls": 159,
+          "rank": {
+            "max": 0,
+            "sssp": 17,
+            "sss": 8,
+            "ssp": 6,
+            "ss": 14,
+            "s": 64
+          },
+          "players": 287,
+          "rating": 15.9,
+          "label": "15.90",
+          "average_score": 947894,
+          "source_locator": "#urec_pdx M.byr[12]"
+        },
+        {
+          "cls": 160,
+          "rank": {
+            "max": 0,
+            "sssp": 19,
+            "sss": 20,
+            "ssp": 12,
+            "ss": 21,
+            "s": 113
+          },
+          "players": 468,
+          "rating": 16.0,
+          "label": "16.00",
+          "average_score": 954399,
+          "source_locator": "#urec_pdx M.byr[13]"
+        },
+        {
+          "cls": 161,
+          "rank": {
+            "max": 0,
+            "sssp": 36,
+            "sss": 28,
+            "ssp": 20,
+            "ss": 16,
+            "s": 134
+          },
+          "players": 569,
+          "rating": 16.1,
+          "label": "16.10",
+          "average_score": 962874,
+          "source_locator": "#urec_pdx M.byr[14]"
+        },
+        {
+          "cls": 162,
+          "rank": {
+            "max": 1,
+            "sssp": 34,
+            "sss": 25,
+            "ssp": 19,
+            "ss": 20,
+            "s": 171
+          },
+          "players": 581,
+          "rating": 16.2,
+          "label": "16.20",
+          "average_score": 959115,
+          "source_locator": "#urec_pdx M.byr[15]"
+        },
+        {
+          "cls": 163,
+          "rank": {
+            "max": 1,
+            "sssp": 40,
+            "sss": 31,
+            "ssp": 18,
+            "ss": 29,
+            "s": 235
+          },
+          "players": 639,
+          "rating": 16.3,
+          "label": "16.30",
+          "average_score": 965766,
+          "source_locator": "#urec_pdx M.byr[16]"
+        },
+        {
+          "cls": 164,
+          "rank": {
+            "max": 0,
+            "sssp": 42,
+            "sss": 32,
+            "ssp": 23,
+            "ss": 27,
+            "s": 283
+          },
+          "players": 693,
+          "rating": 16.4,
+          "label": "16.40",
+          "average_score": 969860,
+          "source_locator": "#urec_pdx M.byr[17]"
+        },
+        {
+          "cls": 165,
+          "rank": {
+            "max": 2,
+            "sssp": 49,
+            "sss": 45,
+            "ssp": 30,
+            "ss": 44,
+            "s": 337
+          },
+          "players": 722,
+          "rating": 16.5,
+          "label": "16.50",
+          "average_score": 977914,
+          "source_locator": "#urec_pdx M.byr[18]"
+        },
+        {
+          "cls": 166,
+          "rank": {
+            "max": 2,
+            "sssp": 56,
+            "sss": 43,
+            "ssp": 31,
+            "ss": 64,
+            "s": 385
+          },
+          "players": 792,
+          "rating": 16.6,
+          "label": "16.60",
+          "average_score": 977006,
+          "source_locator": "#urec_pdx M.byr[19]"
+        },
+        {
+          "cls": 167,
+          "rank": {
+            "max": 0,
+            "sssp": 65,
+            "sss": 55,
+            "ssp": 42,
+            "ss": 94,
+            "s": 437
+          },
+          "players": 891,
+          "rating": 16.7,
+          "label": "16.70",
+          "average_score": 980778,
+          "source_locator": "#urec_pdx M.byr[20]"
+        },
+        {
+          "cls": 168,
+          "rank": {
+            "max": 3,
+            "sssp": 102,
+            "sss": 70,
+            "ssp": 53,
+            "ss": 135,
+            "s": 546
+          },
+          "players": 1079,
+          "rating": 16.8,
+          "label": "16.80",
+          "average_score": 978775,
+          "source_locator": "#urec_pdx M.byr[21]"
+        },
+        {
+          "cls": 169,
+          "rank": {
+            "max": 3,
+            "sssp": 170,
+            "sss": 105,
+            "ssp": 93,
+            "ss": 193,
+            "s": 583
+          },
+          "players": 1291,
+          "rating": 16.9,
+          "label": "16.90",
+          "average_score": 988867,
+          "source_locator": "#urec_pdx M.byr[22]"
+        },
+        {
+          "cls": 170,
+          "rank": {
+            "max": 6,
+            "sssp": 238,
+            "sss": 160,
+            "ssp": 157,
+            "ss": 240,
+            "s": 578
+          },
+          "players": 1514,
+          "rating": 17.0,
+          "label": "17.00",
+          "average_score": 990119,
+          "source_locator": "#urec_pdx M.byr[23]"
+        },
+        {
+          "cls": 171,
+          "rank": {
+            "max": 23,
+            "sssp": 454,
+            "sss": 261,
+            "ssp": 214,
+            "ss": 347,
+            "s": 514
+          },
+          "players": 1917,
+          "rating": 17.1,
+          "label": "17.10",
+          "average_score": 996477,
+          "source_locator": "#urec_pdx M.byr[24]"
+        },
+        {
+          "cls": 172,
+          "rank": {
+            "max": 21,
+            "sssp": 538,
+            "sss": 350,
+            "ssp": 203,
+            "ss": 288,
+            "s": 331
+          },
+          "players": 1788,
+          "rating": 17.2,
+          "label": "17.20",
+          "average_score": 1000607,
+          "source_locator": "#urec_pdx M.byr[25]"
+        },
+        {
+          "cls": 173,
+          "rank": {
+            "max": 34,
+            "sssp": 620,
+            "sss": 284,
+            "ssp": 146,
+            "ss": 176,
+            "s": 154
+          },
+          "players": 1450,
+          "rating": 17.3,
+          "label": "17.30",
+          "average_score": 1003472,
+          "source_locator": "#urec_pdx M.byr[26]"
+        },
+        {
+          "cls": 174,
+          "rank": {
+            "max": 53,
+            "sssp": 662,
+            "sss": 233,
+            "ssp": 92,
+            "ss": 87,
+            "s": 71
+          },
+          "players": 1208,
+          "rating": 17.4,
+          "label": "17.40",
+          "average_score": 1006452,
+          "source_locator": "#urec_pdx M.byr[27]"
+        },
+        {
+          "cls": 175,
+          "rank": {
+            "max": 80,
+            "sssp": 691,
+            "sss": 152,
+            "ssp": 48,
+            "ss": 59,
+            "s": 34
+          },
+          "players": 1070,
+          "rating": 17.5,
+          "label": "17.50",
+          "average_score": 1008162,
+          "source_locator": "#urec_pdx M.byr[28]"
+        },
+        {
+          "cls": 176,
+          "rank": {
+            "max": 161,
+            "sssp": 635,
+            "sss": 48,
+            "ssp": 22,
+            "ss": 16,
+            "s": 11
+          },
+          "players": 897,
+          "rating": 17.6,
+          "label": "17.60",
+          "average_score": 1008922,
+          "source_locator": "#urec_pdx M.byr[29]"
+        },
+        {
+          "cls": 177,
+          "rank": {
+            "max": 52,
+            "sssp": 63,
+            "sss": 2,
+            "ssp": 6,
+            "ss": 0,
+            "s": 0
+          },
+          "players": 123,
+          "rating": 17.7,
+          "label": "17.70",
+          "average_score": 1009750,
+          "source_locator": "#urec_pdx M.byr[30]"
+        }
+      ],
+      "source_sha256": {
+        "manifest.json": "ee667323baea82cba67cff4599932427348fdd05dcdbed436909ea058006c53a",
+        "selected_stats.json": "ed94da9516c945264ae2e42b199a767ac1e8143d711088cf8089aa5adfb4c115",
+        "embedded_stats.txt": "8975fd9032ab50e68f9b4e0359816a8eae28c601302339d713b125627d541418",
+        "rating_score_table.csv": "f3ee534b58bd0958254a8dfb76bb41c808e369209edbf0dfa9b57fddcd45f3dd",
+        "rating_rank_counts.csv": "1bebcff3dd40d70038378118e8ed6e27eeca4ef6b2d4c5c5f893d226e2ab95e9",
+        "source.html": "2c92b784a1c64b44047f2363e6958662621a23db21068ecc17c5fb494df955de",
+        "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+      }
+    },
+    "medium": {
+      "reference": {
+        "title": "月の光",
+        "difficulty": "MASTER",
+        "constant": "14.7",
+        "constant_confirmed": false,
+        "source_url": "https://db.chunirec.net/music/%E6%9C%88%E3%81%AE%E5%85%89/98779fcb0e4d7912",
+        "statistics_generated_at": null
+      },
+      "rating_scope": [
+        15.7,
+        16.85
+      ],
+      "calibration_rows": [
+        {
+          "cls": 158,
+          "rating": 15.8,
+          "players": 106,
+          "published_group_mean_score": 995155,
+          "spread_score": 12679.589787179837,
+          "spread_lower_score": 1887.7924528301228,
+          "tail_score": 9712.575169768534,
+          "tail_lower_score": 6731.792452830239
+        },
+        {
+          "cls": 159,
+          "rating": 15.9,
+          "players": 138,
+          "published_group_mean_score": 995779,
+          "spread_score": 12179.100754143088,
+          "spread_lower_score": 2808.9710144926794,
+          "tail_score": 9736.935688806581,
+          "tail_lower_score": 7028.971014492679
+        },
+        {
+          "cls": 160,
+          "rating": 16.0,
+          "players": 226,
+          "published_group_mean_score": 995582,
+          "spread_score": 14018.314722703304,
+          "spread_lower_score": 3762.0619469025405,
+          "tail_score": 10423.596959569142,
+          "tail_lower_score": 8179.0619469025405
+        },
+        {
+          "cls": 161,
+          "rating": 16.1,
+          "players": 318,
+          "published_group_mean_score": 995931,
+          "spread_score": 13564.810898441821,
+          "spread_lower_score": 4482.132075471687,
+          "tail_score": 10312.544751423644,
+          "tail_lower_score": 8550.132075471687
+        },
+        {
+          "cls": 162,
+          "rating": 16.2,
+          "players": 311,
+          "published_group_mean_score": 994218,
+          "spread_score": 15904.669165893109,
+          "spread_lower_score": 5443.122186495108,
+          "tail_score": 12405.087297791499,
+          "tail_lower_score": 11224.122186495108
+        },
+        {
+          "cls": 163,
+          "rating": 16.3,
+          "players": 345,
+          "published_group_mean_score": 995889,
+          "spread_score": 13569.479948407854,
+          "spread_lower_score": 5740.1304347825935,
+          "tail_score": 11150.037236888078,
+          "tail_lower_score": 9850.130434782594
+        },
+        {
+          "cls": 164,
+          "rating": 16.4,
+          "players": 396,
+          "published_group_mean_score": 998682,
+          "spread_score": 10124.987054559053,
+          "spread_lower_score": 5247.2121212121565,
+          "tail_score": 8155.095470141503,
+          "tail_lower_score": 6841.989898989908
+        },
+        {
+          "cls": 165,
+          "rating": 16.5,
+          "players": 439,
+          "published_group_mean_score": 999592,
+          "spread_score": 8524.552651109989,
+          "spread_lower_score": 3548.8359908885323,
+          "tail_score": 8078.073358068359,
+          "tail_lower_score": 6723.489749430562
+        },
+        {
+          "cls": 166,
+          "rating": 16.6,
+          "players": 505,
+          "published_group_mean_score": 996337,
+          "spread_score": 9800.022620043135,
+          "spread_lower_score": 4174.267326732632,
+          "tail_score": 11436.861563073471,
+          "tail_lower_score": 10163.0
+        },
+        {
+          "cls": 167,
+          "rating": 16.7,
+          "players": 590,
+          "published_group_mean_score": 997870,
+          "spread_score": 7306.360018990468,
+          "spread_lower_score": 2589.9830508475425,
+          "tail_score": 10096.01645924151,
+          "tail_lower_score": 8871.525423728861
+        },
+        {
+          "cls": 168,
+          "rating": 16.8,
+          "players": 729,
+          "published_group_mean_score": 999927,
+          "spread_score": 6896.739589860081,
+          "spread_lower_score": 2720.4787379970076,
+          "tail_score": 8474.82247378258,
+          "tail_lower_score": 7717.032921810634
+        }
+      ],
+      "medians": {
+        "spread_score": 12179.100754143088,
+        "spread_lower_score": 3762.0619469025405,
+        "tail_score": 10096.01645924151,
+        "tail_lower_score": 8179.0619469025405
+      },
+      "source_groups": [
+        {
+          "cls": 150,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 0,
+            "ss": 0,
+            "s": 6
+          },
+          "players": 9,
+          "rating": 15.0,
+          "label": "15.00",
+          "average_score": 908062,
+          "source_locator": "#urec_pdx M.byr[2]"
+        },
+        {
+          "cls": 151,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 0,
+            "ss": 4,
+            "s": 12
+          },
+          "players": 22,
+          "rating": 15.1,
+          "label": "15.10",
+          "average_score": 983448,
+          "source_locator": "#urec_pdx M.byr[3]"
+        },
+        {
+          "cls": 152,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 0,
+            "ss": 4,
+            "s": 16
+          },
+          "players": 23,
+          "rating": 15.2,
+          "label": "15.20",
+          "average_score": 988915,
+          "source_locator": "#urec_pdx M.byr[4]"
+        },
+        {
+          "cls": 153,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 2,
+            "ss": 3,
+            "s": 17
+          },
+          "players": 24,
+          "rating": 15.3,
+          "label": "15.30",
+          "average_score": 991648,
+          "source_locator": "#urec_pdx M.byr[5]"
+        },
+        {
+          "cls": 154,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 1,
+            "ss": 14,
+            "s": 27
+          },
+          "players": 44,
+          "rating": 15.4,
+          "label": "15.40",
+          "average_score": 981158,
+          "source_locator": "#urec_pdx M.byr[6]"
+        },
+        {
+          "cls": 155,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 1,
+            "ss": 9,
+            "s": 29
+          },
+          "players": 44,
+          "rating": 15.5,
+          "label": "15.50",
+          "average_score": 991459,
+          "source_locator": "#urec_pdx M.byr[7]"
+        },
+        {
+          "cls": 156,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 2,
+            "ss": 9,
+            "s": 44
+          },
+          "players": 61,
+          "rating": 15.6,
+          "label": "15.60",
+          "average_score": 990092,
+          "source_locator": "#urec_pdx M.byr[8]"
+        },
+        {
+          "cls": 157,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 2,
+            "ss": 23,
+            "s": 51
+          },
+          "players": 82,
+          "rating": 15.7,
+          "label": "15.70",
+          "average_score": 991543,
+          "source_locator": "#urec_pdx M.byr[9]"
+        },
+        {
+          "cls": 158,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 0,
+            "ssp": 8,
+            "ss": 28,
+            "s": 67
+          },
+          "players": 106,
+          "rating": 15.8,
+          "label": "15.80",
+          "average_score": 995155,
+          "source_locator": "#urec_pdx M.byr[10]"
+        },
+        {
+          "cls": 159,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 1,
+            "ssp": 14,
+            "ss": 45,
+            "s": 71
+          },
+          "players": 138,
+          "rating": 15.9,
+          "label": "15.90",
+          "average_score": 995779,
+          "source_locator": "#urec_pdx M.byr[11]"
+        },
+        {
+          "cls": 160,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 6,
+            "ssp": 25,
+            "ss": 76,
+            "s": 113
+          },
+          "players": 226,
+          "rating": 16.0,
+          "label": "16.00",
+          "average_score": 995582,
+          "source_locator": "#urec_pdx M.byr[12]"
+        },
+        {
+          "cls": 161,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 6,
+            "ssp": 48,
+            "ss": 96,
+            "s": 157
+          },
+          "players": 318,
+          "rating": 16.1,
+          "label": "16.10",
+          "average_score": 995931,
+          "source_locator": "#urec_pdx M.byr[13]"
+        },
+        {
+          "cls": 162,
+          "rank": {
+            "max": 0,
+            "sssp": 0,
+            "sss": 11,
+            "ssp": 52,
+            "ss": 97,
+            "s": 146
+          },
+          "players": 311,
+          "rating": 16.2,
+          "label": "16.20",
+          "average_score": 994218,
+          "source_locator": "#urec_pdx M.byr[14]"
+        },
+        {
+          "cls": 163,
+          "rank": {
+            "max": 0,
+            "sssp": 4,
+            "sss": 14,
+            "ssp": 64,
+            "ss": 119,
+            "s": 136
+          },
+          "players": 345,
+          "rating": 16.3,
+          "label": "16.30",
+          "average_score": 995889,
+          "source_locator": "#urec_pdx M.byr[15]"
+        },
+        {
+          "cls": 164,
+          "rank": {
+            "max": 0,
+            "sssp": 1,
+            "sss": 15,
+            "ssp": 73,
+            "ss": 153,
+            "s": 150
+          },
+          "players": 396,
+          "rating": 16.4,
+          "label": "16.40",
+          "average_score": 998682,
+          "source_locator": "#urec_pdx M.byr[16]"
+        },
+        {
+          "cls": 165,
+          "rank": {
+            "max": 0,
+            "sssp": 2,
+            "sss": 43,
+            "ssp": 103,
+            "ss": 164,
+            "s": 121
+          },
+          "players": 439,
+          "rating": 16.5,
+          "label": "16.50",
+          "average_score": 999592,
+          "source_locator": "#urec_pdx M.byr[17]"
+        },
+        {
+          "cls": 166,
+          "rank": {
+            "max": 0,
+            "sssp": 1,
+            "sss": 59,
+            "ssp": 112,
+            "ss": 178,
+            "s": 143
+          },
+          "players": 505,
+          "rating": 16.6,
+          "label": "16.60",
+          "average_score": 996337,
+          "source_locator": "#urec_pdx M.byr[18]"
+        },
+        {
+          "cls": 167,
+          "rank": {
+            "max": 0,
+            "sssp": 7,
+            "sss": 71,
+            "ssp": 162,
+            "ss": 212,
+            "s": 128
+          },
+          "players": 590,
+          "rating": 16.7,
+          "label": "16.70",
+          "average_score": 997870,
+          "source_locator": "#urec_pdx M.byr[19]"
+        },
+        {
+          "cls": 168,
+          "rank": {
+            "max": 0,
+            "sssp": 14,
+            "sss": 138,
+            "ssp": 191,
+            "ss": 238,
+            "s": 136
+          },
+          "players": 729,
+          "rating": 16.8,
+          "label": "16.80",
+          "average_score": 999927,
+          "source_locator": "#urec_pdx M.byr[20]"
+        },
+        {
+          "cls": 169,
+          "rank": {
+            "max": 0,
+            "sssp": 22,
+            "sss": 183,
+            "ssp": 268,
+            "ss": 264,
+            "s": 124
+          },
+          "players": 879,
+          "rating": 16.9,
+          "label": "16.90",
+          "average_score": 997442,
+          "source_locator": "#urec_pdx M.byr[21]"
+        },
+        {
+          "cls": 170,
+          "rank": {
+            "max": 0,
+            "sssp": 33,
+            "sss": 304,
+            "ssp": 328,
+            "ss": 313,
+            "s": 114
+          },
+          "players": 1109,
+          "rating": 17.0,
+          "label": "17.00",
+          "average_score": 1000924,
+          "source_locator": "#urec_pdx M.byr[22]"
+        },
+        {
+          "cls": 171,
+          "rank": {
+            "max": 0,
+            "sssp": 76,
+            "sss": 480,
+            "ssp": 412,
+            "ss": 357,
+            "s": 113
+          },
+          "players": 1456,
+          "rating": 17.1,
+          "label": "17.10",
+          "average_score": 1002949,
+          "source_locator": "#urec_pdx M.byr[23]"
+        },
+        {
+          "cls": 172,
+          "rank": {
+            "max": 0,
+            "sssp": 111,
+            "sss": 583,
+            "ssp": 341,
+            "ss": 237,
+            "s": 73
+          },
+          "players": 1361,
+          "rating": 17.2,
+          "label": "17.20",
+          "average_score": 1001251,
+          "source_locator": "#urec_pdx M.byr[24]"
+        },
+        {
+          "cls": 173,
+          "rank": {
+            "max": 0,
+            "sssp": 157,
+            "sss": 565,
+            "ssp": 225,
+            "ss": 169,
+            "s": 45
+          },
+          "players": 1168,
+          "rating": 17.3,
+          "label": "17.30",
+          "average_score": 1005054,
+          "source_locator": "#urec_pdx M.byr[25]"
+        },
+        {
+          "cls": 174,
+          "rank": {
+            "max": 0,
+            "sssp": 243,
+            "sss": 508,
+            "ssp": 135,
+            "ss": 93,
+            "s": 17
+          },
+          "players": 1003,
+          "rating": 17.4,
+          "label": "17.40",
+          "average_score": 1005487,
+          "source_locator": "#urec_pdx M.byr[26]"
+        },
+        {
+          "cls": 175,
+          "rank": {
+            "max": 0,
+            "sssp": 435,
+            "sss": 366,
+            "ssp": 99,
+            "ss": 61,
+            "s": 19
+          },
+          "players": 992,
+          "rating": 17.5,
+          "label": "17.50",
+          "average_score": 1005854,
+          "source_locator": "#urec_pdx M.byr[27]"
+        },
+        {
+          "cls": 176,
+          "rank": {
+            "max": 2,
+            "sssp": 629,
+            "sss": 160,
+            "ssp": 38,
+            "ss": 27,
+            "s": 8
+          },
+          "players": 866,
+          "rating": 17.6,
+          "label": "17.60",
+          "average_score": 1008771,
+          "source_locator": "#urec_pdx M.byr[28]"
+        },
+        {
+          "cls": 177,
+          "rank": {
+            "max": 4,
+            "sssp": 105,
+            "sss": 6,
+            "ssp": 3,
+            "ss": 3,
+            "s": 1
+          },
+          "players": 122,
+          "rating": 17.7,
+          "label": "17.70",
+          "average_score": 1009417,
+          "source_locator": "#urec_pdx M.byr[29]"
+        }
+      ],
+      "source_sha256": {
+        "manifest.json": "9dc14c6e0b5d9ad83c43daf2e52ccae485a2a8520fe0635b08ea827c04e9650e",
+        "selected_stats.json": "35344a46e60480190e28f2f1a14f05fd8059ac19d2e98d008ad11c1755248815",
+        "embedded_stats.txt": "6f770d42d676474d593dc941f224df7bfbc3f29f67211baf77aad1f49d768c60",
+        "rating_score_table.csv": "6a1528ab285d00d820e403863da0b182d9d437f590200ed5bfa3d8eccef52839",
+        "rating_rank_counts.csv": "12011e5b370f2be93b2f6862a2ade1f5210523f3aeb1d6ffc3bb066de773135a",
+        "source.html": "cec0ac9610a1cf5dfdeda7a01ba5a5ae1fbb7c82e6dfaef58ca5056645460942",
+        "music.js": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+      }
+    }
+  },
+  "method": "Independent width and upper-vs-mean proxies. Magnitude: XL median rounded up, Moon median rounded down. Detectability: large uses Moon estimated median, medium uses Moon identification lower-bound median; each rounded down to the score step.",
+  "evidence_semantics": "Clear means estimated magnitude AND a detectable gap supported by identification bounds; it does not assert the large/medium magnitude threshold is proven by those bounds.",
+  "min_players": 100,
+  "score_rounding_step": 500,
+  "default_thresholds": {
+    "spread_threshold": 61500.0,
+    "tail_threshold": 48500.0
+  },
+  "tier_thresholds": {
+    "personal_spread": {
+      "large": {
+        "estimate_threshold": 61500.0,
+        "evidence_threshold": 12000.0
+      },
+      "medium": {
+        "estimate_threshold": 12000.0,
+        "evidence_threshold": 3500.0
+      }
+    },
+    "relative_specialization": {
+      "large": {
+        "estimate_threshold": 48500.0,
+        "evidence_threshold": 10000.0
+      },
+      "medium": {
+        "estimate_threshold": 10000.0,
+        "evidence_threshold": 8000.0
+      }
+    }
+  },
+  "formula_sha256": "a00e7587d094d15b72218a925aac80e202015788eb5a97e0d978e765b5e45b91",
+  "population_module_sha256": "628051b6008545ab664fd4f3233a7c6c5be7a5dc35855f936deb437e1c17505a",
+  "sample_identity": "public aggregate chart statistics; catalogue player scores are not population samples",
+  "cause_identification": "unknown; these proxies cannot identify keyboard, stamina or chart patterns"
+}

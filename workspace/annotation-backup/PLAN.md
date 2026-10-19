@@ -1,0 +1,21 @@
+# Annotation backup work plan
+
+- [x] Inspect repository conventions and define safe backup/fingerprint behavior.
+  - Result: Confirmed a standard-library helper fits the existing `penguin` package and tests use pytest. The existing `source_snapshots` table remains part of fingerprints unless a caller explicitly excludes it.
+  - Changed: `workspace/annotation-backup/PLAN.md`
+  - Verified: Reviewed `pyproject.toml` and existing Python/test conventions; did not inspect or modify the real database.
+  - Notes: Source and destination paths are validated before any destination is created; SQLite URI `mode=ro` plus `query_only` keeps source connections read-only.
+- [x] Implement `penguin/annotation_backup.py` with read-only connections, exclusive destination creation, backup validation, and deterministic per-table fingerprints.
+  - Result: Added `backup_database` using SQLite's online backup API, exclusive destination creation, integrity and foreign-key checks, cleanup guarded by the created file identity, and an output summary with only hash/size/validation data. Added deterministic table hashes that include schema and sorted row hashes with typed BLOB-safe encoding.
+  - Changed: `penguin/annotation_backup.py`
+  - Verified: Focused tests and Ruff passed after implementation.
+  - Notes: Operational errors return fixed reason codes; row values and SQL parameters are not included in errors or results.
+- [x] Add synthetic SQLite tests for WAL, destination protection, identity checks, row changes, exclusions, and blobs.
+  - Result: Added eight isolated test cases covering committed pages still present in a WAL, output validation and digest, existing destination preservation, source/destination identity rejection, missing and non-file sources, cleanup after failed foreign-key validation, fingerprint changes/exclusion, and BLOB data under a quoted identifier.
+  - Changed: `tests/test_annotation_backup.py`
+  - Verified: Tests use only temporary synthetic databases.
+- [x] Run the focused test file and record actual results.
+  - Result: All 8 tests passed under the project's Python 3.14 virtual environment; Ruff reported no issues for the two new Python files.
+  - Changed: `workspace/annotation-backup/PLAN.md`
+  - Verified: `python -B -m pytest -p no:cacheprovider tests/test_annotation_backup.py -q` (8 passed); `ruff check --no-cache penguin/annotation_backup.py tests/test_annotation_backup.py` (passed).
+  - Notes: The global Python 3.12 did not have pytest, so the supported project virtual environment was used. The first Ruff invocation could not write its cache, so the successful lint run used `--no-cache`. No `.env` or real SQLite database was read, and no database, UI, bot, or root plan was changed.

@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/%E8%BD%86%E8%BD%A4%E9%A6%96/169110c4439d3bb2",
+  "requested_title": "轆轤首",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:11.980813+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/%E8%BD%86%E8%BD%A4%E9%A6%96/169110c4439d3bb2",
+      "final_url": "https://db.chunirec.net/music/%E8%BD%86%E8%BD%A4%E9%A6%96/169110c4439d3bb2",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:12.347813+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\02\\source_snapshot\\source.html",
+      "sha256": "dbf697fe0037f316dfa9a74c9937e66805c1219a1c741bc887da642d276e3a4b"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:12.413568+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\02\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "轆轤首",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.4",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8829,
+    "end": 11742
+  },
+  "total_players": 4904,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\02\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 28,
+  "rank_csv_sha256": "1b5877ab851e8cae6489a9c009c289aef156ea7b82105360d9292846e5567a53",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:12.453733+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\02\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "06000f8c93c0817d4938b11c24c528edbd641503cf01ee56ccfc6f2a9d563407",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 2,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

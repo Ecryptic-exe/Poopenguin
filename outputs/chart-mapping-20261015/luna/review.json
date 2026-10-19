@@ -1,0 +1,530 @@
+{
+  "review_date": "2026-10-15",
+  "timezone": "Asia/Taipei",
+  "source_workbook": "D:\\WorkSpace\\Codex_Workspace\\chunilib_L_ver\\workspace\\Poopenguin-reference\\Pooping Penguin\\tools\\ChunithmChart.xlsx",
+  "source_workbook_sha256": "664752cc9dbb54282eecbcbccfeab483b7a6e4769f6016fbc1f05f2a0fda94d7",
+  "base_workbook": "D:\\WorkSpace\\Codex_WorkSpace\\LB_Penguin\\outputs\\chart-mapping-20261015\\ChunithmChart_with_ID.xlsx",
+  "base_workbook_sha256": "f49528945007780994a2dc886a6f39314b5a86cc7262e556e037740e2f9a8b5a",
+  "reviewed_workbook": "D:\\WorkSpace\\Codex_WorkSpace\\LB_Penguin\\outputs\\chart-mapping-20261015\\luna\\ChunithmChart_reviewed.xlsx",
+  "catalog_database": "D:\\WorkSpace\\Codex_WorkSpace\\LB_Penguin\\data\\penguin.sqlite3",
+  "database_access": "read-only",
+  "summary": {
+    "total_reviewed": 8,
+    "verified": 8,
+    "unresolved": 0
+  },
+  "verification": {
+    "source_hash_unchanged": true,
+    "changed_cells_only": [
+      "13.7以下!L54",
+      "13.7以下!M54",
+      "13.7以下!O54",
+      "14!L119",
+      "14!L237",
+      "14!L64",
+      "14!M119",
+      "14!M237",
+      "14!M64",
+      "14!O119",
+      "14!O237",
+      "14!O64",
+      "14+!L209",
+      "14+!L74",
+      "14+!L78",
+      "14+!M209",
+      "14+!M74",
+      "14+!M78",
+      "14+!O209",
+      "14+!O74",
+      "14+!O78",
+      "15以上!L65",
+      "15以上!M65",
+      "15以上!O65"
+    ],
+    "base_verified_mappings": 826,
+    "reviewed_verified_mappings": 834,
+    "all_existing_non_target_cells_unchanged": true,
+    "sheet_order_and_row_order_preserved": true,
+    "original_cells_outside_L_R_preserved": true,
+    "source_hyperlinks_preserved": true,
+    "xlsx_package_integrity": "zip test passed",
+    "workbook_xml_readability": "workbook and all worksheet parts parse successfully"
+  },
+  "rows": [
+    {
+      "source_row_zero_based": 52,
+      "source_title": "L9 (AJ-1)",
+      "source_difficulty": "MAS",
+      "source_const": 13.6,
+      "source_notes": null,
+      "source_sheet": "13.7以下",
+      "source_excel_row": 54,
+      "source_genre": "Variety",
+      "source_description": "容錯低，中段時停多打幾次抓一下就可以，可全擦（如不介意炸準），追L9 Ultima前打兩發有奇效",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 34.328829,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "來源題名核心為 L9，括號 AJ-1 為附註；來源分類為 Variety，MAS 13.6。CHUNITHM 曲目頁確認 L9／paraoka、Variety、MASTER 13.6、1,103 notes；與本列難度、定數和分類吻合。來源列無物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 45,
+        "title": "L9",
+        "artist": "paraoka",
+        "genre": "VARIETY",
+        "chunithm_catcode": 6,
+        "chart_id": 125,
+        "chart_song_id": 45,
+        "difficulty": "MAS",
+        "level": "13+",
+        "const": 13.6,
+        "maxcombo": 1103,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e13757d8983b2d"
+      },
+      "external_sources": [
+        {
+          "title": "L9 - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/L9",
+          "claims": [
+            "L9 / paraoka",
+            "VARIETY",
+            "MASTER 13+ / 13.6",
+            "1,103 notes"
+          ]
+        },
+        {
+          "title": "L9 - ChuniDB",
+          "url": "https://db.chunirec.net/music/1c06aff71db4a978",
+          "claims": [
+            "L9 / paraoka",
+            "MASTER 13.6",
+            "1,103 notes"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 139,
+      "source_title": "Tuatha De Danann",
+      "source_difficulty": "EXP",
+      "source_const": 14.0,
+      "source_notes": null,
+      "source_sheet": "14",
+      "source_excel_row": 64,
+      "source_genre": "Original",
+      "source_description": "黃鍵非常多，容錯率高",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 153.36806,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "來源題名 Tuatha De Danann 僅省略正式拼法中的重音符號；來源分類 Original、難度 EXP、定數 14.0。CHUNITHM 曲目頁與 ChuniDB 確認 Tuatha Dé Danann／Gram、Original、EXPERT 14.0、2,243 notes。來源列沒有物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 2648,
+        "title": "Tuatha Dé Danann",
+        "artist": "深淵を覗きし者\"Gram\"",
+        "genre": "ORIGINAL",
+        "chunithm_catcode": 5,
+        "chart_id": 6528,
+        "chart_song_id": 2648,
+        "difficulty": "EXP",
+        "level": "14",
+        "const": 14.0,
+        "maxcombo": 2243,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e1418ca0d1c851"
+      },
+      "external_sources": [
+        {
+          "title": "Tuatha Dé Danann - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/Tuatha%20D%C3%A9%20Danann",
+          "claims": [
+            "official title spelling with Dé",
+            "ORIGINAL / Gram",
+            "EXPERT 14.0",
+            "2,243 notes"
+          ]
+        },
+        {
+          "title": "Tuatha Dé Danann - ChuniDB",
+          "url": "https://db.chunirec.net/music/734e08ab42a73436",
+          "claims": [
+            "ORIGINAL / Gram",
+            "EXPERT 14.0"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 194,
+      "source_title": "Phantasm Brigate",
+      "source_difficulty": "MAS",
+      "source_const": 14.1,
+      "source_notes": null,
+      "source_sheet": "14",
+      "source_excel_row": 119,
+      "source_genre": "東方project",
+      "source_description": "前半送分，很考驗交互穩定性",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 138.945758,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "來源 Brigate 為 Brigade 的少一個 d 拼字，來源分類明確為 東方project，難度 MAS、定數 14.1。CHUNITHM 曲目頁確認 Phantasm Brigade／Silver Forest、東方Project、MASTER 14.1、1,519 notes；分類和難度均相符。來源列沒有物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 194,
+        "title": "Phantasm Brigade",
+        "artist": "Silver Forest",
+        "genre": "東方Project",
+        "chunithm_catcode": 3,
+        "chart_id": 723,
+        "chart_song_id": 194,
+        "difficulty": "MAS",
+        "level": "14",
+        "const": 14.1,
+        "maxcombo": 1519,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e137ed8f1943b9"
+      },
+      "external_sources": [
+        {
+          "title": "Phantasm Brigade - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/Phantasm%20Brigade",
+          "claims": [
+            "東方Project / Silver Forest",
+            "MASTER 14.1",
+            "1,519 notes"
+          ]
+        },
+        {
+          "title": "Phantasm Brigade [MASTER] - CHUNITHM譜面保管所",
+          "url": "https://sdvx.in/chunithm/02/02139mst.htm",
+          "claims": [
+            "Phantasm Brigade / Silver Forest",
+            "CHAIN 1,519"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 312,
+      "source_title": "ludicium “Apocalypsis Mix”",
+      "source_difficulty": "MAS",
+      "source_const": 14.3,
+      "source_notes": 2350.0,
+      "source_sheet": "14",
+      "source_excel_row": 237,
+      "source_genre": null,
+      "source_description": "約等於沒有容錯的高容錯，愛來自長交互",
+      "source_video_label": "(9.0) Iudicium “Apocalypsis Mix” [MASTER 14] (譜面確認) [CHUNITHM チュウニズム]",
+      "source_video_link": {
+        "cell": "D237",
+        "url": "https://youtu.be/bKINRAVG13Q?si=sS6vCqFM8zBvJf90"
+      },
+      "bm25_rank": 1,
+      "bm25_score": 231.064211,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "來源首字母小寫 l 與正式大寫 I 易混淆。原表 D237 的列專屬影片連結標題明列 Iudicium “Apocalypsis Mix” [MASTER 14]；G237 物量為 2,350，與 CHUNITHM 曲目頁和資料庫譜面物量完全相同。資料庫目前定數 14.4、原表記 14.3，故保留原表數值並記錄差異；曲名、MASTER 譜面身份由影片標題及物量獨立確認。",
+      "confidence": "very high",
+      "database_match": {
+        "song_id": 2134,
+        "title": "Iudicium “Apocalypsis Mix”",
+        "artist": "曲：Powerless／歌：柏木 咲姫(CV：石見 舞菜香)、柏木 美亜(CV:和氣 あず未)",
+        "genre": "ゲキマイ",
+        "chunithm_catcode": 9,
+        "chart_id": 4630,
+        "chart_song_id": 2134,
+        "difficulty": "MAS",
+        "level": "14",
+        "const": 14.4,
+        "maxcombo": 2350,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e13f87cf81d0cf"
+      },
+      "external_sources": [
+        {
+          "title": "Iudicium “Apocalypsis Mix” - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/Iudicium%20%E2%80%9CApocalypsis%20Mix%E2%80%9D",
+          "claims": [
+            "MASTER 14.4",
+            "2,350 notes",
+            "current constant history"
+          ]
+        },
+        {
+          "title": "Source-row chart video",
+          "url": "https://youtu.be/bKINRAVG13Q",
+          "claims": [
+            "The workbook's D237 link label identifies Iudicium “Apocalypsis Mix”, MASTER 14"
+          ]
+        },
+        {
+          "title": "Iudicium “Apocalypsis Mix” - ChuniDB",
+          "url": "https://db.chunirec.net/music/8c068f4c1c823ee6",
+          "claims": [
+            "current MASTER constant 14.4",
+            "2,350 notes"
+          ]
+        }
+      ],
+      "discrepancy": "Source sheet says 14.3; current database and chart reference say 14.4. The original rating cell is preserved.",
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 482,
+      "source_title": "GERBARA",
+      "source_difficulty": "MAS",
+      "source_const": 14.6,
+      "source_notes": null,
+      "source_sheet": "14+",
+      "source_excel_row": 74,
+      "source_genre": "Variety ",
+      "source_description": "基礎4k，有4k接5k可掃，14+銜接曲",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 38.458725,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "GERBARA 修正為 GERBERA。原表分類 Variety、難度 MAS、定數 14.6，並註明 4k 譜面。CHUNITHM 曲目頁確認 GERBERA／BEMANI Sound Team “TAG”、VARIETY、MASTER 14.6、2,209 notes；與來源分類、難度和定數一致。來源列沒有物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 670,
+        "title": "GERBERA",
+        "artist": "BEMANI Sound Team \"TAG\"「SOUND VOLTEX」より",
+        "genre": "VARIETY",
+        "chunithm_catcode": 6,
+        "chart_id": 2448,
+        "chart_song_id": 670,
+        "difficulty": "MAS",
+        "level": "14+",
+        "const": 14.6,
+        "maxcombo": 2209,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e139ccab9f39be"
+      },
+      "external_sources": [
+        {
+          "title": "GERBERA - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/GERBERA",
+          "claims": [
+            "VARIETY / BEMANI Sound Team TAG",
+            "MASTER 14.6",
+            "2,209 notes"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 486,
+      "source_title": "Overhea[r]t",
+      "source_difficulty": "MAS",
+      "source_const": 14.6,
+      "source_notes": null,
+      "source_sheet": "14+",
+      "source_excel_row": 78,
+      "source_genre": "Original",
+      "source_description": "定數比較高的怒槌紅譜，大小鍵樓梯跟尾殺長的很丑但其他地方比較簡單",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 111.25243,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "來源題名 Overhea[r]t 與曲庫完全一致；原表分類 Original、難度 MAS、定數 14.6。CHUNITHM 曲目頁確認同名曲／打打だいず、ORIGINAL、MASTER 14.6、2,121 notes。來源敘述指出其為紅譜；原表沒有物量欄值或列專屬影片連結。",
+      "confidence": "very high",
+      "database_match": {
+        "song_id": 2613,
+        "title": "Overhea[r]t",
+        "artist": "打打だいず",
+        "genre": "ORIGINAL",
+        "chunithm_catcode": 5,
+        "chart_id": 6409,
+        "chart_song_id": 2613,
+        "difficulty": "MAS",
+        "level": "14+",
+        "const": 14.6,
+        "maxcombo": 2121,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e14169dcc719ff"
+      },
+      "external_sources": [
+        {
+          "title": "Overhea[r]t - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/Overhea%EF%BC%BBr%EF%BC%BDt",
+          "claims": [
+            "ORIGINAL / 打打だいず",
+            "MASTER 14.6",
+            "2,121 notes"
+          ]
+        },
+        {
+          "title": "Overhea[r]t - ChuniDB",
+          "url": "https://db.chunirec.net/music/a728e658df8b9abb",
+          "claims": [
+            "Overhea[r]t / 打打だいず"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 617,
+      "source_title": "Southen Cross",
+      "source_difficulty": "MAS",
+      "source_const": 14.9,
+      "source_notes": null,
+      "source_sheet": "14+",
+      "source_excel_row": 209,
+      "source_genre": "Variety",
+      "source_description": "Genesis Pro Max",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 99.974969,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "Southen 少寫一個 r，修正為 Southern Cross。原表分類 Variety、難度 MAS、定數 14.9。CHUNITHM 曲目頁確認 Southern Cross／403、VARIETY、MASTER 14.9、2,028 notes，譜面保管所亦記錄 2,028 chain。來源列沒有物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 2780,
+        "title": "Southern Cross",
+        "artist": "403",
+        "genre": "VARIETY",
+        "chunithm_catcode": 6,
+        "chart_id": 6938,
+        "chart_song_id": 2780,
+        "difficulty": "MAS",
+        "level": "14+",
+        "const": 14.9,
+        "maxcombo": 2028,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e142113a5d10da"
+      },
+      "external_sources": [
+        {
+          "title": "Southern Cross - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/Southern%20Cross",
+          "claims": [
+            "VARIETY / 403",
+            "MASTER 14.9",
+            "2,028 notes"
+          ]
+        },
+        {
+          "title": "Southern Cross [MASTER] - CHUNITHM譜面保管所",
+          "url": "https://sdvx.in/chunithm/10/10096mst.htm",
+          "claims": [
+            "Southern Cross / 403",
+            "CHAIN 2,028"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": null
+    },
+    {
+      "source_row_zero_based": 699,
+      "source_title": "黎明に殉ず",
+      "source_difficulty": "MAS",
+      "source_const": 15.1,
+      "source_notes": null,
+      "source_sheet": "15以上",
+      "source_excel_row": 65,
+      "source_genre": "Original ",
+      "source_description": "前段難，尾殺難",
+      "source_video_label": null,
+      "source_video_link": null,
+      "bm25_rank": 1,
+      "bm25_score": 40.009444,
+      "review_status": "VERIFIED",
+      "spreadsheet_status": "MANUALLY_VERIFIED",
+      "identity_rationale": "原表寫「黎明に殉ず」，資料庫正式題名為「黎命に殉ず」；兩者讀音同為 れいめいにじゅんず。這是同音異寫，不是依相似字面或定數單獨判定：原表另標 Original、MAS 15.1、5k 樓梯，並描述前段與尾殺較難；作曲者 Koke 的 SEGA 授權曲目影片和曲庫條目確認正式題名、Original、Koke，CHUNITHM 譜面頁確認 MASTER 15.1／2,453 notes，譜面保管所再次確認 Koke／2,453 chain。玩家的 CHUNITHM 遊玩影片也使用來源的「黎明」異寫。原表沒有物量欄值或列專屬影片連結。",
+      "confidence": "high",
+      "database_match": {
+        "song_id": 2616,
+        "title": "黎命に殉ず",
+        "artist": "Koke",
+        "genre": "ORIGINAL",
+        "chunithm_catcode": 5,
+        "chart_id": 6421,
+        "chart_song_id": 2616,
+        "difficulty": "MAS",
+        "level": "15",
+        "const": 15.1,
+        "maxcombo": 2453,
+        "version": null,
+        "available": true,
+        "tachi_chart_id": "C19d35e1416c8119ad78"
+      },
+      "external_sources": [
+        {
+          "title": "Koke official song video: 黎命に殉ず",
+          "url": "https://www.youtube.com/watch?v=KLuY9BaV47k",
+          "claims": [
+            "Koke identifies the canonical title and says it is a 5th CHUNITHM original-song contest winner; Sega permission/copyright noted"
+          ]
+        },
+        {
+          "title": "黎命に殉ず - CHUNITHM 攻略 Wiki",
+          "url": "https://wikiwiki.jp/chunithmwiki/%E9%BB%8E%E5%91%BD%E3%81%AB%E6%AE%89%E3%81%9A",
+          "claims": [
+            "title reading れいめいにじゅんず",
+            "ORIGINAL / Koke",
+            "MASTER 15.1",
+            "2,453 notes"
+          ]
+        },
+        {
+          "title": "黎命に殉ず [MASTER] - CHUNITHM譜面保管所",
+          "url": "https://sdvx.in/chunithm/09/09123mst.htm",
+          "claims": [
+            "黎命に殉ず / Koke",
+            "CHAIN 2,453",
+            "NOTES DESIGNER Ataraxia"
+          ]
+        },
+        {
+          "title": "CHUNITHM gameplay titled 黎明に殉ず AJ",
+          "url": "https://www.youtube.com/watch?v=-5jET9P2cEI",
+          "claims": [
+            "Independent player video uses the source spelling for CHUNITHM gameplay, corroborating the spelling variant"
+          ]
+        },
+        {
+          "title": "CHUNITHM gameplay titled 黎明に殉ず 26個 AJ",
+          "url": "https://www.youtube.com/watch?v=3Z8zztKVhbA",
+          "claims": [
+            "Independent player video uses the source spelling for CHUNITHM gameplay, corroborating the spelling variant"
+          ]
+        }
+      ],
+      "discrepancy": null,
+      "title_variant": "Source uses 黎明; canonical catalogue title is 黎命. Both are read れいめい."
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "task": "single_song_published_rating_score_table",
+  "source_url": "https://db.chunirec.net/music/What%27s+up%3F+Pop%21/379e125c378792dd",
+  "requested_title": "What's up? Pop!",
+  "difficulty": "MASTER",
+  "started_at": "2026-10-04T12:00:13.615204+08:00",
+  "fetches": [
+    {
+      "url": "https://db.chunirec.net/music/What%27s+up%3F+Pop%21/379e125c378792dd",
+      "final_url": "https://db.chunirec.net/music/What%27s+up%3F+Pop%21/379e125c378792dd",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:14.121304+08:00",
+      "content_type": "text/html; charset=UTF-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\05\\source_snapshot\\source.html",
+      "sha256": "42e8c0ea31b87b1f61a7f02aa83825da17ae587e2f6eede21e09e66600320ed7"
+    },
+    {
+      "url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "final_url": "https://db.chunirec.net/assets/js/music.js?v=2_50_0015",
+      "http_status": 200,
+      "retrieved_at": "2026-10-04T12:00:14.188733+08:00",
+      "content_type": "application/javascript; charset=utf-8",
+      "raw_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\05\\source_snapshot\\music.js",
+      "sha256": "e2521ad1ce9654c0a70eaad1846833aa7129ef7c4fe2f1d4f43ac5ebd7affd71"
+    }
+  ],
+  "errors": [],
+  "llm_used": false,
+  "tag_pipeline_changed": false,
+  "statistics_generated_at": null,
+  "title": "What's up? Pop!",
+  "chart": {
+    "difficulty_code": "MAS",
+    "level": "15",
+    "const": "15.3",
+    "const_confirmed": false,
+    "notes": "-",
+    "evidence_locator": "chart info row: MAS"
+  },
+  "statistic_label": "BEST 枠平均別平均スコア",
+  "statistics_locator": "#urec_pdx prefix M",
+  "statistics_text_range": {
+    "start": 8718,
+    "end": 11758
+  },
+  "total_players": 13733,
+  "rank_csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\05\\source_snapshot\\rating_rank_counts.csv",
+  "rank_csv_rows": 29,
+  "rank_csv_sha256": "1dea89f9ed760f2386fbb9d1516e5dc392da045b0cdcdb3dfdc1cd68e7f11cce",
+  "status": "complete",
+  "completed_at": "2026-10-04T12:00:14.236045+08:00",
+  "rows": 28,
+  "csv_file": "D:\\WorkSpace\\Codex_WorkSpace\\chunilib_L_ver\\v2\\table_probes\\b10_numeric_20261004_120010\\05\\source_snapshot\\rating_score_table.csv",
+  "csv_sha256": "13d9473212b32fb8361d34d10d1ce744e779154b608b393b413585c4fa36d103",
+  "csv_roundtrip_valid": true,
+  "missing_scores": 0,
+  "interpretation": "Published BEST-slot-average groups versus mean score on this chart; not a score-to-chart-rating formula."
+}

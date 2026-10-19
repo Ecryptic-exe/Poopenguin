@@ -1,0 +1,353 @@
+import contextlib
+import decimal
+from dataclasses import dataclass
+from decimal import Decimal
+from typing import Any, NamedTuple, override
+
+from discord import AppCommandOptionType, Interaction, Member, User, app_commands
+from discord.ext import commands
+from discord.utils import escape_markdown
+
+from chuni_penguin.constants import MAX_DIFFICULTY, ChunithmVersion
+from chuni_penguin.types import Difficulty, Genre, LinkedGate, Rank
+
+
+class DifficultyConverter(commands.Converter[Difficulty]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Difficulty:
+        argument = argument.upper()
+
+        # convert from short form
+        # special case MST since I think sdvx.in uses that, might as
+        # well support it
+        if argument == "MST":
+            return Difficulty.master
+
+        if argument == "BSC":
+            return Difficulty.basic
+
+        # special case this since it's bad
+        if argument in ("WORLD'S END", "WORLDSEND", "WORLDS END", "WED"):
+            return Difficulty.worlds_end
+
+        # this covers BASIC/ADVANCED/EXPERT/MASTER/ULTIMA full length
+        if hasattr(Difficulty, argument):
+            return getattr(Difficulty, argument)
+
+        # try to helpfully convert misspellings by using short form
+        # e.g. BASI, ULTI, MAST
+        with contextlib.suppress(ValueError):
+            return Difficulty(argument[:3])
+
+        # give up
+        msg = f'Could not infer difficulty name from "{argument}"'
+        raise commands.BadArgument(msg)
+
+
+class RankingDifficultyConverter(commands.Converter[Difficulty | None]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Difficulty | None:
+        if argument.lower() == "all":
+            return None
+
+        return await DifficultyConverter().convert(ctx, argument)
+
+
+class GenreConverter(commands.Converter[Genre]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Genre:
+        genre_lower = argument.lower()
+
+        if genre_lower.startswith(("pops", "anime", "pna", "p&a")):
+            return Genre.pops_and_anime
+        if genre_lower.startswith(("nico", "voca")):
+            return Genre.niconico
+        if genre_lower.startswith(("touhou", "toho", "東方", "东方")):
+            return Genre.touhou_project
+        if genre_lower.startswith(("ori", "chu")):
+            return Genre.original
+        if genre_lower.startswith(("variety", "var")):
+            return Genre.variety
+        if genre_lower.startswith(("irodori", "iro", "イロドリ", "irdr")):
+            return Genre.irodorimidori
+        if genre_lower.startswith(("geki", "ゲキ", "mai", "マイ", "ongeki")):
+            return Genre.gekimai
+
+        msg = f'Could not infer genre name from "{argument}".'
+        raise commands.BadArgument(msg)
+
+
+class RankConverter(commands.Converter[Rank]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Rank:
+        try:
+            return Rank[argument.lower().replace("+", "p")]
+        except ValueError as e:
+            msg = f'Could not infer rank from "{argument}".'
+            raise commands.BadArgument(msg) from e
+
+
+@dataclass(slots=True)
+class Level:
+    level: str
+    const: float | None
+
+    @property
+    def inferred_const(self):
+        return self.const or float(self.level.replace("+", ".5", 1))
+
+    @property
+    def inferred_max_const(self):
+        if self.const is not None:
+            return self.const
+
+        if self.level.endswith("+"):
+            return float(self.level.replace("+", ".9", 1))
+
+        return (int(self.level) * 10 + 4) / 10
+
+    def __str__(self):
+        return str(self.const) if self.const is not None else self.level
+
+
+class LevelRange(NamedTuple):
+    min_level: Level | None
+    max_level: Level | None
+
+    def __str__(self) -> str:
+        if self.min_level is not None and self.max_level is not None:
+            return f"{self.min_level}-{self.max_level}"
+        if self.min_level is not None:
+            return f"{self.min_level}-"
+        if self.max_level is not None:
+            return f"-{self.max_level}"
+
+        return "-"
+
+
+class LevelConverter(commands.Converter[Level]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Level:
+        # covers regular levels (14)
+        with contextlib.suppress(ValueError):
+            whole = int(argument)
+
+            if whole < 1 or whole > MAX_DIFFICULTY:
+                msg = f'Invalid level "{escape_markdown(argument)}". Must be between 1 and {MAX_DIFFICULTY}.'
+                raise commands.BadArgument(msg)
+
+            return Level(argument, None)
+
+        # covers plus levels
+        if argument.endswith("+"):
+            with contextlib.suppress(ValueError):
+                whole = int(argument[:-1])
+
+                if whole < 7:
+                    msg = f'Invalid level "{escape_markdown(argument)}". Only level 7 and above have plus levels.'
+                    raise commands.BadArgument(msg)
+
+                const = (whole * 10 + 5) / 10
+
+                if const > MAX_DIFFICULTY:
+                    msg = f'Invalid level "{escape_markdown(argument)}". Must be between 1 and {MAX_DIFFICULTY}.'
+                    raise commands.BadArgument(msg)
+
+                return Level(argument, None)
+
+        # covers chart constants (14.9)
+        with contextlib.suppress(ValueError):
+            const = float(argument)
+
+            if const < 1 or const > MAX_DIFFICULTY:
+                msg = f'Invalid level "{escape_markdown(argument)}". Must be between 1 and {MAX_DIFFICULTY}.'
+                raise commands.BadArgument(msg)
+
+            whole = int(const)
+            decimal = round(const * 10) - whole * 10
+
+            return Level(f"{whole}{'+' if decimal >= 5 else ''}", const)
+
+        msg = f'Could not infer level or chart constant from "{escape_markdown(argument)}".'
+        raise commands.BadArgument(msg)
+
+
+class LevelRangeConverter(commands.Converter[Level | LevelRange]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Level | LevelRange:
+        min_level_str, separator, max_level_str = argument.partition("-")
+        level_converter = LevelConverter()
+
+        if len(max_level_str) <= 0 and len(separator) <= 0:
+            return await level_converter.convert(ctx, min_level_str)
+
+        min_level = (
+            await level_converter.convert(ctx, min_level_str)
+            if len(min_level_str) > 0
+            else None
+        )
+        max_level = (
+            await level_converter.convert(ctx, max_level_str)
+            if len(max_level_str) > 0
+            else None
+        )
+
+        if (
+            min_level is not None
+            and max_level is not None
+            and min_level.inferred_const > max_level.inferred_const
+        ):
+            msg = f"Invalid range: minimum level {min_level} is larger than maximum level {max_level}"
+            raise commands.BadArgument(msg)
+
+        return LevelRange(min_level, max_level)
+
+
+# TODO: Consider inheriting from commands.clean_content instead so we
+# get mention scrubbing and markdown scrubbing, but I think
+# we have a bunch of aliases in the production database that's just
+# emotes and mentions of people, so it's probably not possible.
+# At least we can force casing to always be lowercase.
+class AliasNameConverter(commands.Converter[str]):
+    def __init__(self, *, lower: bool = False) -> None:
+        super().__init__()
+        self.lower = lower
+
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> str:
+        return argument.strip().lower() if self.lower else argument.strip()
+
+
+class AliasNameTransformer(app_commands.Transformer):
+    def __init__(self, *, lower: bool = False) -> None:
+        super().__init__()
+        self.lower = lower
+
+    @override
+    async def transform(self, interaction: Interaction, value: str) -> str:
+        return value.strip().lower() if self.lower else value.strip()
+
+
+class MemberOrUserConverter(commands.Converter[Member | User]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> Member | User:
+        for converter in (commands.MemberConverter, commands.UserConverter):
+            with contextlib.suppress(commands.BadArgument):
+                return await converter().convert(ctx, argument)
+
+        raise commands.UserNotFound(argument)
+
+
+class CommandOrGroupConverter(commands.Converter[commands.Command | commands.Cog]):
+    @override
+    async def convert(
+        self, ctx: commands.Context, argument: str
+    ) -> commands.Command | commands.Cog:
+        command = ctx.bot.get_command(argument)
+
+        if command is not None:
+            return command
+
+        cog = ctx.bot.get_cog(argument)
+
+        if cog is not None:
+            return cog
+
+        msg = f"No commands or groups found with name `{escape_markdown(argument)}`."
+        raise commands.BadArgument(msg)
+
+
+class LinkedGateConverter(commands.Converter[LinkedGate]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> LinkedGate:
+        argument_lower = argument.lower()
+
+        with contextlib.suppress(ValueError):
+            return LinkedGate(int(argument_lower))
+
+        if argument_lower.startswith("<:air:"):
+            return LinkedGate.air
+
+        if argument_lower == "amz":
+            return LinkedGate.amazon
+
+        if argument_lower.startswith("cry"):
+            return LinkedGate.crystal
+
+        if argument_lower == "lmn" or argument_lower.startswith("lum"):
+            return LinkedGate.luminous
+
+        if argument_lower == "vrs":
+            return LinkedGate.verse
+
+        if argument_lower in ("xv", "xvrs", "xverse", "x-verse"):
+            return LinkedGate.x_verse
+
+        if argument_lower in ("rv", "reverse", "re:verse"):
+            return LinkedGate.re_verse
+
+        if argument_lower in ("uv", "uni", "universe"):
+            return LinkedGate.universe
+
+        try:
+            return getattr(LinkedGate, argument_lower)
+        except AttributeError:
+            msg = f'Unknown Linked GATE "{escape_markdown(argument)}".'
+            raise commands.CommandError(msg) from None
+
+
+class VersionConverter(commands.Converter[ChunithmVersion]):
+    @override
+    async def convert(self, ctx: commands.Context, argument: str) -> ChunithmVersion:
+        argument_upper = argument.upper()
+
+        if argument_upper.endswith("+"):
+            argument_upper = f"{argument_upper[:-1]} PLUS"
+
+        if argument_upper in ChunithmVersion.__args__:
+            return argument_upper  # pyright: ignore[reportReturnType]
+
+        if argument_upper.startswith("ORIGIN"):
+            return "CHUNITHM PLUS" if argument_upper.endswith("PLUS") else "CHUNITHM"
+
+        if argument_upper.startswith("AMZ"):
+            return "AMAZON PLUS" if argument_upper.endswith("PLUS") else "AMAZON"
+
+        if argument_upper.startswith("CRY"):
+            return "CRYSTAL PLUS" if argument_upper.endswith("PLUS") else "CRYSTAL"
+
+        if argument_upper.startswith(("LMN", "LUM")):
+            return "LUMINOUS PLUS" if argument_upper.endswith("PLUS") else "LUMINOUS"
+
+        if argument_upper == "VRS":
+            return "VERSE"
+
+        if argument_upper in ("XV", "XVRS", "X-VRS"):
+            return "X-VERSE"
+
+        if argument_upper in ("XVX", "XVRSX", "X-VRS-X"):
+            return "X-VERSE-X"
+
+        msg = f'Unknown version "{escape_markdown(argument)}"'
+        raise commands.CommandError(msg) from None
+
+
+class DecimalConverter(commands.Converter[Decimal]):
+    async def convert(self, ctx: commands.Context, argument: str) -> Decimal:
+        try:
+            return Decimal(argument)
+        except decimal.InvalidOperation:
+            msg = f'"{escape_markdown(argument)}" is not a valid number.'
+            raise commands.BadArgument(msg) from None
+
+
+class DecimalTransformer(app_commands.Transformer):
+    @property
+    def type(self) -> AppCommandOptionType:
+        return AppCommandOptionType.number
+
+    async def transform(self, interaction: Interaction, value: Any, /) -> Decimal:
+        try:
+            return Decimal(value)
+        except decimal.InvalidOperation:
+            raise app_commands.TransformerError(value, self.type, self) from None
