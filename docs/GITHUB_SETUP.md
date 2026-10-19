@@ -1,5 +1,7 @@
 # 從 GitHub 安裝
 
+公開儲存庫：[Loli45D/LB_Penguin](https://github.com/Loli45D/LB_Penguin)，預設分支 `main`。
+
 儲存庫包含程式、必要資產、測試及已審核的社群譜面來源。`.env`、`bot.ini`、真實玩家資料庫、憑證、抽卡／管理資料、執行紀錄及快取不會上傳；現有電腦的資料保留在原處。
 
 ## 全新安裝
