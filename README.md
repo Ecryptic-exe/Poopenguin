@@ -23,12 +23,6 @@ Type `!help` in Discord for the full in-bot manual (English or Chinese).
   add, remove, and manage keyword sets and copypasta templates live, no
   redeploy required.
 
-- **CHUNITHM Rating Charts** 📊
-  `!rating <song> [difficulty]` looks up a song and draws how players of
-  different ratings score on that chart. `!song_search <query>` finds songs
-  and their available difficulties. Statistics come from the public Chunirec
-  site, and only the chart you pick is fetched and drawn.
-
 - **Gacha System** 🎰
   Pull for CHUNITHM-themed characters with configurable rates, set a pull
   target, and check your stats. Admins can hand-edit the roster, rates, and
@@ -80,9 +74,7 @@ penguin with an attitude problem.
 
 - Python 3.9+
 - [discord.py](https://pypi.org/project/discord.py/) 2.x
-- Extra packages for the CHUNITHM charts (python-dotenv, requests,
-  beautifulsoup4, numpy, matplotlib, Pillow, tzdata), all listed in
-  `requirements.txt`
+- `requirements.txt`
 - [LM Studio](https://lmstudio.ai/) — only needed for the chatbot
 
 ## 🚀 Quick start
