@@ -33,7 +33,9 @@ uv run --no-sync python -X utf8 launcher.py --env-file .env
 
 `.env.example` 列出實際支援的選項：文字前綴、明確啟用／停用模組、Kamaitachi 憑證、本機 LM Studio 與唯讀測試參數。留白沿用 `bot.ini`，修改後重新啟動；不展開 `${...}` 或執行任何內容，也不從 `.env` 更換資料庫位置。未知欄位不套用。
 
-啟動不會自動同步遠端 Discord 指令。2026-10-15 曾依使用者要求把全域入口由 29 精簡為 13；2026-10-19 再依最新要求加入 `/score`，目前 **14 個**。每次更新前備份現有註冊，保持原有範圍與 Poopenguin 指令格式，之後由 API 回讀確認。最新紀錄為 `reports/command-registration-20261019.json`。如需註冊到測試伺服器，owner 可使用原 `!treesync *`。Bot 需要 Message Content Intent 支援文字指令；選配管理功能另需其原伺服器權限與設定。
+正常啟動會在資料庫與 extension 載入完成、命令樹通過安全檢查後，將目前全域 slash command tree 同步到 Discord 一次。載入不完整、資料庫未就緒或 Discord 拒絕同步時，Bot 會記錄原因並繼續啟動；owner 仍可使用 `!treesync` 手動同步。被設定停用的模組不會出現在本機命令樹，因此同步時其舊遠端指令會一併移除。2026-10-15 曾依使用者要求把全域入口由 29 精簡為 13；2026-10-19 再依最新要求加入 `/score`，當時共 **14 個**。歷史紀錄見 `reports/command-registration-20261019.json`。Bot 需要 Message Content Intent 支援文字指令；選配管理功能另需其原伺服器權限與設定。
+
+Bot Ready 後會在 log 印出登入帳號，並每 10 秒輪替遊戲狀態文字；第一則會使用 `bot.ini` 設定的預設 prefix。
 
 本次既有 Token 的 Message Content Intent 已通過實際連線，**不需要額外 Windows／管理員權限**。依使用者後續要求，正常 Bot 已保持背景運行供測試；下面的有界連線工具則會在檢查後自行斷線。
 

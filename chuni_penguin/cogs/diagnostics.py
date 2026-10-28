@@ -201,6 +201,11 @@ class DiagnosticsCog(commands.Cog, name="Diagnostics"):
 
     @tasks.loop(minutes=3, reconnect=True)
     async def listening(self):
+        # EventsCog owns the rotating Poopenguin status when it is loaded.
+        # Keep this optional song presence only for configurations without it.
+        if self.bot.get_cog("Events") is not None:
+            return
+
         song = await self.runtime_info.presence_song()
         if song is None:
             return

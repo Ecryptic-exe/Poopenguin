@@ -54,13 +54,11 @@ class PenguinCommandTree(CommandTree["ChuniBot"]):
 
         if delta.total_seconds() >= 2.8:
             await logger.awarning(
-                "Ignoring interaction, running late.",
-                tag="interaction_ignore_high_latency",
+                "Interaction arrived late; attempting to respond.",
+                tag="interaction_high_latency",
                 interaction_id=interaction.id,
                 latency=delta.total_seconds(),
             )
-            return False
-
         if not interaction.client.is_ready():
             if interaction.type != discord.InteractionType.autocomplete:
                 with contextlib.suppress(discord.NotFound):

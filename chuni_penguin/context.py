@@ -130,10 +130,11 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
     ) -> Self:
         ctx = await super().from_interaction(interaction)
 
-        if interaction.response.type in (
-            discord.InteractionResponseType.channel_message,
-            discord.InteractionResponseType.deferred_channel_message,
-        ):
+        # Acknowledge before database reads, converters, and command checks.
+        # Deferred replies do not need an extra GET of the loading message:
+        # Context.send() completes that response through the followup webhook.
+        await ctx.defer()
+        if interaction.response.type == discord.InteractionResponseType.channel_message:
             ctx.response = await interaction.original_response()
 
         ctx.user_config = await interaction.client.fetch_user_config(
@@ -141,6 +142,19 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
         )
 
         return ctx
+
+    @override
+    async def defer(self, *, ephemeral: bool = False) -> None:
+        if self.interaction is not None and not self.interaction.response.is_done():
+            # These commands already request private slash replies while allowing
+            # prefix usage. Preserve that visibility when acknowledging early.
+            private_reply = self.command is not None and self.command.qualified_name in {
+                "chartview", "feed list", "kamaitachi link"
+            }
+            await self.interaction.response.defer(
+                ephemeral=ephemeral or private_command(self.command) or private_reply,
+                thinking=True,
+            )
 
     @overload
     async def respond_or_edit(

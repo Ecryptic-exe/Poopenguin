@@ -104,7 +104,7 @@ class KamaitachiCog(commands.Cog, name="Kamaitachi"):
         """
 
         if ctx.interaction is not None and ctx.guild is not None:
-            await ctx.interaction.response.defer(ephemeral=True, thinking=True)
+            await ctx.defer(ephemeral=True)
 
         async with self.bot.begin_db_read() as session:
             query = select(Cookie).where(Cookie.discord_id == ctx.author.id)

@@ -103,6 +103,7 @@ class ChuniBot(commands.AutoShardedBot):
                 guilds=True,
                 voice_states=True,
                 messages=True,
+                guild_reactions=True,
                 typing=True,
                 message_content=True,
             ),
@@ -168,6 +169,7 @@ class ChuniBot(commands.AutoShardedBot):
     async def setup_hook(self) -> None:
         with use_config(self.settings):
             await self._setup_extensions()
+            await self._sync_commands_on_startup()
 
     async def _setup_extensions(self) -> None:
         selected = self.extension_manager.selected_specs(
@@ -227,6 +229,70 @@ class ChuniBot(commands.AutoShardedBot):
                 "Startup data unavailable", error_type=type(exc).__name__
             )
 
+    async def _sync_commands_on_startup(self) -> None:
+        """Publish the fully loaded global command tree once during startup."""
+        if self.offline:
+            return
+        if not self.startup_report.database_ready:
+            self.startup_report.registration = "pending_manual_sync"
+            await logger.awarning(
+                "Skipping startup slash-command sync",
+                tag="startup_command_sync_skipped",
+                reason="database_not_ready",
+            )
+            return
+
+        try:
+            self.extension_manager.assert_sync_safe()
+        except ValueError:
+            self.startup_report.registration = "pending_manual_sync"
+            await logger.awarning(
+                "Skipping startup slash-command sync",
+                tag="startup_command_sync_skipped",
+                reason="command_tree_incomplete",
+            )
+            return
+
+        try:
+            synced = await self.tree.sync()
+        except discord.Forbidden:
+            self.startup_report.registration = "sync_failed"
+            await logger.aerror(
+                "Startup slash-command sync failed",
+                tag="startup_command_sync_failed",
+                reason="missing_applications_commands_permission",
+            )
+        except discord.HTTPException as exc:
+            self.startup_report.registration = "sync_failed"
+            await logger.aerror(
+                "Startup slash-command sync failed",
+                tag="startup_command_sync_failed",
+                error_type=type(exc).__name__,
+                status=exc.status,
+            )
+        except Exception as exc:  # noqa: BLE001
+            self.startup_report.registration = "sync_failed"
+            await logger.aerror(
+                "Startup slash-command sync failed",
+                tag="startup_command_sync_failed",
+                error_type=type(exc).__name__,
+            )
+        else:
+            try:
+                await self.record_global_command_sync()
+            except Exception as exc:  # noqa: BLE001
+                self.startup_report.registration = "synced_local_hash_unrecorded"
+                await logger.aerror(
+                    "Slash commands synced, but the local tree hash was not recorded",
+                    tag="startup_command_hash_record_failed",
+                    error_type=type(exc).__name__,
+                )
+            await logger.ainfo(
+                f"Synced {len(synced)} slash commands globally on startup",
+                tag="startup_command_sync",
+                command_count=len(synced),
+            )
+
     async def _load_startup_data(self):
         # Load guild prefixes
         async with self.begin_db_read() as session:
@@ -281,7 +347,8 @@ class ChuniBot(commands.AutoShardedBot):
             )
             raise
 
-        if ctx.command is not None:
+        # Interaction contexts already load settings in from_interaction().
+        if ctx.command is not None and ctx.interaction is None:
             ctx.user_config = await self.fetch_user_config(ctx.author.id)
 
         return ctx

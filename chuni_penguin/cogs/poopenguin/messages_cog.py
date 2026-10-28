@@ -120,12 +120,16 @@ class MessagesCog(commands.Cog, name="messages"):
         )
         ctx = await self.bot.get_context(message)
 
-        # A mention with only an image attached (no text) goes to the AI
-        # (vision) instead of showing help.
+        # A bare mention opens the manual. A mention with text is a chat prompt;
+        # an image-only mention goes through the AI vision path.
         has_image = any(
             (a.content_type or "").startswith("image/") for a in message.attachments)
         if (not command and not has_image) or command in ("poop penguin", "help"):
-            await self.bot.get_command("help")(ctx)
+            help_command = self.bot.help_command
+            if help_command is not None:
+                help_command = help_command.copy()
+                help_command.context = ctx
+                await help_command.send_bot_help(help_command.get_bot_mapping())
             return True
 
         valid_commands = [c.name for c in self.bot.commands]
@@ -141,9 +145,10 @@ class MessagesCog(commands.Cog, name="messages"):
         else:
             language = get_guild_language(load_settings(), message.guild.id)
             from .i18n import t
+            prefix = self.bot.settings.bot.default_prefix
             await message.channel.send(t(language,
-                f"No command named `{command}` found. Use `!help` to see all available commands.",
-                f"未找到名為 `{command}` 的命令。使用 `!help` 查看所有可用命令。"))
+                f"No command named `{command}` found. Use `{prefix}help` to see all available commands.",
+                f"未找到名為 `{command}` 的命令。使用 `{prefix}help` 查看所有可用命令。"))
         return True
 
     async def _handle_keywords(self, message):
@@ -186,7 +191,8 @@ class MessagesCog(commands.Cog, name="messages"):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        ctx = await self.bot.get_context(message)
+        # Only detect commands here; the actual invocation loads user settings.
+        ctx = await commands.Bot.get_context(self.bot, message)
         if ctx.valid:
             return
 

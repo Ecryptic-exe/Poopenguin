@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 from types import FrameType
 
+import aiohttp
 import discord
 
 from chuni_penguin.application.credentials import (
@@ -27,10 +28,14 @@ from chuni_penguin.config import get_config, use_config
 from chuni_penguin.logging import logger
 from chuni_penguin.utils import get_loop_factory
 
+STARTUP_DNS_RETRY_DELAYS = (2, 4, 8, 16)
+
 
 class KeyboardInterruptHandler:
-    def __init__(self, bot: "ChuniBot"):
-        self.bot: "ChuniBot" = bot
+    def __init__(self):
+        self.bot: "ChuniBot | None" = None
+        self.loop = asyncio.get_running_loop()
+        self.stopping = asyncio.Event()
         self._pending: bool = False
 
     def __call__(
@@ -41,14 +46,10 @@ class KeyboardInterruptHandler:
         if self._pending:
             raise KeyboardInterrupt
 
-        self.bot.loop.call_soon_threadsafe(
-            self.bot.loop.create_task,
-            self.bot.close(),
-        )
-        self.bot.loop.call_soon_threadsafe(
-            lambda: None
-        )  # no-op to wake up loop (important!)
         self._pending = True
+        self.loop.call_soon_threadsafe(self.stopping.set)
+        if self.bot is not None:
+            self.loop.call_soon_threadsafe(self.loop.create_task, self.bot.close())
 
 
 def parse_args(args: list[str] | None = None) -> argparse.Namespace:
@@ -92,20 +93,65 @@ async def startup(*, env_file: Path | None = None):
             "Message Content Intent not enabled, go to 'https://discord.com/developers/applications' and enable the Message Content Intent."
         )
         sys.exit(1)
+    except aiohttp.ClientConnectorDNSError:
+        logger.error(
+            "Cannot resolve Discord after startup retries. Check your DNS/network "
+            "connection, then run the same launch command again."
+        )
+        sys.exit(1)
+
+
+async def _wait_for_dns_retry(stopping: asyncio.Event, delay: float) -> bool:
+    """Wait for retry time or return True when shutdown was requested."""
+    try:
+        async with asyncio.timeout(delay):
+            await stopping.wait()
+    except TimeoutError:
+        return False
+    return True
 
 
 async def run_bot(settings, token):
-    async with ChuniBot(settings) as bot:
-        handler = KeyboardInterruptHandler(bot)
+    handler = KeyboardInterruptHandler()
+    try:
+        handler.loop.add_signal_handler(signal.SIGINT, handler)
+        handler.loop.add_signal_handler(signal.SIGTERM, handler)
+    except NotImplementedError:
+        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGTERM, handler)
 
+    attempts = len(STARTUP_DNS_RETRY_DELAYS) + 1
+    for attempt in range(1, attempts + 1):
+        if handler.stopping.is_set():
+            return
         try:
-            bot.loop.add_signal_handler(signal.SIGINT, handler)
-            bot.loop.add_signal_handler(signal.SIGTERM, handler)
-        except NotImplementedError:  # fucking windows
-            signal.signal(signal.SIGINT, handler)
-            signal.signal(signal.SIGTERM, handler)
+            # static_login creates an HTTP session. Always close a failed client
+            # and create a fresh one, rather than reusing its connector/session.
+            async with ChuniBot(settings) as bot:
+                handler.bot = bot
+                if handler.stopping.is_set():
+                    return
+                await bot.start(token, reconnect=True)
+        except aiohttp.ClientConnectorDNSError:
+            if handler.stopping.is_set():
+                return
+            if attempt == attempts:
+                raise
+        else:
+            return
+        finally:
+            handler.bot = None
 
-        await bot.start(token, reconnect=True)
+        delay = STARTUP_DNS_RETRY_DELAYS[attempt - 1]
+        await logger.awarning(
+            "Cannot resolve Discord; retrying startup.",
+            tag="startup_dns_retry",
+            attempt=attempt,
+            max_attempts=attempts,
+            retry_in_seconds=delay,
+        )
+        if await _wait_for_dns_retry(handler.stopping, delay):
+            return
 
 
 if __name__ == "__main__":

@@ -167,7 +167,7 @@ class PlayerStatisticsCog(commands.Cog, name="PlayerStatistics"):
         )
 
         await self._statistics_impl(
-            await PenguinContext.from_interaction(interaction),
+            ctx,
             user=user,
             level=converted_level,
             difficulty=(

@@ -18,6 +18,7 @@ from chuni_penguin.database import (
     PlayerSource,
     UserConfig,
 )
+from chuni_penguin.logging import logged_prefix_command
 from chuni_penguin.services.player_sources import PlayerSourceService, SourceError
 from chuni_penguin.ui import EmbedPaginationView, ScoreCardEmbed
 from chuni_penguin.ui.autocomplete import song_title_choices
@@ -422,6 +423,33 @@ class PlayersCog(commands.Cog, name="V2Players"):
                 if query.casefold() in r["title"].casefold() or query == r["id"]
             ]
         return [r for r in rows if difficulty is None or r["diff"] == difficulty]
+
+    @commands.command(name="scores", aliases=["score"])
+    @logged_prefix_command
+    async def scores_prefix(self, ctx: PenguinContext, *, query: str):
+        """Show your CHUNITHM-NET scores for one song in a prefix command."""
+        try:
+            rows = await self.matching_rows(ctx, query, "net")
+            if not rows:
+                await ctx.reply("此歌曲沒有找到已遊玩的 CHUNITHM-NET 成績。")
+                return
+
+            embeds = [
+                ScoreCardEmbed(
+                    row["record"],
+                    synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    detailed=True,
+                )
+                for row in rows
+                if "record" in row
+            ]
+            if not embeds:
+                await ctx.reply("此來源沒有符合的已遊玩成績。")
+                return
+
+            await EmbedPaginationView(ctx, embeds).start()
+        except SourceError as exc:
+            await ctx.reply(str(exc))
 
     @app_commands.command(name="score", description="查詢自己的指定歌曲及難度成績")
     async def score(

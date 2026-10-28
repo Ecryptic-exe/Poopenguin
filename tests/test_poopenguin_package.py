@@ -104,7 +104,12 @@ _EXPECTED_COMMANDS = {
     "vote_cog": {
         ("command", "vto"),
         ("command", "setvote"),
-        ("listener", "on_reaction_add"),
+        ("listener", "on_raw_reaction_add"),
+        ("listener", "on_raw_reaction_remove"),
+        ("listener", "on_raw_reaction_clear"),
+        ("listener", "on_raw_reaction_clear_emoji"),
+        ("listener", "on_raw_message_delete"),
+        ("listener", "on_raw_bulk_message_delete"),
     },
 }
 
