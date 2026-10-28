@@ -12,6 +12,9 @@ from typing import Any
 
 from chuni_penguin.config import config
 from chuni_penguin.utils.localization import guild_language, t
+from chuni_penguin.utils.ui_messages import MESSAGES
+
+_CHINESE_UI = {english: chinese for chinese, english in MESSAGES.items()}
 
 
 def get_chunithm_language(context_or_guild: Any = None) -> str:
@@ -40,6 +43,24 @@ def get_chunithm_language(context_or_guild: Any = None) -> str:
     return guild_language(config.fun, guild_id)
 
 
+def ui_text(context_or_language: Any, text: str, *values: object) -> str:
+    """Translate an explicit interface template before inserting unchanged data.
+
+    Call this where UI text is built, never on arbitrary song titles, comments,
+    command arguments or complete messages containing user-controlled text.
+    """
+    language = (
+        context_or_language
+        if isinstance(context_or_language, str)
+        else get_chunithm_language(context_or_language)
+    )
+    if language == "chinese":
+        text = _CHINESE_UI.get(text, _TRADITIONAL_CHINESE.get(text, text))
+    else:
+        text = MESSAGES.get(text, text)
+    return text.format(*values) if values else text
+
+
 _TRADITIONAL_CHINESE = {
     "Error": "錯誤",
     "Success": "成功",
@@ -66,7 +87,7 @@ _TRADITIONAL_CHINESE = {
     "Timed out trying to connect to the network.": "連線逾時，請稍後再試。",
     "An error occurred while communicating with the network. Please try again later (or re-login).": "連線時發生錯誤，請稍後再試或重新登入。",
     "An unknown network error occured trying to connect to the network.": "連線時發生未知網路錯誤，請稍後再試。",
-    "You're missing a quote somewhere. Perhaps you're using the wrong kind of quote (`\"` vs `”`)?": "有一個引號沒有配對。請確認使用的是正確的引號（`\"` 或 `”`）。",
+    "You're missing a quote somewhere. Perhaps you're using the wrong kind of quote (`\"` vs `”`)?": '有一個引號沒有配對。請確認使用的是正確的引號（`"` 或 `”`）。',
     "No matching songs were found.": "找不到符合的曲目。",
     "No scores found.": "找不到成績。",
     "沒有找到符合的曲目。": "找不到符合的曲目。",
@@ -76,8 +97,10 @@ _TRADITIONAL_CHINESE = {
 
 def translate_chunithm_text(text: str | None, language: str) -> str | None:
     """Translate known CHUNITHM interface strings without touching user data."""
-    if text is None or language != "chinese":
+    if text is None:
         return text
+    if language != "chinese":
+        return MESSAGES.get(text, text)
     translated = _TRADITIONAL_CHINESE.get(text)
     if translated is not None:
         return translated
@@ -111,7 +134,7 @@ def translate_chunithm_text(text: str | None, language: str) -> str | None:
         detail, separator, help_text = text.partition(
             "\nView help for this command with "
         )
-        detail = "參數錯誤：" + detail[len("Bad argument: ") :]
+        detail = "參數錯誤：" + ui_text(language, detail[len("Bad argument: ") :])
         if separator:
             return detail + "\n使用 " + help_text + " 查看此指令的說明。"
         return detail
@@ -147,8 +170,6 @@ def translate_chunithm_text(text: str | None, language: str) -> str | None:
 
 def localize_chunithm_embed(embed, language: str):
     """Return a translated copy of an embed, preserving artwork and links."""
-    if language != "chinese":
-        return embed
     data = embed.to_dict()
     for key in ("title", "description"):
         if isinstance(data.get(key), str):
@@ -169,4 +190,5 @@ __all__ = (
     "localize_chunithm_embed",
     "t",
     "translate_chunithm_text",
+    "ui_text",
 )

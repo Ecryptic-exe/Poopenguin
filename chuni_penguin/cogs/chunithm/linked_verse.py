@@ -16,6 +16,7 @@ from chuni_penguin.types import (
     LinkedGateStatus,
 )
 from chuni_penguin.ui import LinkedGateLeaderboardView, SongInfoEmbed
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -144,6 +145,7 @@ class LinkedVerse(commands.Cog, name="Linked VERSE"):
                     db_gate.song,
                     db_gate.song.charts,
                     synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    language=get_chunithm_language(ctx),
                 ),
             ],
             view=view,

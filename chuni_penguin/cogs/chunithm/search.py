@@ -1,4 +1,3 @@
-import hashlib
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Annotated
 
@@ -17,7 +16,6 @@ from chuni_penguin.converters import (
 )
 from chuni_penguin.logging import logged_app_command, logged_prefix_command
 from chuni_penguin.repositories.chart_search import ChartSearchFilter
-from chuni_penguin.ui import SongDetailsView, SonglistView
 from chuni_penguin.ui.autocomplete import song_title_choices
 from chuni_penguin.utils import shlex_split
 
@@ -98,29 +96,29 @@ class SearchCog(commands.Cog, name="Search"):
                 chart_ids = await extras.tagged_chart_ids(tag)
                 charts = [chart for chart in charts if chart.id in chart_ids]
 
-            if getattr(ctx, "interaction", None) is not None:
-                from chuni_penguin.ui.chart_results import ChartResultsView
+            from chuni_penguin.ui.chart_results import ChartResultsView
+            from chuni_penguin.ui.panel import session_for
+            from chuni_penguin.utils.chunithm_i18n import ui_text
 
-                query_label = " · ".join(
-                    f"{name}：{value}"
-                    for name, value in (
-                        ("等級／定數", str(level)),
-                        ("難度", difficulty),
-                        ("版本", version),
-                        ("標籤", tag),
-                    )
-                    if value
+            values = dict(
+                level=str(level), difficulty=difficulty, version=version, tag=tag
+            )
+            session_for(ctx).parameters["find"] = {
+                key: str(value) for key, value in values.items() if value is not None
+            }
+            query_label = " · ".join(
+                f"{ui_text(ctx, name)}: {value}"
+                for name, value in (
+                    ("等級／定數", str(level)),
+                    ("難度", difficulty),
+                    ("版本", version),
+                    ("標籤", tag),
                 )
-                await ChartResultsView(
-                    ctx, charts, title="篩選譜面", query_label=query_label
-                ).start()
-                return
-            if len(charts) == 0:
-                await ctx.reply("No charts found.", mention_author=False)
-                return
-
-            view = SonglistView(ctx, list(charts))
-            await view.start()
+                if value
+            )
+            await ChartResultsView(
+                ctx, charts, title=ui_text(ctx, "篩選譜面"), query_label=query_label
+            ).start()
 
     @app_commands.command(
         name="chart",
@@ -149,7 +147,7 @@ class SearchCog(commands.Cog, name="Search"):
         self,
         ctx: PenguinContext,
         *,
-        query: Annotated[str, AliasNameConverter(lower=True)],
+        query: Annotated[str, AliasNameConverter(lower=True)] = "",
     ):
         """Search for a song and browse its information in tabs.
 
@@ -172,43 +170,11 @@ class SearchCog(commands.Cog, name="Search"):
     async def _info_inner(
         self, ctx: PenguinContext, *, query: str, detailed: bool = False
     ):
-        async with ctx.typing():
-            result = await ctx.find_songs(query, load_global_aliases=True)
+        from chuni_penguin.ui.entrypoints import show_song_entry
 
-            if result is None:
-                return
-
-            if query == "67" and any(song.id == 45 for song in result.songs):
-                await ctx.bot.database.user_found_easter_egg(
-                    ctx.author.id, "L9-upside-down-is-67"
-                )
-                fun_mode = True
-            elif (query in ("bike", "\N{BICYCLE}") or ":bikebait:" in query) and any(
-                song.id == 881 for song in result.songs
-            ):
-                await ctx.bot.database.user_found_easter_egg(ctx.author.id, "bike")
-                fun_mode = True
-            else:
-                fun_mode = False
-
-            view = SongDetailsView(
-                ctx,
-                result.songs,
-                detailed=detailed,
-                synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
-                fun_mode=fun_mode,
-            )
-            await view.start()
-
-            # straight up jorking it
-            if (
-                ctx.guild is not None
-                and hashlib.md5(f"{ctx.guild.id}{query.lower()}".encode()).hexdigest()
-                == "9729fe8bdc6e25a045f8c8028e19aa79"
-            ):
-                await ctx.send(
-                    content="https://cdn.discordapp.com/attachments/1348088922055512197/1358215134937612338/vlc-record-2025-04-05-19h01m28s-2025-04-05_18-57-05.mkv-.mp4"
-                )
+        return await show_song_entry(
+            ctx, query, section="chart", tab="chart" if detailed else "view"
+        )
 
 
 async def setup(bot: "ChuniBot"):

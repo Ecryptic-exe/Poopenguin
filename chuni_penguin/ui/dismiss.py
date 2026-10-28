@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 """Owner-only message dismissal, shared by public and private Embed views."""
 
 import asyncio
@@ -6,6 +7,7 @@ from contextlib import suppress
 import discord
 
 from chuni_penguin.logging import logger
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 
 def response_closed(ctx):
@@ -17,7 +19,9 @@ def response_closed(ctx):
 
 class CloseButton(discord.ui.Button):
     def __init__(self, owner_id, *, ctx=None, row=None):
-        super().__init__(label="關閉", custom_id="penguin:dismiss", row=row)
+        super().__init__(
+            label=ui_text(ctx, "關閉"), custom_id="penguin:dismiss", row=row
+        )
         self.owner_id, self.ctx = owner_id, ctx
 
     async def callback(self, interaction):
@@ -27,7 +31,7 @@ class CloseButton(discord.ui.Button):
 async def dismiss_message(interaction, view, owner_id, *, ctx=None):
     if interaction.user.id != owner_id:
         await interaction.response.send_message(
-            "只有開啟者能關閉此訊息。", ephemeral=True
+            ui_text(ctx, "只有開啟者能關閉此訊息。"), ephemeral=True
         )
         return
     if view is not None:
@@ -79,16 +83,20 @@ async def dismiss_message(interaction, view, owner_id, *, ctx=None):
         with suppress(discord.HTTPException):
             if isinstance(view, discord.ui.LayoutView):
                 replacement = discord.ui.LayoutView(timeout=None)
-                replacement.add_item(discord.ui.TextDisplay("已關閉。"))
+                replacement.add_item(discord.ui.TextDisplay(ui_text(ctx, "已關閉。")))
                 await interaction.edit_original_response(view=replacement)
             else:
                 await interaction.edit_original_response(
-                    content="已關閉。", embeds=[], attachments=[], view=None
+                    content=ui_text(ctx, "已關閉。"),
+                    embeds=[],
+                    attachments=[],
+                    view=None,
                 )
 
 
 class CloseView(discord.ui.View):
     _panel_own_navigation = True
+    _menu_navigation_disabled = True
 
     def __init__(self, owner_id, *, ctx=None):
         super().__init__(timeout=None)
@@ -99,6 +107,9 @@ def ensure_close(view, owner_id, *, ctx=None):
     """Add exactly one close action after a view finishes rebuilding controls."""
     if getattr(view, "_embed_closed", False):
         return view
+    from .navigation import add_back_button
+
+    add_back_button(ctx, view)
     if any(
         isinstance(item, discord.ui.Button)
         and (isinstance(item, CloseButton) or item.label in ("關閉", "Close"))

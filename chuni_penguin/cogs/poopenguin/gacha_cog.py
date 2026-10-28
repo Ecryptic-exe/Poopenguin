@@ -76,8 +76,8 @@ import discord
 from discord.ext import commands
 
 from .config import load_settings
-from .i18n import t, get_guild_language
-from .gacha_manager import GachaManager, GachaError, PITY_LIMIT, STARS
+from .gacha_manager import PITY_LIMIT, STARS, GachaError, GachaManager
+from .i18n import get_guild_language, t
 
 # Discord caps a single message at 10 embeds total. Both the Record view
 # (one embed per owned character) and multi-pull results (one embed per
@@ -148,14 +148,14 @@ class GachaMenuView(discord.ui.View):
         self._build_main()
 
     async def on_timeout(self):
-        if self.message is None:
-            return
-        for item in self.children:
-            item.disabled = True
-        try:
-            await self.message.edit(view=self)
-        except discord.HTTPException:
-            pass
+        from chuni_penguin.ui.navigation import expire_navigation
+
+        await expire_navigation(self)
+
+    async def interaction_check(self, interaction):
+        from chuni_penguin.ui.navigation import navigation_check
+
+        return await navigation_check(self.ctx, interaction, self)
 
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
@@ -172,10 +172,9 @@ class GachaMenuView(discord.ui.View):
     def _reset_controls(self):
         self.clear_items()
         self._panel_navigation = False
-        if getattr(self.ctx, "interaction", None) is not None:
-            from chuni_penguin.ui.panel import attach_navigation
+        from chuni_penguin.ui.panel import attach_navigation
 
-            attach_navigation(self.ctx, self)
+        attach_navigation(self.ctx, self)
         from chuni_penguin.ui.dismiss import ensure_close
 
         ensure_close(self, self.ctx.author.id, ctx=self.ctx)
@@ -932,7 +931,7 @@ class GachaCog(commands.Cog, name="gacha"):
     @gacha.command(
         name="target",
         description="View, set, or clear YOUR OWN personal pity target (independent of other users).")
-    @discord.app_commands.describe(character="A 3-star character to pity toward - leave blank to view, or use \"clear\" to unset")
+    @discord.app_commands.describe(character='A 3-star character to pity toward - leave blank to view, or use "clear" to unset')
     async def gacha_target(self, ctx, *, character: str = None):
         """View, set, or clear your own personal pity target."""
         language = self._lang(ctx)

@@ -19,6 +19,7 @@ from chuni_penguin.types import (
     Rank,
 )
 from chuni_penguin.utils import get_jacket_url
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 
 from ._pagination import FormatPageReturn, ListPageSource, PaginationView
 from .components.chart_card_embed import ChartCardEmbed
@@ -61,7 +62,9 @@ class LeaderboardPageSource(ListPageSource):
     ) -> FormatPageReturn:
         if self.chart is not None:
             info_embed = ChartCardEmbed(
-                self.chart, synthesis_alt_jacket=self.synthesis_alt_jacket
+                self.chart,
+                synthesis_alt_jacket=self.synthesis_alt_jacket,
+                language=get_chunithm_language(menu.ctx),
             )
         else:
             info_embed = discord.Embed(
@@ -208,7 +211,14 @@ class LinkedGateLeaderboardPageSource(ListPageSource):
         leaderboard_embed.set_footer(text=self.network)
 
         return {
-            "embeds": [SongInfoEmbed(self.song, self.song.charts), leaderboard_embed]
+            "embeds": [
+                SongInfoEmbed(
+                    self.song,
+                    self.song.charts,
+                    language=get_chunithm_language(menu.ctx),
+                ),
+                leaderboard_embed,
+            ]
         }
 
 

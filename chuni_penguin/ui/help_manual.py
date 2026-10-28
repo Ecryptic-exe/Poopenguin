@@ -5,15 +5,15 @@ from collections.abc import Iterable
 import discord
 from discord.ext import commands
 
-from chuni_penguin.context import PenguinContext
 from chuni_penguin.cogs.poopenguin.config import load_settings
 from chuni_penguin.cogs.poopenguin.i18n import get_guild_language, t
+from chuni_penguin.context import PenguinContext
 
 from ._base import PenguinView
 from .dismiss import dismiss_message
 
-
 _COMMAND_DESCRIPTIONS_ZH = {
+    "menu": "開啟主選單。",
     "ask": "提出問題，並按隨機成功率給出回答。",
     "pick": "從提供的選項中隨機選擇一個。",
     "rng": "在指定的最小值和最大值之間產生隨機數。",
@@ -334,6 +334,8 @@ class ManualPageButton(discord.ui.Button):
 
 
 class HelpManualView(PenguinView):
+    _panel_own_navigation = True
+
     def __init__(
         self, ctx: PenguinContext, pages: list[discord.Embed], language: str
     ):
@@ -345,6 +347,9 @@ class HelpManualView(PenguinView):
         self.add_item(self.previous_button)
         self.add_item(self.next_button)
         self.add_item(ManualCloseButton(ctx, language))
+        from .navigation import add_back_button
+
+        add_back_button(ctx, self)
         self.update_buttons()
 
     async def _before_start(self, *, content: str | None = None):
@@ -776,8 +781,15 @@ async def show_help_manual(
     ctx: PenguinContext,
     commands_list: list[commands.Command] | None = None,
 ):
+    from .panel import retire_previous, session_for
+
+    await retire_previous(ctx)
+    session_for(ctx).move("help", remember=False)
+    if getattr(ctx, "interaction", None) is not None:
+        ctx.interaction._baton = ctx
     language = get_manual_language(ctx)
     pages = await build_manual_pages(ctx, commands_list)
     view = HelpManualView(ctx, pages, language)
+    session_for(ctx).active_view = view
     await view.start()
     return view

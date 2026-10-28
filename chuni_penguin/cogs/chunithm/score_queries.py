@@ -22,6 +22,7 @@ from chuni_penguin.logging import logged_app_command, logged_prefix_command
 from chuni_penguin.types import Difficulty
 from chuni_penguin.ui import EmbedPaginationView, ScoreCardEmbed, SelectToCompareView
 from chuni_penguin.ui.autocomplete import song_title_choices
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 from chuni_penguin.utils.score_messages import (
     extract_images_from_component,
     extract_images_from_message,
@@ -193,6 +194,7 @@ class ScoreQueriesCog(commands.Cog, name="ScoreQueries"):
                         r,
                         synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
                         detailed=True,
+                        language=get_chunithm_language(ctx),
                     )
                     for r in records
                 ],
@@ -413,6 +415,7 @@ class ScoreQueriesCog(commands.Cog, name="ScoreQueries"):
                         r,
                         synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
                         detailed=True,
+                        language=get_chunithm_language(ctx),
                     )
                     for r in records
                 ],

@@ -5,10 +5,16 @@ import pytest
 import pytest_asyncio
 
 from chuni_penguin.application.offline import create_fixture_database
-from chuni_penguin.config import Config
+from chuni_penguin.config import Config, use_config
 from chuni_penguin.database import Cookie, PlayerSource
 from chuni_penguin.services.database import DatabaseService
 from chuni_penguin.ui.account_state import ACCOUNT_SOURCES, load_account_state
+
+
+@pytest.fixture(autouse=True)
+def chinese_ui():
+    with use_config(Config.from_mapping({"fun": {"language": "chinese"}})):
+        yield
 
 
 @pytest_asyncio.fixture

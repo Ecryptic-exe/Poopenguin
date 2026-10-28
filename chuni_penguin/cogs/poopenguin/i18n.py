@@ -22,5 +22,11 @@ def t(language: str, english: str, chinese: str) -> str:
 
 
 def get_guild_language(settings: dict, guild_id) -> str:
-    """Look up the configured language for a guild, defaulting to english."""
-    return settings.get("language", {}).get(str(guild_id), "english")
+    """Use the same guild override and configured fallback as CHUNITHM."""
+    language = settings.get("language", {}).get(str(guild_id))
+    if language in ("english", "chinese"):
+        return language
+    from chuni_penguin.config import config
+    from chuni_penguin.utils.localization import guild_language
+
+    return guild_language(config.fun, guild_id)

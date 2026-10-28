@@ -22,6 +22,7 @@ from chuni_penguin.logging import logged_prefix_command
 from chuni_penguin.services.player_sources import PlayerSourceService, SourceError
 from chuni_penguin.ui import EmbedPaginationView, ScoreCardEmbed
 from chuni_penguin.ui.autocomplete import song_title_choices
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 from .chunithm.best_plays import BestPlaysCog
 from .chunithm.recent_scores import RecentScoresCog
@@ -36,7 +37,7 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
     )
 
     def __init__(self, cog, user_id, region, *, ctx=None):
-        super().__init__(timeout=180)
+        super().__init__(title=ui_text(ctx, "綁定自己的 Chunirec 帳號"), timeout=180)
         self.cog, self.user_id, self.region = cog, user_id, region
         self.ctx = ctx
         if ctx is not None:
@@ -61,7 +62,7 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
     async def on_submit(self, interaction):
         if interaction.user.id != self.user_id:
             await interaction.response.send_message(
-                "此表單只供本人使用。", ephemeral=True
+                ui_text(interaction, "此表單只供本人使用。"), ephemeral=True
             )
             return
         from chuni_penguin.ui.panel import defer_panel, panel_message
@@ -81,9 +82,11 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
                 self.user_id, token=self.token.value.strip(), region=self.region
             )
         except (SourceError, commands.CommandError) as exc:
-            content = str(exc)
+            content = ui_text(self.ctx or interaction, str(exc))
         else:
-            content = self.cog.sync_result(result, f"chunirec:{self.region}")
+            content = self.cog.sync_result(
+                result, f"chunirec:{self.region}", self.ctx or interaction
+            )
         finally:
             self.clear_submission(interaction)
         if self.ctx is None:
@@ -105,7 +108,7 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
 
     async def on_error(self, interaction, error):
         # A Modal traceback can contain the submitted secret in locals.
-        message = "綁定失敗，請檢查本機資料庫與設定後重試。"
+        message = ui_text(interaction, "綁定失敗，請檢查本機資料庫與設定後重試。")
         self.clear_submission(interaction)
         if self.ctx is not None:
             from chuni_penguin.ui.panel import (
@@ -164,12 +167,12 @@ class PlayersCog(commands.Cog, name="V2Players"):
         view = PanelView(ctx)
         embed = discord.Embed(
             title={
-                "account": "帳號與隱私",
-                "sync": "同步資料",
-                "score": "我的成績",
-                "compare": "成績比較",
+                "account": ui_text(interaction, "帳號與隱私"),
+                "sync": ui_text(interaction, "同步資料"),
+                "score": ui_text(interaction, "我的成績"),
+                "compare": ui_text(interaction, "成績比較"),
                 "b50": "Best 50",
-                "recent": "最近遊玩",
+                "recent": ui_text(interaction, "最近遊玩"),
             }.get(section, "CHUNITHM Penguin"),
             description=content[:4096],
             color=0x57B9CF,
@@ -184,8 +187,15 @@ class PlayersCog(commands.Cog, name="V2Players"):
             )
 
     @staticmethod
-    def sync_result(result, source):
-        return f"{source} 已匯入 {len(result['records'])} 筆；可信 ID 關聯 {result['mapped']} 筆，未關聯 {result['unmapped']} 筆。未關聯資料可在主資料的「來源成績」查詢。此來源不提供最近遊玩歷史。"
+    def sync_result(result, source, ctx=None):
+        return ui_text(
+            ctx,
+            "{0} 已匯入 {1} 筆；可信 ID 關聯 {2} 筆，未關聯 {3} 筆。未關聯資料可在主資料的「來源成績」查詢。此來源不提供最近遊玩歷史。",
+            source,
+            len(result["records"]),
+            result["mapped"],
+            result["unmapped"],
+        )
 
     @account.command(name="link", description="透過私人表單綁定自己的 Chunirec Token")
     async def link(
@@ -208,11 +218,19 @@ class PlayersCog(commands.Cog, name="V2Players"):
                 )
             ).all()
             cookie = await session.get(Cookie, interaction.user.id)
-        lines = [f"{r.source} · {r.status} · {r.synced_at or '尚未同步'}" for r in rows]
+        lines = [
+            f"{r.source} · {r.status} · {r.synced_at or ui_text(interaction, '尚未同步')}"
+            for r in rows
+        ]
         lines.append(
-            f"NET：{'已綁定' if cookie and cookie.cookie else '未綁定'}；Kamaitachi：{'已綁定' if cookie and cookie.kamaitachi_token else '未綁定'}"
+            f"NET：{ui_text(interaction, '已綁定') if cookie and cookie.cookie else ui_text(interaction, '未綁定')}；Kamaitachi：{ui_text(interaction, '已綁定') if cookie and cookie.kamaitachi_token else ui_text(interaction, '未綁定')}"
         )
-        lines.append("Chunilib：僅支援自行匯出檔匯入；網站登入與受保護 API 尚未接入。")
+        lines.append(
+            ui_text(
+                interaction,
+                "Chunilib：僅支援自行匯出檔匯入；網站登入與受保護 API 尚未接入。",
+            )
+        )
         await self.send_result(interaction, "\n".join(lines), ephemeral=True)
 
     @account.command(
@@ -226,7 +244,9 @@ class PlayersCog(commands.Cog, name="V2Players"):
         await interaction.response.defer(ephemeral=True)
         await self.sources.unlink(interaction.user.id, source)
         await self.send_result(
-            interaction, f"已刪除自己的 {source} 綁定及本機資料。", ephemeral=True
+            interaction,
+            ui_text(interaction, "已刪除自己的 {0} 綁定及本機資料。", source),
+            ephemeral=True,
         )
 
     @account.command(
@@ -237,22 +257,27 @@ class PlayersCog(commands.Cog, name="V2Players"):
     ):
         if not confirm:
             await interaction.response.send_message(
-                "此操作刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景。確認後請指定 confirm: true；來源網站資料不受影響。",
+                ui_text(
+                    interaction,
+                    "此操作刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景。確認後請指定 confirm: true；來源網站資料不受影響。",
+                ),
                 ephemeral=True,
             )
             return
         await interaction.response.defer(ephemeral=True)
         await self.send_result(
-            interaction, await self.delete_own_data(interaction.user.id), ephemeral=True
+            interaction,
+            await self.delete_own_data(interaction.user.id, interaction),
+            ephemeral=True,
         )
 
-    async def delete_own_data(self, user_id):
+    async def delete_own_data(self, user_id, ctx=None):
         """Shared confirmed deletion for the original command and account UI."""
         if self.sources.locks[user_id].locked():
-            return "帳號目前正在查詢或同步，請結束操作後重試。"
+            return ui_text(ctx, "帳號目前正在查詢或同步，請結束操作後重試。")
         async with self.sources.locks[user_id]:
             if self.bot.services.accounts.active_users.get(user_id, 0):
-                return "請先關閉正在使用帳號的成績分頁，再刪除帳號。"
+                return ui_text(ctx, "請先關閉正在使用帳號的成績分頁，再刪除帳號。")
 
             async def erase(session):
                 from chuni_penguin.database import ChartReviewerProfile
@@ -274,7 +299,10 @@ class PlayersCog(commands.Cog, name="V2Players"):
                     )
 
             await self.bot.database.writer.execute_fn(erase)
-        return "已刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景。備份檔請由管理者依保存政策清除。"
+        return ui_text(
+            ctx,
+            "已刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景。備份檔請由管理者依保存政策清除。",
+        )
 
     @app_commands.command(
         name="privacy", description="設定是否允許其他 Discord 使用者查詢自己的資料"
@@ -290,9 +318,12 @@ class PlayersCog(commands.Cog, name="V2Players"):
         await users.save_user_config(row, is_new=old is None)
         await self.send_result(
             interaction,
-            "已允許他人查詢與比較；這不會改變目前訊息的公開／私人狀態。"
+            ui_text(
+                interaction,
+                "已允許他人查詢與比較；這不會改變目前訊息的公開／私人狀態。",
+            )
             if share
-            else "已設為僅本人可查詢。",
+            else ui_text(interaction, "已設為僅本人可查詢。"),
             ephemeral=True,
         )
 
@@ -316,10 +347,13 @@ class PlayersCog(commands.Cog, name="V2Players"):
             elif source == "chunilib:export":
                 if export is None:
                     raise SourceError(
-                        "Chunilib 尚無可驗證的 Bot 玩家登入 API。請提供自己的 player-data JSON 匯出檔；此操作是本機匯入。"
+                        ui_text(
+                            interaction,
+                            "Chunilib 尚無可驗證的 Bot 玩家登入 API。請提供自己的 player-data JSON 匯出檔；此操作是本機匯入。",
+                        )
                     )
                 if export.size > 5 * 1024 * 1024:
-                    raise SourceError("匯出檔不可超過 5 MiB。")
+                    raise SourceError(ui_text(interaction, "匯出檔不可超過 5 MiB。"))
                 result = await self.sources.import_chunilib(
                     interaction.user.id, await export.read()
                 )
@@ -332,16 +366,20 @@ class PlayersCog(commands.Cog, name="V2Players"):
                 )
                 return
             await self.send_result(
-                interaction, self.sync_result(result, source), ephemeral=True
+                interaction,
+                self.sync_result(result, source, interaction),
+                ephemeral=True,
             )
         except SourceError as exc:
-            await self.send_result(interaction, str(exc), ephemeral=True)
+            await self.send_result(
+                interaction, ui_text(interaction, str(exc)), ephemeral=True
+            )
 
     async def source_rows(self, ctx, source, target=None, *, song_id=None):
         user_id = target.id if target else ctx.author.id
         config = await self.bot.services.users.fetch_user_config(user_id)
         if user_id != ctx.author.id and config.privacy_mode:
-            raise SourceError("該玩家尚未允許分享成績。")
+            raise SourceError(ui_text(ctx, "該玩家尚未允許分享成績。"))
         if source in ("net", "kamaitachi"):
             async with self.bot.services.accounts.network(
                 ctx,
@@ -371,7 +409,7 @@ class PlayersCog(commands.Cog, name="V2Players"):
     async def sync_native(self, ctx, source):
         """The same source-explicit native synchronization for commands and panels."""
         if source not in ("net", "kamaitachi"):
-            raise SourceError("請選擇 NET 或 Kamaitachi。")
+            raise SourceError(ui_text(ctx, "請選擇 NET 或 Kamaitachi。"))
         try:
             async with self.bot.services.accounts.network(
                 ctx, kamaitachi=source == "kamaitachi", chunithm_net=source == "net"
@@ -392,7 +430,13 @@ class PlayersCog(commands.Cog, name="V2Players"):
                         status="synced",
                     )
                 )
-            return f"{client.NAME} 已讀取 {len(records)} 筆個人最佳與 {len(recent)} 筆最近遊玩，並更新本機快取。"
+            return ui_text(
+                ctx,
+                "{0} 已讀取 {1} 筆個人最佳與 {2} 筆最近遊玩，並更新本機快取。",
+                client.NAME,
+                len(records),
+                len(recent),
+            )
         except Exception:
             row = await self.sources.get(ctx.author.id, source)
             row = row or PlayerSource(
@@ -426,30 +470,11 @@ class PlayersCog(commands.Cog, name="V2Players"):
 
     @commands.command(name="scores", aliases=["score"])
     @logged_prefix_command
-    async def scores_prefix(self, ctx: PenguinContext, *, query: str):
-        """Show your CHUNITHM-NET scores for one song in a prefix command."""
-        try:
-            rows = await self.matching_rows(ctx, query, "net")
-            if not rows:
-                await ctx.reply("此歌曲沒有找到已遊玩的 CHUNITHM-NET 成績。")
-                return
+    async def scores_prefix(self, ctx: PenguinContext, *, query: str = ""):
+        """Open the same song score panel as /score."""
+        from chuni_penguin.ui.entrypoints import show_song_entry
 
-            embeds = [
-                ScoreCardEmbed(
-                    row["record"],
-                    synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
-                    detailed=True,
-                )
-                for row in rows
-                if "record" in row
-            ]
-            if not embeds:
-                await ctx.reply("此來源沒有符合的已遊玩成績。")
-                return
-
-            await EmbedPaginationView(ctx, embeds).start()
-        except SourceError as exc:
-            await ctx.reply(str(exc))
+        return await show_song_entry(ctx, query, section="score", tab="scores")
 
     @app_commands.command(name="score", description="查詢自己的指定歌曲及難度成績")
     async def score(
@@ -472,7 +497,7 @@ class PlayersCog(commands.Cog, name="V2Players"):
         try:
             rows = await self.matching_rows(ctx, query, source, difficulty)
             embeds = [
-                ScoreCardEmbed(r["record"])
+                ScoreCardEmbed(r["record"], language=get_chunithm_language(interaction))
                 if "record" in r
                 else discord.Embed(
                     title=r["title"][:256], description=f"{r['diff']} · {r['score']:,}"
@@ -481,12 +506,16 @@ class PlayersCog(commands.Cog, name="V2Players"):
             ]
             if not embeds:
                 await self.send_result(
-                    interaction, "此來源沒有符合的已遊玩成績。", ephemeral=True
+                    interaction,
+                    ui_text(interaction, "此來源沒有符合的已遊玩成績。"),
+                    ephemeral=True,
                 )
                 return
             await EmbedPaginationView(ctx, embeds).start(ephemeral=True)
         except SourceError as exc:
-            await self.send_result(interaction, str(exc), ephemeral=True)
+            await self.send_result(
+                interaction, ui_text(interaction, str(exc)), ephemeral=True
+            )
 
     @app_commands.command(
         name="compare", description="比較自己與已允許分享的玩家成績及分數差距"
@@ -506,7 +535,15 @@ class PlayersCog(commands.Cog, name="V2Players"):
             theirs = await self.matching_rows(ctx, query, source, difficulty, user)
             by_id = {(r["id"], r["diff"]): r for r in theirs}
             lines = [
-                f"{discord.utils.escape_markdown(r['title'])} · {r['diff']}：{r['score']:,} vs {by_id[(r['id'], r['diff'])]['score']:,}（差 {r['score'] - by_id[(r['id'], r['diff'])]['score']:+,}）"
+                ui_text(
+                    interaction,
+                    "{0} · {1}：{2:,} vs {3:,}（差 {4:+,}）",
+                    discord.utils.escape_markdown(r["title"]),
+                    r["diff"],
+                    r["score"],
+                    by_id[(r["id"], r["diff"])]["score"],
+                    r["score"] - by_id[(r["id"], r["diff"])]["score"],
+                )
                 for r in mine
                 if (r["id"], r["diff"]) in by_id
             ]
@@ -517,25 +554,38 @@ class PlayersCog(commands.Cog, name="V2Players"):
             ]
             summary = (
                 (
-                    f"共同譜面 {len(deltas)} 張 · 領先 {sum(d > 0 for d in deltas)}／平手 {sum(d == 0 for d in deltas)}／落後 {sum(d < 0 for d in deltas)} · 平均分差 {sum(deltas) / len(deltas):+,.1f}\n\n"
+                    ui_text(
+                        interaction,
+                        "共同譜面 {0} 張 · 領先 {1}／平手 {2}／落後 {3} · 平均分差 {4:+,.1f}\n\n",
+                        len(deltas),
+                        sum(d > 0 for d in deltas),
+                        sum(d == 0 for d in deltas),
+                        sum(d < 0 for d in deltas),
+                        sum(deltas) / len(deltas),
+                    )
                 )
                 if deltas
                 else ""
             )
             embeds = [
                 discord.Embed(
-                    title="成績比較", description=summary + "\n".join(lines[i : i + 5])
+                    title=ui_text(interaction, "成績比較"),
+                    description=summary + "\n".join(lines[i : i + 5]),
                 ).set_footer(text=source)
                 for i in range(0, len(lines), 5)
             ]
             if not embeds:
                 await self.send_result(
-                    interaction, "雙方沒有可依來源 ID 對應的共同成績。", ephemeral=True
+                    interaction,
+                    ui_text(interaction, "雙方沒有可依來源 ID 對應的共同成績。"),
+                    ephemeral=True,
                 )
             else:
                 await EmbedPaginationView(ctx, embeds).start(ephemeral=True)
         except SourceError as exc:
-            await self.send_result(interaction, str(exc), ephemeral=True)
+            await self.send_result(
+                interaction, ui_text(interaction, str(exc)), ephemeral=True
+            )
 
     @app_commands.command(
         name="b50", description="查詢 Best 50；NET 沿用原 Best30＋New20 圖片"
@@ -551,7 +601,10 @@ class PlayersCog(commands.Cog, name="V2Players"):
                 if cookie is None or not cookie.cookie.startswith("#LWP-Cookies-2.0"):
                     await self.send_result(
                         interaction,
-                        "NET 尚未登入，請先 /login；此操作不會改用其他來源。",
+                        ui_text(
+                            interaction,
+                            "NET 尚未登入，請先 /login；此操作不會改用其他來源。",
+                        ),
                         ephemeral=True,
                     )
                     return
@@ -571,19 +624,30 @@ class PlayersCog(commands.Cog, name="V2Players"):
             ]
             if not lines:
                 raise SourceError(
-                    "此匯入來源尚無可信譜面定數關聯，無法計算 Best50；請使用 /score 查看原始成績。"
+                    ui_text(
+                        interaction,
+                        "此匯入來源尚無可信譜面定數關聯，無法計算 Best50；請使用 /score 查看原始成績。",
+                    )
                 )
-            header = f"來源回報 Rating：{payload.get('rating') or '未提供'}\n本機依來源已確認定數排序 Best50；不代表來源遊戲內 Rating 組成。"
+            header = ui_text(
+                interaction,
+                "來源回報 Rating：{0}\n本機依來源已確認定數排序 Best50；不代表來源遊戲內 Rating 組成。",
+                payload.get("rating") or ui_text(interaction, "未提供"),
+            )
             embeds = [
                 discord.Embed(
                     title="Best 50",
                     description=header + "\n\n" + "\n".join(lines[i : i + 10]),
-                ).set_footer(text=f"{source} · 同步 {row.synced_at}")
+                ).set_footer(
+                    text=ui_text(interaction, "{0} · 同步 {1}", source, row.synced_at)
+                )
                 for i in range(0, len(lines), 10)
             ]
             await EmbedPaginationView(ctx, embeds).start(ephemeral=True)
         except SourceError as exc:
-            await self.send_result(interaction, str(exc), ephemeral=True)
+            await self.send_result(
+                interaction, ui_text(interaction, str(exc)), ephemeral=True
+            )
 
     @app_commands.command(
         name="recent", description="查看真正的最近遊玩歷史（NET／Kamaitachi）"
@@ -593,7 +657,10 @@ class PlayersCog(commands.Cog, name="V2Players"):
         if source not in ("net", "kamaitachi"):
             await self.send_result(
                 interaction,
-                "此來源目前未提供可驗證的遊玩歷史；Best 更新時間與 Rating 的 RECENT 枠不能當作最近遊玩紀錄。",
+                ui_text(
+                    interaction,
+                    "此來源目前未提供可驗證的遊玩歷史；Best 更新時間與 Rating 的 RECENT 枠不能當作最近遊玩紀錄。",
+                ),
                 ephemeral=True,
             )
             return
@@ -604,7 +671,10 @@ class PlayersCog(commands.Cog, name="V2Players"):
             if cookie is None or not cookie.cookie.startswith("#LWP-Cookies-2.0"):
                 await self.send_result(
                     interaction,
-                    "NET 尚未登入，請先 /login；此操作不會改用其他來源。",
+                    ui_text(
+                        interaction,
+                        "NET 尚未登入，請先 /login；此操作不會改用其他來源。",
+                    ),
                     ephemeral=True,
                 )
                 return

@@ -1,5 +1,5 @@
 from math import floor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 if TYPE_CHECKING:
     from chuni_penguin.types import Judgements, Rank
@@ -9,7 +9,25 @@ ONE_MISS_IN_JUSTICE = 101
 ONE_MISS_IN_ATTACK = 2
 
 
-def calculate_border(notecount: int) -> "dict[str | Rank, Judgements]":
+@overload
+def calculate_border(notecount: int) -> "dict[str | Rank, Judgements]": ...
+
+
+@overload
+def calculate_border(
+    notecount: int, *, justice: int
+) -> "dict[str | Rank, Judgements | None]": ...
+
+
+def calculate_border(
+    notecount: int, *, justice: int | None = None
+) -> "dict[str | Rank, Judgements] | dict[str | Rank, Judgements | None]":
+    if notecount <= 0:
+        msg = "Note count must be positive."
+        raise ValueError(msg)
+    if justice is not None and (type(justice) is not int or not 0 <= justice <= notecount):
+        msg = "JUSTICE must be an integer between zero and the note count."
+        raise ValueError(msg)
     # "tolerance" is the number of justices you can have without falling
     # below this score, assuming it's an AJ.
     #
@@ -94,7 +112,7 @@ def calculate_border(notecount: int) -> "dict[str | Rank, Judgements]":
 
     from chuni_penguin.types import Judgements, Rank
 
-    return {
+    borders = {
         "99AJ": Judgements(
             justice_critical=border_jcrit_99aj,
             justice=border_jus_99aj,
@@ -138,6 +156,41 @@ def calculate_border(notecount: int) -> "dict[str | Rank, Judgements]":
             miss=border_miss_s,
         ),
     }
+
+    if justice is None:
+        return borders
+
+    fixed: dict[str | Rank, Judgements | None] = {}
+    for rank, original in borders.items():
+        # Recover the exact integer budget used above, without rounding the
+        # displayed per-note deductions (which are truncated to two decimals).
+        tolerance = (
+            original.justice
+            + original.attack * ONE_ATTACK_IN_JUSTICE
+            + original.miss * ONE_MISS_IN_JUSTICE
+        )
+        remaining = tolerance - justice
+        if remaining < 0:
+            fixed[rank] = None
+            continue
+        # Keep the existing recommended MISS allocation where it fits, then
+        # maximize ATTACK. 99AJ must remain an ALL JUSTICE result.
+        miss = min(original.miss, remaining // ONE_MISS_IN_JUSTICE, notecount - justice)
+        attack = (
+            0
+            if rank == "99AJ"
+            else min(
+                (remaining - miss * ONE_MISS_IN_JUSTICE) // ONE_ATTACK_IN_JUSTICE,
+                notecount - justice - miss,
+            )
+        )
+        fixed[rank] = Judgements(
+            justice_critical=notecount - justice - attack - miss,
+            justice=justice,
+            attack=attack,
+            miss=miss,
+        )
+    return fixed
 
 
 def calculate_score_deduction_per_judgement(notecount: int):

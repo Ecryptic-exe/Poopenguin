@@ -1,3 +1,4 @@
+import asyncio
 import io
 import itertools
 from collections.abc import Callable, Sequence
@@ -13,7 +14,11 @@ from selectolax.lexbor import LexborHTMLParser
 
 from chuni_penguin.adapters._hooks import raise_on_server_errors
 from chuni_penguin.adapters.base import NetworkAdapter
-from chuni_penguin.adapters.errors import AlreadyFriends, InvalidFriendCode
+from chuni_penguin.adapters.errors import (
+    AlreadyFriends,
+    InvalidFriendCode,
+    NetworkError,
+)
 from chuni_penguin.adapters.utils import (
     calculate_ongeki_rating_breakdown,
     process_records,
@@ -134,9 +139,13 @@ class ChunithmNetAdapter(NetworkAdapter):
         self,
         method: str,
         url: str,
+        *,
+        check_status: bool = False,
         **kwargs: Any,
     ):
         resp = await self._client.request(method, url, **kwargs)
+        if check_status:
+            resp.raise_for_status()
 
         return LexborHTMLParser(resp.content, is_fragment=False)
 
@@ -220,7 +229,12 @@ class ChunithmNetAdapter(NetworkAdapter):
         return (await self._process_records([parse_detailed_recent_record(soup)]))[0]
 
     async def _get_hidden_personal_bests(
-        self, level: str | None = None, difficulty: Difficulty | None = None
+        self,
+        level: str | None = None,
+        difficulty: Difficulty | None = None,
+        *,
+        request_delay: float = 0,
+        validate_pages: bool = False,
     ):
         hidden_charts = await self.database.charts.get_hidden_on_chuninet(
             level=level, difficulty=difficulty
@@ -229,8 +243,12 @@ class ChunithmNetAdapter(NetworkAdapter):
         pbs: list[PersonalBest] = []
 
         for song_id in hidden_song_ids:
+            if request_delay:
+                await asyncio.sleep(request_delay)
             # get the records for the hidden chart's song id
-            hidden_records = await self.get_personal_bests_on_song(song_id)
+            hidden_records = await self.get_personal_bests_on_song(
+                song_id, validate_page=validate_pages
+            )
 
             # and insert it into our records, if a record is not already there
             pbs.extend(hidden_records)
@@ -303,27 +321,47 @@ class ChunithmNetAdapter(NetworkAdapter):
             and (version is None or pb.song.version == version)
         ]
 
-    async def get_all_personal_bests(self) -> list[PersonalBest]:
+    async def get_all_personal_bests(
+        self, *, request_delay: float = 0, validate_pages: bool = False
+    ) -> list[PersonalBest]:
         pbs: list[PersonalBest] = []
 
         for difficulty in Difficulty:
+            if request_delay:
+                await asyncio.sleep(request_delay)
             if difficulty == Difficulty.worlds_end:
                 soup = await self._request_as_soup(
-                    "GET", "/mobile/record/worldsEndList"
+                    "GET", "/mobile/record/worldsEndList", check_status=validate_pages
                 )
             else:
                 soup = await self._request_as_soup(
                     "POST",
                     f"/mobile/record/musicGenre/send{str(difficulty).capitalize()}",
+                    check_status=validate_pages,
                     data={
                         "genre": "99",
                         "token": self._token,
                     },
                 )
 
-            pbs.extend(parse_music_for_rating(soup))
+            if validate_pages and soup.css_first(
+                ".musiclist_box, select[name=genre], input[name=genre], "
+                "form[action*='worldsEnd']"
+            ) is None:
+                msg = "CHUNITHM-NET returned an unexpected record page."
+                raise NetworkError(msg)
+            records = parse_music_for_rating(soup)
+            if validate_pages and (
+                len(records) != len(soup.css("form:has(.w388.musiclist_box) .play_musicdata_highscore .text_b"))
+                or any(record.chart.difficulty != difficulty for record in records)
+            ):
+                msg = "CHUNITHM-NET returned an incomplete or mismatched record page."
+                raise NetworkError(msg)
+            pbs.extend(records)
 
-        hidden_pbs = await self._get_hidden_personal_bests()
+        hidden_pbs = await self._get_hidden_personal_bests(
+            request_delay=request_delay, validate_pages=validate_pages
+        )
         existing_charts = {(r.song.id, r.chart.difficulty) for r in pbs}
         pbs.extend(
             [
@@ -335,11 +373,14 @@ class ChunithmNetAdapter(NetworkAdapter):
 
         return await self._process_records(pbs)
 
-    async def get_personal_bests_on_song(self, song_id: int) -> list[PersonalBest]:
+    async def get_personal_bests_on_song(
+        self, song_id: int, *, validate_page: bool = False
+    ) -> list[PersonalBest]:
         if song_id >= 8000:
             soup = await self._request_as_soup(
                 "POST",
                 "/mobile/record/worldsEndList/sendWorldsEndDetail/",
+                check_status=validate_page,
                 data={
                     "idx": song_id,
                     "token": self._token,
@@ -349,12 +390,19 @@ class ChunithmNetAdapter(NetworkAdapter):
             soup = await self._request_as_soup(
                 "POST",
                 "/mobile/record/musicGenre/sendMusicDetail/",
+                check_status=validate_page,
                 data={
                     "idx": song_id,
                     "token": self._token,
                 },
             )
 
+        if validate_page and (
+            soup.css_first(".play_musicdata_title, .play_musicdata_worldsend_title") is None
+            or soup.css_first(".music_box") is None
+        ):
+            msg = "CHUNITHM-NET returned an unexpected song record page."
+            raise NetworkError(msg)
         return await self._process_records(parse_music_record(soup, song_id))
 
     async def get_best30(self) -> list[PersonalBest]:

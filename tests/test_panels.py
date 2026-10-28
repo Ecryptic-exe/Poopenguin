@@ -9,7 +9,7 @@ import pytest
 import pytest_asyncio
 from discord.ext import commands
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 
 from chuni_penguin.application.offline import create_fixture_database, deny_network
 from chuni_penguin.bot import ChuniBot
@@ -368,7 +368,10 @@ async def ctx(tmp_path, monkeypatch):
     import chuni_penguin.config as config_module
 
     url = await create_fixture_database(tmp_path / "panel.sqlite3")
-    settings = Config.from_mapping({"bot": {"db_connection_string": url}})
+    # These layout regressions assert the original Traditional Chinese captions.
+    settings = Config.from_mapping(
+        {"bot": {"db_connection_string": url}, "fun": {"language": "chinese"}}
+    )
     attempts = []
     monkeypatch.setattr(config_module, "_default_settings", settings)
     with deny_network(attempts):
@@ -402,10 +405,11 @@ async def test_grouped_panel_modal_calculation_and_back_edit_the_same_message(ct
     await show_panel(ctx)
     home = ctx.message.payloads[-1]["view"]
     assert {item.label for item in home.children} == {
-        "Song",
+        "歌曲／譜面",
         "主資料介面",
         "Poopenguin",
         "計算工具",
+        "說明",
         "關閉",
     }
     await navigate(ctx, interaction(ctx), "tools")
@@ -550,6 +554,197 @@ async def test_calculator_results_are_reusable_embeds(ctx):
         ctx, "kept legacy", {"view": discord.ui.LayoutView()}
     )
     assert content == "kept legacy" and "embed" not in kwargs
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("numeric", [False, True])
+async def test_tools_border_custom_justice_edits_same_message(
+    ctx, monkeypatch, numeric
+):
+    from chuni_penguin.database import Chart
+    from chuni_penguin.ui.border import BorderView
+    from chuni_penguin.ui.custom_justice import CustomJusticeButton, CustomJusticeModal
+
+    async with ctx.bot.begin_db_read() as db:
+        chart = await db.scalar(
+            select(Chart).options(
+                joinedload(Chart.song), joinedload(Chart.sdvxin_chart_view)
+            )
+        )
+    chart.maxcombo = 2303
+    monkeypatch.setattr(ctx, "find_chart", AsyncMock(return_value=chart), raising=False)
+    await show_panel(ctx, "tools")
+    anchor = ctx.message
+    await navigate(
+        ctx,
+        interaction(ctx),
+        "border",
+        values={
+            "difficulty_or_notecount": "2303" if numeric else "MAS",
+            "query": "" if numeric else "fixture",
+        },
+    )
+    view = ctx.message.payloads[-1]["view"]
+    assert isinstance(view, BorderView)
+    assert view.notecount == 2303
+    assert not any(
+        "JUSTICE =" in field.name for field in ctx.message.payloads[-1]["embed"].fields
+    )
+    button = next(
+        item for item in view.children if isinstance(item, CustomJusticeButton)
+    )
+    click = interaction(ctx)
+    await button.callback(click)
+    modal = click.response.send_modal.call_args.args[0]
+    assert isinstance(modal, CustomJusticeModal)
+    modal.count._value = "90"
+    submitted = interaction(ctx)
+    await modal.on_submit(submitted)
+    result = anchor.payloads[-1]["embed"]
+    field = next(
+        field for field in result.fields if field.name == "JUSTICE = 90 時的容錯"
+    )
+    assert field.value == "\n".join(
+        (
+            "▸ 99AJ ▸ N/A",
+            "▸ SSS+ ▸ 90-2-0",
+            "▸ SSS ▸ 90-9-0",
+            "▸ SS+ ▸ 90-14-3",
+            "▸ SS ▸ 90-27-8",
+            "▸ S+ ▸ 90-52-18",
+            "▸ S ▸ 90-77-40",
+        )
+    )
+    assert ctx.message is session_for(ctx).message is anchor
+    assert view.message is anchor
+    assert view.custom_justice == 90
+    assert isinstance(
+        next(item for item in view.children if isinstance(item, PanelMenu)), PanelMenu
+    )
+    assert any(getattr(item, "label", "") == "修改參數" for item in view.children)
+    assert any(getattr(item, "label", "") == "關閉" for item in view.children)
+    assert_rows(view)
+    assert ctx.new_private_messages == []
+    # A second custom value replaces the custom section without duplicating it.
+    another = CustomJusticeModal(view, 2303)
+    another.count._value = "50"
+    await another.on_submit(interaction(ctx))
+    fields = anchor.payloads[-1]["embed"].fields
+    assert sum("JUSTICE =" in field.name for field in fields) == 1
+    assert any(field.name == "JUSTICE = 50 時的容錯" for field in fields)
+    modal.stop()
+    another.stop()
+    await view.deactivate()
+
+
+@pytest.mark.asyncio
+async def test_tools_border_requery_resets_custom_and_rejects_old_modal(ctx):
+    from chuni_penguin.ui.custom_justice import CustomJusticeModal
+
+    await show_panel(ctx, "tools")
+    await navigate(
+        ctx, interaction(ctx), "border", values={"difficulty_or_notecount": "2303"}
+    )
+    original = session_for(ctx).active_view
+    await original.transition(interaction(ctx), custom_justice=90)
+    pending = CustomJusticeModal(original, 2303)
+    pending.count._value = "50"
+    await navigate(
+        ctx, interaction(ctx), "border", values={"difficulty_or_notecount": "1103"}
+    )
+    replacement = session_for(ctx).active_view
+    assert replacement is not original
+    assert replacement.notecount == 1103 and replacement.custom_justice is None
+    assert not any(
+        "JUSTICE =" in field.name for field in ctx.message.payloads[-1]["embed"].fields
+    )
+    before = len(ctx.message.payloads)
+    stale = interaction(ctx)
+    await pending.on_submit(stale)
+    stale.response.send_message.assert_awaited_once()
+    assert len(ctx.message.payloads) == before
+    assert original._expired and original.is_finished()
+    pending.stop()
+    await replacement.deactivate()
+
+
+@pytest.mark.asyncio
+async def test_tools_border_modal_owner_validation_and_timeout(ctx):
+    from chuni_penguin.ui.custom_justice import CustomJusticeModal
+
+    await show_panel(ctx, "tools")
+    await navigate(
+        ctx, interaction(ctx), "border", values={"difficulty_or_notecount": "2303"}
+    )
+    view = session_for(ctx).active_view
+    before = len(ctx.message.payloads)
+    outsider = interaction(ctx, user_id=22)
+    assert not await view.interaction_check(outsider)
+    for value, user_id in (("90", 22), ("-1", 11), ("2304", 11)):
+        modal = CustomJusticeModal(view, 2303)
+        modal.count._value = value
+        event = interaction(ctx, user_id=user_id)
+        await modal.on_submit(event)
+        event.response.send_message.assert_awaited_once()
+        assert len(ctx.message.payloads) == before
+        modal.stop()
+    pending = CustomJusticeModal(view, 2303)
+    pending.count._value = "90"
+    await view.on_timeout()
+    count = len(ctx.message.payloads)
+    expired = interaction(ctx)
+    await pending.on_submit(expired)
+    expired.response.send_message.assert_awaited_once()
+    assert len(ctx.message.payloads) == count
+    assert view._expired and view.is_finished()
+    pending.stop()
+
+
+@pytest.mark.asyncio
+async def test_tools_border_shares_chinese_labels_and_results_with_song_card(ctx):
+    from dataclasses import replace
+
+    from chuni_penguin.database import Chart
+    from chuni_penguin.ui.custom_justice import CustomJusticeButton, CustomJusticeModal
+
+    with use_config(Config.from_mapping({"fun": {"language": "chinese"}})):
+        await show_panel(ctx, "tools")
+        await navigate(
+            ctx, interaction(ctx), "border", values={"difficulty_or_notecount": "2303"}
+        )
+        tools = session_for(ctx).active_view
+        button = next(
+            item for item in tools.children if isinstance(item, CustomJusticeButton)
+        )
+        assert button.label == "自訂 JUSTICE"
+        modal = CustomJusticeModal(tools, 2303)
+        assert modal.title == "自訂 JUSTICE"
+        modal.count._value = "90"
+        await modal.on_submit(interaction(ctx))
+        result = ctx.message.payloads[-1]["embed"]
+        custom = next(
+            field for field in result.fields if field.name == "JUSTICE = 90 時的容錯"
+        )
+        assert any(field.name == "計算方式" for field in result.fields)
+        async with ctx.bot.begin_db_read() as db:
+            chart = await db.scalar(
+                select(Chart).options(
+                    joinedload(Chart.song), joinedload(Chart.sdvxin_chart_view)
+                )
+            )
+        chart.maxcombo = 2303
+        card = SongDetailsView(
+            ctx, [chart.song], initial_tab="borders", difficulty=chart.difficulty
+        )
+        card.data._cache[("charts", chart.song_id)] = (chart,)
+        rendered = await card.render(replace(card.state, custom_justice=90))
+        same = next(
+            field for field in rendered.pages[0][0].fields if field.name == custom.name
+        )
+        assert same.value == custom.value
+        modal.stop()
+        await card.deactivate()
+        await tools.deactivate()
 
 
 @pytest.mark.asyncio
@@ -859,7 +1054,7 @@ async def test_category_menus_stay_separate_and_song_contains_only_single_song_a
     assert {
         option.value for option in menu.options if option.value.startswith("panel:")
     } == {"panel:alias"}
-    assert "主選單" not in {getattr(item, "label", "") for item in view.children}
+    assert "返回主選單" in {getattr(item, "label", "") for item in view.children}
     await view.deactivate()
 
 
@@ -1024,10 +1219,12 @@ async def test_reduced_slash_entries_retain_poopenguin_and_original_compare(ctx)
     }
     assert names == {
         "help",
+        "menu",
         "account",
         "chart",
         "score",
         "tools",
+        "dailyupdate",
         "compare",
         "permissions",
         "ask",
@@ -1247,6 +1444,7 @@ async def test_song_entry_preserves_requested_initial_view_and_optional_search(
     assert session_for(ctx).route.section == entry
     view = session_for(ctx).active_view
     assert [c.label for c in view.children if isinstance(c, discord.ui.Button)] == [
+        "返回主選單",
         "關閉"
     ]
     assert_rows(view)

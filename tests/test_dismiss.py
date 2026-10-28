@@ -142,12 +142,12 @@ async def test_failed_delete_clears_embed_attachments_and_controls_without_data_
     view = CloseView(11)
     await view.children[0].callback(interaction)
     interaction.edit_original_response.assert_awaited_once_with(
-        content="已關閉。", embeds=[], attachments=[], view=None
+        content="Closed.", embeds=[], attachments=[], view=None
     )
 
 
 @pytest.mark.asyncio
-async def test_timeout_retains_a_working_close_control_and_layout_content():
+async def test_timeout_disables_embed_controls_and_retains_layout_content():
     for view in (PenguinView(context()), PenguinLayoutView(context())):
         if isinstance(view, discord.ui.LayoutView):
             view.add_item(discord.ui.TextDisplay("Retained content"))
@@ -157,6 +157,11 @@ async def test_timeout_retains_a_working_close_control_and_layout_content():
         view.message = SimpleNamespace(edit=AsyncMock())
         await view.on_timeout()
         replacement = view.message.edit.call_args.kwargs["view"]
+        if not isinstance(view, discord.ui.LayoutView):
+            assert replacement is view and view.is_finished()
+            assert all(item.disabled for item in view.children)
+            assert "/menu" in view.message.edit.call_args.kwargs["content"]
+            continue
         assert replacement.timeout is None
         close = next(
             item

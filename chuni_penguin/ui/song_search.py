@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 """Same-message song selection and a separate owner-only alias confirmation."""
 
 import discord
@@ -5,38 +6,41 @@ from discord.ext import commands
 
 from chuni_penguin.services.song_discovery import SongDiscoveryService, search_key
 from chuni_penguin.types import Difficulty
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 from ._base import PenguinView
 from .dismiss import CloseView, dismiss_message
 from .song_labels import record_label
 
 
-def candidate_description(candidate):
+def candidate_description(candidate, ctx=None):
     song = candidate.song
-    detail = f"{record_label(song, song.charts)} · {song.artist}"
+    detail = f"{record_label(song, song.charts, ctx=ctx)} · {song.artist}"
     if candidate.variants:
-        detail += f" · 另有 {len(candidate.variants)} 個版本"
+        detail += ui_text(ctx, " · 另有 {0} 個版本", len(candidate.variants))
     return detail
 
 
 class SongCandidateSelect(discord.ui.Select):
-    def __init__(self, result):
+    def __init__(self, result, ctx=None):
         descriptions = [
-            candidate_description(candidate) for candidate in result.candidates[:25]
+            candidate_description(candidate, ctx)
+            for candidate in result.candidates[:25]
         ]
         keys = [
             (candidate.song.title, description)
             for candidate, description in zip(result.candidates, descriptions)
         ]
         super().__init__(
-            placeholder="選擇你要找的歌曲",
+            placeholder=ui_text(ctx, "選擇你要找的歌曲"),
             row=0,
             options=[
                 discord.SelectOption(
                     label=c.song.title[:100],
                     value=str(index),
                     description=(
-                        descriptions[index][:72] + f" · 編號 {c.song.id}"
+                        descriptions[index][:72]
+                        + ui_text(ctx, " · 編號 {0}", c.song.id)
                         if keys.count(keys[index]) > 1
                         else descriptions[index]
                     )[:100],
@@ -58,8 +62,8 @@ class SongSearchView(PenguinView):
         self._opening = False
         self.remove_item(self.first)
         self.remove_item(self.retry)
-        self.add_item(SongCandidateSelect(result))
-        self.add_item(SongSearchActionSelect())
+        self.add_item(SongCandidateSelect(result, ctx))
+        self.add_item(SongSearchActionSelect(ctx))
         from .dismiss import ensure_close
 
         ensure_close(self, ctx.author.id, ctx=ctx)
@@ -69,15 +73,25 @@ class SongSearchView(PenguinView):
 
         session_for(self.ctx).active_view = self
         descriptions = [
-            f"搜尋：{discord.utils.escape_markdown(self.result.query)}",
-            f"找到 {len(self.result.candidates)} 個候選，請從下方選擇。",
+            ui_text(
+                self.ctx, "搜尋：{0}", discord.utils.escape_markdown(self.result.query)
+            ),
+            ui_text(
+                self.ctx, "找到 {0} 個候選，請從下方選擇。", len(self.result.candidates)
+            ),
         ]
         for candidate in self.result.candidates[:10]:
             if candidate.variants:
                 descriptions.append(
-                    f"**{discord.utils.escape_markdown(candidate.song.title)}** 可切換："
+                    ui_text(
+                        self.ctx,
+                        "**{0}** 可切換：",
+                        discord.utils.escape_markdown(candidate.song.title),
+                    )
                     + "；".join(
-                        discord.utils.escape_markdown(record_label(song, song.charts))
+                        discord.utils.escape_markdown(
+                            record_label(song, song.charts, ctx=self.ctx)
+                        )
                         for song in candidate.variants
                     )
                 )
@@ -85,7 +99,7 @@ class SongSearchView(PenguinView):
         return {
             "content": None,
             "embed": discord.Embed(
-                title="你要找的是哪一首？",
+                title=ui_text(self.ctx, "你要找的是哪一首？"),
                 description=description[:4000],
             ),
         }
@@ -95,7 +109,7 @@ class SongSearchView(PenguinView):
 
         if self._opening or not 0 <= index < len(self.result.candidates):
             await interaction.response.send_message(
-                "正在開啟歌曲，請稍候。", ephemeral=True
+                ui_text(self.ctx, "正在開啟歌曲，請稍候。"), ephemeral=True
             )
             return
         self._opening = True
@@ -110,7 +124,8 @@ class SongSearchView(PenguinView):
     async def interaction_check(self, interaction):
         if getattr(self, "_panel_inactive", False):
             await interaction.response.send_message(
-                "搜尋結果已更新，請使用目前的歌曲面板。", ephemeral=True
+                ui_text(self.ctx, "搜尋結果已更新，請使用目前的歌曲面板。"),
+                ephemeral=True,
             )
             return False
         return await super().interaction_check(interaction)
@@ -127,18 +142,22 @@ class SongSearchView(PenguinView):
             PanelModal(
                 self.ctx,
                 "score" if self.tab == "scores" else "chart",
-                "重新搜尋歌曲",
-                (("query", "歌曲名稱或簡寫", True),),
+                ui_text(self.ctx, "重新搜尋歌曲"),
+                (("query", ui_text(self.ctx, "歌曲名稱或簡寫"), True),),
             )
         )
 
 
 class SongSearchActionSelect(discord.ui.Select):
-    def __init__(self):
+    def __init__(self, ctx=None):
         super().__init__(
-            placeholder="重新搜尋",
+            placeholder=ui_text(ctx, "重新搜尋"),
             row=1,
-            options=[discord.SelectOption(label="重新輸入曲名／簡寫", value="retry")],
+            options=[
+                discord.SelectOption(
+                    label=ui_text(ctx, "重新輸入曲名／簡寫"), value="retry"
+                )
+            ],
         )
 
     async def callback(self, interaction):
@@ -168,7 +187,7 @@ async def discover_song(
         return await show_panel(
             ctx,
             "score" if tab == "scores" else "chart",
-            description="沒有找到合適的歌曲，請換一個簡寫或輸入更多字。",
+            description=ui_text(ctx, "沒有找到合適的歌曲，請換一個簡寫或輸入更多字。"),
         )
     if result.needs_choice:
         await retire_previous(ctx)
@@ -227,6 +246,10 @@ class AliasOfferView(discord.ui.View):
         super().__init__(timeout=300)
         self.ctx, self.alias, self.song, self.status = ctx, alias, song, status
         self.saving = False
+
+        for item in self.children:
+            if isinstance(item, discord.ui.Button) and item.label:
+                item.label = ui_text(ctx, item.label)
         if status.status != "available":
             self.remove_item(self.add_alias)
 
@@ -234,7 +257,7 @@ class AliasOfferView(discord.ui.View):
         if interaction.user.id == self.ctx.author.id:
             return True
         await interaction.response.send_message(
-            "此提醒只供原搜尋者操作。", ephemeral=True
+            ui_text(self.ctx, "此提醒只供原搜尋者操作。"), ephemeral=True
         )
         return False
 
@@ -246,7 +269,7 @@ class AliasOfferView(discord.ui.View):
 
         if self.saving:
             await interaction.response.send_message(
-                "正在儲存，請稍候。", ephemeral=True
+                ui_text(self.ctx, "正在儲存，請稍候。"), ephemeral=True
             )
             return
         self.saving = True
@@ -265,14 +288,20 @@ class AliasOfferView(discord.ui.View):
             if getattr(self, "_embed_closed", False):
                 return
             text = {
-                "added": "已加入此伺服器的別名，下次可以直接使用。",
-                "already_exists": "這個別名已經指向此歌曲，不需要重複新增。",
-                "conflict": "這個別名已指向其他歌曲，請換個別名。原有對應未被覆寫。",
-                "title_conflict": "這是既有歌曲名稱，請換個別名。",
+                "added": ui_text(self.ctx, "已加入此伺服器的別名，下次可以直接使用。"),
+                "already_exists": ui_text(
+                    self.ctx, "這個別名已經指向此歌曲，不需要重複新增。"
+                ),
+                "conflict": ui_text(
+                    self.ctx, "這個別名已指向其他歌曲，請換個別名。原有對應未被覆寫。"
+                ),
+                "title_conflict": ui_text(self.ctx, "這是既有歌曲名稱，請換個別名。"),
             }[result.status]
             await interaction.edit_original_response(
-                embed=discord.Embed(title="別名結果", description=text),
-                view=CloseView(self.ctx.author.id),
+                embed=discord.Embed(
+                    title=ui_text(self.ctx, "別名結果"), description=text
+                ),
+                view=CloseView(self.ctx.author.id, ctx=self.ctx),
             )
             self.stop()
         except (commands.CommandError, ValueError):
@@ -280,8 +309,10 @@ class AliasOfferView(discord.ui.View):
                 return
             await interaction.edit_original_response(
                 embed=discord.Embed(
-                    title="無法加入別名",
-                    description="請確認此伺服器的別名權限，或換一個別名。",
+                    title=ui_text(self.ctx, "無法加入別名"),
+                    description=ui_text(
+                        self.ctx, "請確認此伺服器的別名權限，或換一個別名。"
+                    ),
                 ),
                 view=self,
             )
@@ -299,22 +330,22 @@ class AliasOfferView(discord.ui.View):
 
 class AliasRenameModal(discord.ui.Modal):
     def __init__(self, offer):
-        super().__init__(title="換個歌曲別名", timeout=300)
+        super().__init__(title=ui_text(offer.ctx, "換個歌曲別名"), timeout=300)
         self.offer = offer
         self.alias_input = discord.ui.TextInput(
-            label="新別名", default=offer.alias, max_length=100
+            label=ui_text(offer.ctx, "新別名"), default=offer.alias, max_length=100
         )
         self.add_item(self.alias_input)
 
     async def on_submit(self, interaction):
         if getattr(self.offer, "_embed_closed", False):
             await interaction.response.send_message(
-                "別名提醒已關閉，請重新操作。", ephemeral=True
+                ui_text(self.offer.ctx, "別名提醒已關閉，請重新操作。"), ephemeral=True
             )
             return
         if interaction.user.id != self.offer.ctx.author.id:
             await interaction.response.send_message(
-                "只能修改自己的別名提議。", ephemeral=True
+                ui_text(self.offer.ctx, "只能修改自己的別名提議。"), ephemeral=True
             )
             return
         from chuni_penguin.services.alias_learning import AliasLearningService
@@ -332,7 +363,8 @@ class AliasRenameModal(discord.ui.Modal):
                 return
             await interaction.edit_original_response(
                 embed=discord.Embed(
-                    title="別名格式不合適", description="請改用 1–100 字的一般文字。"
+                    title=ui_text(self.offer.ctx, "別名格式不合適"),
+                    description=ui_text(self.offer.ctx, "請改用 1–100 字的一般文字。"),
                 ),
                 view=self.offer,
             )
@@ -341,21 +373,27 @@ class AliasRenameModal(discord.ui.Modal):
             return
         view = AliasOfferView(self.offer.ctx, alias, self.offer.song, status)
         await interaction.edit_original_response(
-            embed=alias_offer_embed(alias, self.offer.song, status), view=view
+            embed=alias_offer_embed(alias, self.offer.song, status, self.offer.ctx),
+            view=view,
         )
         self.offer.stop()
 
 
-def alias_offer_embed(alias, song, status):
-    text = f"要把 **{discord.utils.escape_markdown(alias)}** 設為 **{discord.utils.escape_markdown(song.title)}** 的別名嗎？\n範圍：目前伺服器共用。"
+def alias_offer_embed(alias, song, status, ctx=None):
+    text = ui_text(
+        ctx,
+        "要把 **{0}** 設為 **{1}** 的別名嗎？\n範圍：目前伺服器共用。",
+        discord.utils.escape_markdown(alias),
+        discord.utils.escape_markdown(song.title),
+    )
     if status.status in ("conflict", "title_conflict"):
         titles = "、".join(
             dict.fromkeys(
                 discord.utils.escape_markdown(c.title) for c in status.conflicts
             )
         )
-        text += f"\n此名稱已有其他對應：{titles[:1200]}。請換個別名。"
-    return discord.Embed(title="記住這個簡寫？", description=text[:3500])
+        text += ui_text(ctx, "\n此名稱已有其他對應：{0}。請換個別名。", titles[:1200])
+    return discord.Embed(title=ui_text(ctx, "記住這個簡寫？"), description=text[:3500])
 
 
 async def offer_alias(ctx, query, song):
@@ -386,7 +424,7 @@ async def offer_alias(ctx, query, song):
     offered.add(key)
     session.alias_offers = offered
     await ctx.interaction.followup.send(
-        embed=alias_offer_embed(query, song, status),
+        embed=alias_offer_embed(query, song, status, ctx),
         view=AliasOfferView(ctx, query, song, status),
         ephemeral=True,
         allowed_mentions=discord.AllowedMentions.none(),

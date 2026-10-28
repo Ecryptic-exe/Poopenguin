@@ -35,7 +35,7 @@ def pending_background_tasks():
 
 
 def test_processing_embed_is_short_and_contains_only_the_label_and_status():
-    embed = processing_embed("  歌曲資料  ")
+    embed = processing_embed("  歌曲資料  ", "chinese")
 
     assert isinstance(embed, discord.Embed)
     assert embed.description == "⏳ 歌曲資料處理中…"

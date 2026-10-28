@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from sqlalchemy import select
 
 from chuni_penguin.database import Cookie, PlayerSource
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 ACCOUNT_SOURCES = (
     ("CHUNITHM-NET", "net"),
@@ -51,18 +52,18 @@ class AccountState:
         )
 
 
-def _sync_status(row: PlayerSource | None) -> str | None:
+def _sync_status(row: PlayerSource | None, ctx=None) -> str | None:
     if row is None:
         return None
     return {
-        "synced": "已同步",
-        "failed; previous snapshot retained": "同步失敗，先前資料已保留",
-        "failed; partial cache possible": "同步失敗，快取可能部分更新",
+        "synced": ui_text(ctx, "已同步"),
+        "failed; previous snapshot retained": ui_text(ctx, "同步失敗，先前資料已保留"),
+        "failed; partial cache possible": ui_text(ctx, "同步失敗，快取可能部分更新"),
     }.get(row.status)
 
 
-def _row_status(row: PlayerSource | None, fallback: str) -> str:
-    return _sync_status(row) or fallback
+def _row_status(row: PlayerSource | None, fallback: str, ctx=None) -> str:
+    return _sync_status(row, ctx) or fallback
 
 
 async def load_account_state(ctx) -> AccountState:
@@ -92,24 +93,26 @@ async def load_account_state(ctx) -> AccountState:
             states.append(
                 AccountSourceState(
                     key=key,
-                    label=label,
+                    label=ui_text(ctx, label),
                     linked=net_linked,
                     status=(
-                        _row_status(row, "已連結")
+                        _row_status(row, ui_text(ctx, "已連結"), ctx)
                         if net_cookie_usable
-                        else "憑證需要更新"
+                        else ui_text(ctx, "憑證需要更新")
                         if net_linked
-                        else "未連結"
+                        else ui_text(ctx, "未連結")
                     ),
                     last_sync=last_sync,
                     can_sync=net_cookie_usable,
                     can_unlink=False,
                     can_logout=net_linked,
                     can_token=net_cookie_usable,
-                    primary_label="同步" if net_cookie_usable else "登入",
+                    primary_label=ui_text(ctx, "同步")
+                    if net_cookie_usable
+                    else ui_text(ctx, "登入"),
                     primary_action="run_sync" if net_cookie_usable else "login",
                     notice=(
-                        "NET 憑證格式無效，請重新登入。"
+                        ui_text(ctx, "NET 憑證格式無效，請重新登入。")
                         if net_linked and not net_cookie_usable
                         else None
                     ),
@@ -117,17 +120,19 @@ async def load_account_state(ctx) -> AccountState:
             )
         elif key == "kamaitachi":
             notice = (
-                "Kamaitachi 需由管理員配置並啟用既有整合。"
+                ui_text(ctx, "Kamaitachi 需由管理員配置並啟用既有整合。")
                 if not kamaitachi_ready
                 else None
             )
             states.append(
                 AccountSourceState(
                     key=key,
-                    label=label,
+                    label=ui_text(ctx, label),
                     linked=kamaitachi_linked,
                     status=(
-                        _row_status(row, "已連結") if kamaitachi_linked else "未連結"
+                        _row_status(row, ui_text(ctx, "已連結"), ctx)
+                        if kamaitachi_linked
+                        else ui_text(ctx, "未連結")
                     ),
                     last_sync=last_sync,
                     can_sync=kamaitachi_linked and kamaitachi_ready,
@@ -135,11 +140,11 @@ async def load_account_state(ctx) -> AccountState:
                     can_logout=False,
                     can_token=False,
                     primary_label=(
-                        "重新整理"
+                        ui_text(ctx, "重新整理")
                         if not kamaitachi_ready
-                        else "同步"
+                        else ui_text(ctx, "同步")
                         if kamaitachi_linked
-                        else "連結"
+                        else ui_text(ctx, "連結")
                     ),
                     primary_action=(
                         "refresh"
@@ -153,14 +158,14 @@ async def load_account_state(ctx) -> AccountState:
             )
         elif key.startswith("chunirec:"):
             linked = bool(row and row.credential)
-            status = "已連結" if linked else "未連結"
-            sync_status = _sync_status(row)
+            status = ui_text(ctx, "已連結") if linked else ui_text(ctx, "未連結")
+            sync_status = _sync_status(row, ctx)
             if sync_status is not None:
                 status = f"{status} · {sync_status}"
             states.append(
                 AccountSourceState(
                     key=key,
-                    label=label,
+                    label=ui_text(ctx, label),
                     linked=linked,
                     status=status,
                     last_sync=last_sync,
@@ -168,7 +173,9 @@ async def load_account_state(ctx) -> AccountState:
                     can_unlink=linked,
                     can_logout=False,
                     can_token=False,
-                    primary_label="同步" if linked else "連結",
+                    primary_label=ui_text(ctx, "同步")
+                    if linked
+                    else ui_text(ctx, "連結"),
                     primary_action="run_sync" if linked else "link_source",
                 )
             )
@@ -177,17 +184,23 @@ async def load_account_state(ctx) -> AccountState:
             states.append(
                 AccountSourceState(
                     key=key,
-                    label=label,
+                    label=ui_text(ctx, label),
                     linked=imported,
-                    status="已匯入" if imported else "未匯入",
+                    status=ui_text(ctx, "已匯入")
+                    if imported
+                    else ui_text(ctx, "未匯入"),
                     last_sync=last_sync,
                     can_sync=False,
                     can_unlink=imported,
                     can_logout=False,
                     can_token=False,
-                    primary_label="匯入檔案",
+                    primary_label=ui_text(ctx, "匯入檔案"),
                     primary_action="import",
-                    notice=f"[開啟 Chunilib]({CHUNILIB_URL}) 取得自己的 player-data JSON，再按「匯入檔案」私下傳送。",
+                    notice=ui_text(
+                        ctx,
+                        "[開啟 Chunilib]({0}) 取得自己的 player-data JSON，再按「匯入檔案」私下傳送。",
+                        CHUNILIB_URL,
+                    ),
                 )
             )
 

@@ -27,7 +27,9 @@ from chuni_penguin.logging import logged_prefix_command
 from chuni_penguin.types import ComboLamp, Rank
 from chuni_penguin.ui import ChartCardEmbed
 from chuni_penguin.ui.autocomplete import song_title_choices
+from chuni_penguin.ui.border import BorderView
 from chuni_penguin.utils import floor_to_ndp
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -65,23 +67,55 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
         note_distance_1000 = int(240000 * 1000 / bpm / note_density)
         crit_overlap_1000 = max(66667 - note_distance_1000, 0)
         jus_overlap_1000 = max(133333 - note_distance_1000, 0)
-        res = f"At **{bpm}** BPM, the distance between two **1/{note_density}** notes is `{note_distance_1000 // 100 / 10}ms`."
-        res += f"\n- The JUSTICE CRITICAL overlap duration is `{crit_overlap_1000 // 100 / 10}ms`"
-        res += f"\n- The JUSTICE overlap duration is `{jus_overlap_1000 // 100 / 10}ms`"
+        res = ui_text(
+            ctx,
+            "At **{0}** BPM, the distance between two **1/{1}** notes is `{2}ms`.",
+            bpm,
+            note_density,
+            note_distance_1000 // 100 / 10,
+        )
+        res += ui_text(
+            ctx,
+            "\n- The JUSTICE CRITICAL overlap duration is `{0}ms`",
+            crit_overlap_1000 // 100 / 10,
+        )
+        res += ui_text(
+            ctx,
+            "\n- The JUSTICE overlap duration is `{0}ms`",
+            jus_overlap_1000 // 100 / 10,
+        )
 
         if crit_overlap_1000 > 0:
-            res += "\n\n:white_check_mark: If these notes appear vertically, you can rub the ground slider and will not get JUSTICE and below."
+            res += ui_text(
+                ctx,
+                "\n\n:white_check_mark: If these notes appear vertically, you can rub the ground slider and will not get JUSTICE and below.",
+            )
         elif jus_overlap_1000 > 0:
-            res += "\n\n:warning: If these notes appear vertically and you rub the ground slider, you will not get ATTACK but you might get JUSTICE."
+            res += ui_text(
+                ctx,
+                "\n\n:warning: If these notes appear vertically and you rub the ground slider, you will not get ATTACK but you might get JUSTICE.",
+            )
         else:
-            res += "\n\n:x: If these notes appear vertically, you might get ATTACK if you rub the ground slider."
+            res += ui_text(
+                ctx,
+                "\n\n:x: If these notes appear vertically, you might get ATTACK if you rub the ground slider.",
+            )
 
         if crit_overlap_1000 > 16667:
-            res += '\n:white_check_mark: If these notes appear in different lanes, you can tap both of them at the same time ("anmitsu" technique) and get JUSTICE CRITICAL for both notes during the JUSTICE CRITICAL overlap duration.'
+            res += ui_text(
+                ctx,
+                '\n:white_check_mark: If these notes appear in different lanes, you can tap both of them at the same time ("anmitsu" technique) and get JUSTICE CRITICAL for both notes during the JUSTICE CRITICAL overlap duration.',
+            )
         elif jus_overlap_1000 > 16667:
-            res += "\n:warning: If these notes appear in different lanes and you tap both of them at the same time, you are very likely to get JUSTICE or ATTACK therefore it is not recommended."
+            res += ui_text(
+                ctx,
+                "\n:warning: If these notes appear in different lanes and you tap both of them at the same time, you are very likely to get JUSTICE or ATTACK therefore it is not recommended.",
+            )
         else:
-            res += "\n:x: If these notes appear in different lanes, you should tap them individually since the notes are too far from each other."
+            res += ui_text(
+                ctx,
+                "\n:x: If these notes appear in different lanes, you should tap them individually since the notes are too far from each other.",
+            )
 
         await ctx.reply(res, mention_author=False)
 
@@ -104,8 +138,13 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
         """
 
         if chart_constant is None and score < 900000:
-            res = "Rating calculation for scores below 900,000 is dependent on chart constant."
-            res += "\nPlease specify chart constant to view detailed calculations."
+            res = ui_text(
+                ctx,
+                "Rating calculation for scores below 900,000 is dependent on chart constant.",
+            )
+            res += ui_text(
+                ctx, "\nPlease specify chart constant to view detailed calculations."
+            )
             # (You really should just git gud though)
             await ctx.reply(res, mention_author=False)
             return
@@ -113,7 +152,9 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
         if chart_constant is not None and (
             chart_constant < 1 or chart_constant > MAX_DIFFICULTY
         ):
-            msg = f"Chart constant must be between 1 and {MAX_DIFFICULTY}."
+            msg = ui_text(
+                ctx, "Chart constant must be between 1 and {0}.", MAX_DIFFICULTY
+            )
             raise commands.BadArgument(msg)
 
         if chart_constant is None:
@@ -121,13 +162,15 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
             const_text = ""
         else:
             rating = calculate_rating(score, chart_constant)
-            const_text = f" on a chart with chart constant **{chart_constant}**"
+            const_text = ui_text(
+                ctx, " on a chart with chart constant **{0}**", chart_constant
+            )
 
         sign = ""
         if chart_constant is None and rating > 0:
             sign = "+"
 
-        res = f"A score of **{score}**{const_text} will give:"
+        res = ui_text(ctx, "A score of **{0}**{1} will give:", score, const_text)
         res += f"\n- Rating: **{sign}{floor_to_ndp(rating, 2)}**"
 
         if chart_constant is not None:
@@ -163,7 +206,13 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
                 )
 
                 res += f"\n  - FC: **{overpower_fc} / {overpower_max_floored} ({overpower_fc_percentage}%)**"
-                res += f"\n  - Non-FC: **{overpower_base} / {overpower_max_floored} ({overpower_base_percentage}%)**"
+                res += ui_text(
+                    ctx,
+                    "\n  - Non-FC: **{0} / {1} ({2}%)**",
+                    overpower_base,
+                    overpower_max_floored,
+                    overpower_base_percentage,
+                )
 
         await ctx.reply(res, mention_author=False)
 
@@ -186,10 +235,10 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
         """
 
         chart_constant = round(chart_constant, 2)
-        res = f"Calculation for chart constant **{chart_constant}**:"
+        res = ui_text(ctx, "Calculation for chart constant **{0}**:", chart_constant)
         if mode == "aj":
             separator = "-------------------------"
-            res += f"```  Score |         OP (AJ)\n{separator}"
+            res += ui_text(ctx, "```  Score |         OP (AJ)\n{0}", separator)
             scores = [1009950]
             scores.extend(
                 itertools.chain(
@@ -199,7 +248,7 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
             )
         else:
             separator = "---------------"
-            res += f"```  Score |  Rate\n{separator}"
+            res += ui_text(ctx, "```  Score |  Rate\n{0}", separator)
             scores = [1009000]
             scores.extend(
                 itertools.chain(
@@ -258,8 +307,8 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
         """
 
         rating = round(rating, 2)
-        res = f"Score required to achieve **{rating:.2f}** play rating:"
-        res += "\n```Const |   Score\n---------------"
+        res = ui_text(ctx, "Score required to achieve **{0:.2f}** play rating:", rating)
+        res += ui_text(ctx, "\n```Const |   Score\n---------------")
 
         chart_constant_10 = int(rating - 3) * 10
         rating_10 = rating * 10
@@ -322,23 +371,25 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
                 notecount = int(difficulty_or_notecount)
 
                 if notecount <= 0:
-                    msg = "Notecount should be larger than 0."
+                    msg = ui_text(ctx, "Notecount should be larger than 0.")
                     raise commands.BadArgument(msg)
 
                 if (
                     notecount
                     > 99_999_999_999_999_999_999_999_999_999_999_999_999_999_999_999
                 ):
-                    msg = "Notecount is too large."
+                    msg = ui_text(ctx, "Notecount is too large.")
                     raise commands.BadArgument(msg)
 
                 deductions = calculate_score_deduction_per_judgement(notecount)
 
                 embed = discord.Embed(
                     color=discord.Color.yellow(),
-                    title="Rank borders and deductions",
+                    title=ui_text(ctx, "Rank borders and deductions"),
                 )
-                embed.add_field(name="Note Count", value=str(notecount), inline=False)
+                embed.add_field(
+                    name=ui_text(ctx, "Note Count"), value=str(notecount), inline=False
+                )
 
                 borders = calculate_border(notecount)
                 borders_field_value = ""
@@ -347,13 +398,13 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
                     borders_field_value += f"▸ {config.icons.rank_icon(rank)} ▸ {judgements.justice}-{judgements.attack}-{judgements.miss}\n"
 
                 embed.add_field(
-                    name="Borders (JUSTICE-ATTACK-MISS)",
+                    name=ui_text(ctx, "Borders (JUSTICE-ATTACK-MISS)"),
                     value=borders_field_value.strip(),
                 )
 
                 deductions = calculate_score_deduction_per_judgement(notecount)
                 embed.add_field(
-                    name="Score Deduction",
+                    name=ui_text(ctx, "Score Deduction"),
                     value=(
                         f"▸ JUSTICE: -{deductions['justice']:.2f}\n"
                         f"▸ ATTACK: -{deductions['attack']:.2f}\n"
@@ -361,7 +412,7 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
                     ),
                 )
 
-                await ctx.respond_or_edit(embed=embed)
+                await BorderView(ctx, embed, notecount).start()
             else:
                 if query is None:
                     raise commands.MissingRequiredArgument(ctx.command.params["query"])  # pyright: ignore[reportOptionalMemberAccess]
@@ -372,7 +423,7 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
                 chart = await ctx.find_chart(
                     difficulty,
                     query,
-                    "Select a chart to view rank borders for:",
+                    ui_text(ctx, "Select a chart to view rank borders for:"),
                 )
 
                 if chart is None:
@@ -384,13 +435,13 @@ class CalculatorsCog(commands.Cog, name="Calculators"):
 
                     raise commands.CommandError(msg)
 
-                await ctx.respond_or_edit(
-                    embed=ChartCardEmbed(
-                        chart,
-                        border=True,
-                        synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
-                    )
+                embed = ChartCardEmbed(
+                    chart,
+                    border=True,
+                    synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    language=get_chunithm_language(ctx),
                 )
+                await BorderView(ctx, embed, chart.maxcombo).start()
 
 
 async def setup(bot):

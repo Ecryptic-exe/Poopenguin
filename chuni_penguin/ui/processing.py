@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 """Small helpers for delayed, user-facing processing feedback."""
 
 import asyncio
@@ -7,13 +8,17 @@ from typing import Any, AsyncIterator, TypeVar
 
 import discord
 
+from chuni_penguin.utils.chunithm_i18n import ui_text
+
 T = TypeVar("T")
 
 
-def processing_embed(label: str) -> discord.Embed:
-    """Build a short Traditional Chinese processing embed for ``label``."""
-    label = label.strip()
-    description = f"⏳ {label}處理中…" if label else "⏳ 處理中…"
+def processing_embed(label: str, ctx=None) -> discord.Embed:
+    """Build a short localized processing embed for ``label``."""
+    label = ui_text(ctx, label.strip())
+    description = (
+        ui_text(ctx, "⏳ {0}處理中…", label) if label else ui_text(ctx, "⏳ 處理中…")
+    )
     return discord.Embed(description=description, color=discord.Color.blurple())
 
 
@@ -96,7 +101,7 @@ async def processing_response(
         await asyncio.sleep(delay)
         progress_started = True
         with suppress(Exception):
-            await original(content=None, embed=processing_embed(label), view=None)
+            await original(content=None, embed=processing_embed(label, ctx), view=None)
 
     async def finish_progress() -> None:
         nonlocal progress_cancelled_before_start

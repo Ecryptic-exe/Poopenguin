@@ -16,6 +16,7 @@ from chuni_penguin.utils import (
     sdvxin_link,
     yt_search_link,
 )
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 if TYPE_CHECKING:
     from chuni_penguin.database import Chart
@@ -29,7 +30,9 @@ class ChartCardEmbed(discord.Embed):
         target_score: Optional[int] = None,
         border: bool = False,
         synthesis_alt_jacket: str | None = None,
+        language: str | None = None,
     ) -> None:
+        language = language or get_chunithm_language()
         difficulty = Difficulty(chart.difficulty)
 
         super().__init__(
@@ -49,7 +52,7 @@ class ChartCardEmbed(discord.Embed):
                 )
 
         self.add_field(
-            name="Category",
+            name=ui_text(language, "Category"),
             value=chart.song.genre,
         )
 
@@ -73,13 +76,13 @@ class ChartCardEmbed(discord.Embed):
                 field_value += f" ({floor_to_ndp(target_rating, 2)})"
 
             self.add_field(
-                name="Target Score",
+                name=ui_text(language, "Target Score"),
                 value=field_value,
             )
 
         if border and chart.maxcombo is not None and chart.maxcombo > 0:
             self.add_field(
-                name="Note Count",
+                name=ui_text(language, "Note Count"),
                 value=str(chart.maxcombo),
             )
 
@@ -90,14 +93,14 @@ class ChartCardEmbed(discord.Embed):
                 field_value += f"▸ {config.icons.rank_icon(rank)} ▸ {judgements.justice}-{judgements.attack}-{judgements.miss}\n"
 
             self.add_field(
-                name="Borders (JUSTICE-ATTACK-MISS)",
+                name=ui_text(language, "Borders (JUSTICE-ATTACK-MISS)"),
                 value=field_value.strip(),
             )
 
             deductions = calculate_score_deduction_per_judgement(chart.maxcombo)
 
             self.add_field(
-                name="Score Deduction",
+                name=ui_text(language, "Score Deduction"),
                 value=(
                     f"▸ JUSTICE: -{deductions['justice']:.2f}\n"
                     f"▸ ATTACK: -{deductions['attack']:.2f}\n"

@@ -344,13 +344,15 @@ async def test_song_detail_renders_actual_database_annotation(catalog):
         fields = [
             field for page in rendered.pages for embed in page for field in embed.fields
         ]
-        annotation = next(field for field in fields if field.name == "社群譜面資料")
+        annotation = next(
+            field for field in fields if field.name == "Community chart data"
+        )
         assert "Preserved source note" in annotation.value
         assert (
             "★★★" in annotation.value
             and "https://example.com/chart" in annotation.value
         )
-        assert "Luna 核對" in annotation.value and "已審核" not in annotation.name
+        assert "Luna reviewed" in annotation.value and "已審核" not in annotation.name
         rollback_annotations(path, batch, apply=True)
         empty = await view.render(SongDetailsState(tab="chart"))
         assert not any(

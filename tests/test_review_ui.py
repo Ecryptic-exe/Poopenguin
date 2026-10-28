@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from chuni_penguin.config import Config, use_config
 from chuni_penguin.services.chart_reviews import DIFFICULTY_LABELS
 from chuni_penguin.ui.chart_reviews import (
     ChartReviewModal,
@@ -11,6 +12,12 @@ from chuni_penguin.ui.chart_reviews import (
     ReviewPrivateView,
     summary_embed,
 )
+
+
+@pytest.fixture(autouse=True)
+def chinese_ui():
+    with use_config(Config.from_mapping({"fun": {"language": "chinese"}})):
+        yield
 
 
 def chart():

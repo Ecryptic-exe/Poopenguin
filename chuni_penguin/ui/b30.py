@@ -6,6 +6,7 @@ import discord
 from discord.ext.commands import Context
 
 from chuni_penguin.utils import floor_to_ndp
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 from ._pagination import FormatPageReturn, ListPageSource, PaginationView
 from .components.score_card_embed import ScoreCardEmbed
@@ -67,6 +68,7 @@ class B30PageSource(ListPageSource["Score"]):
                 show_lamps=self.show_lamps,
                 index=start + i + 1,
                 synthesis_alt_jacket=self.synthesis_alt_jacket,
+                language=get_chunithm_language(menu.ctx),
             )
             for i, record in enumerate(page)
         ]
@@ -75,10 +77,21 @@ class B30PageSource(ListPageSource["Score"]):
 
         if self.show_average or self.show_reachable or self.has_estimated_play_rating:
             kwargs["content"] = (
-                (f"Average: **{self.average}**" if self.show_average else "")
-                + (f"\nReachable: **{self.reachable}**" if self.show_reachable else "")
+                (
+                    ui_text(menu.ctx, "Average: **{0}**", self.average)
+                    if self.show_average
+                    else ""
+                )
                 + (
-                    "\nPlay ratings marked with asterisks are estimated (due to lack of chart constants)."
+                    ui_text(menu.ctx, "\nReachable: **{0}**", self.reachable)
+                    if self.show_reachable
+                    else ""
+                )
+                + (
+                    ui_text(
+                        menu.ctx,
+                        "\nPlay ratings marked with asterisks are estimated (due to lack of chart constants).",
+                    )
                     if self.has_estimated_play_rating
                     else ""
                 )

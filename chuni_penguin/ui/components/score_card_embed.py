@@ -12,6 +12,7 @@ from chuni_penguin.types import (
     Score,
 )
 from chuni_penguin.utils import floor_to_ndp
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 
 class ScoreCardEmbed(discord.Embed):
@@ -23,7 +24,9 @@ class ScoreCardEmbed(discord.Embed):
         index: int | None = None,
         synthesis_alt_jacket: str | None = None,
         detailed: bool = False,
+        language: str | None = None,
     ):
+        language = language or get_chunithm_language()
         super().__init__(color=record.chart.difficulty.color())
 
         self.set_thumbnail(url=record.song.jacket_url)
@@ -82,14 +85,12 @@ class ScoreCardEmbed(discord.Embed):
             footer_sections.append(f"OP: {play_op_display}")
 
         if isinstance(record, PersonalBest) and record.play_count is not None:
-            footer_sections.append(
-                f"{record.play_count} attempt{'s' if record.play_count > 1 else ''}"
-            )
+            footer_sections.append(ui_text(language, "遊玩次數 {0}", record.play_count))
 
         self.set_footer(text="  •  ".join(footer_sections))
 
         if isinstance(record, PersonalBest) and record.ajc_count is not None:
-            score_data += f"\n▸ AJC count: {record.ajc_count}"
+            score_data += "\n▸ " + ui_text(language, "AJC 次數：{0}", record.ajc_count)
 
         total_combo = record.chart.max_combo
 

@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 """Shared, owner-bound Embed navigation over the existing commands/services."""
 
 import asyncio
@@ -14,6 +15,7 @@ from sqlalchemy.orm import joinedload
 from chuni_penguin.database import Chart
 from chuni_penguin.logging import logger
 from chuni_penguin.services.player_sources import SourceError
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
 from ._base import PenguinView
 from .account_state import ACCOUNT_SOURCES, CHUNILIB_URL
@@ -108,6 +110,8 @@ FORM_COMMANDS = {
     "gacha": ("抽卡", "gacha", ()),
 }
 AUTO_PANEL_ROOTS = {
+    "menu",
+    "dailyupdate",
     "help",
     "tools",
     "chart",
@@ -326,6 +330,7 @@ def component_context(ctx, interaction):
     )
     updated._panel_edit = True
     updated._panel_new_private = getattr(ctx, "_panel_new_private", False)
+    interaction._baton = updated
     return updated
 
 
@@ -354,10 +359,10 @@ async def check_route(ctx, command_name):
             or target.commands[0]
         )
     if target is None:
-        raise commands.CommandError("此功能尚未啟用。")
+        raise commands.CommandError(ui_text(ctx, "此功能尚未啟用。"))
     ctx.command = target
     if not await ctx.bot.services.permissions.check(ctx):
-        raise commands.CheckFailure("此功能目前無法使用。")
+        raise commands.CheckFailure(ui_text(ctx, "此功能目前無法使用。"))
 
 
 async def invoke_existing(ctx, command_name, values=None):
@@ -367,20 +372,20 @@ async def invoke_existing(ctx, command_name, values=None):
         "logout",
         "token",
     }:
-        raise commands.CheckFailure("此指令不能從面板執行。")
+        raise commands.CheckFailure(ui_text(ctx, "此指令不能從面板執行。"))
     command = ctx.bot.get_command(command_name)
     if command is None:
-        raise commands.CommandError("此功能尚未啟用。")
+        raise commands.CommandError(ui_text(ctx, "此功能尚未啟用。"))
     ctx.command = command
     # HybridCommand.can_run assumes a slash Interaction._baton. Components use
     # the original command checks and the application checks explicitly instead.
     if not await commands.Command.can_run(command, ctx):
-        raise commands.CheckFailure("此功能目前無法使用。")
+        raise commands.CheckFailure(ui_text(ctx, "此功能目前無法使用。"))
     application_command = getattr(command, "app_command", None)
     if application_command is not None:
         for check in application_command.checks:
             if not await discord.utils.maybe_coroutine(check, ctx.interaction):
-                raise commands.CheckFailure("此功能目前無法使用。")
+                raise commands.CheckFailure(ui_text(ctx, "此功能目前無法使用。"))
     converted = {}
     values = values or {}
     for name, param in command.clean_params.items():
@@ -437,7 +442,7 @@ def group_for(section):
         return "fun"
     if section in ("tools", "calculate", "const", "rating", "border", "anmitsu"):
         return "tools"
-    return "home" if section == "home" else "song"
+    return "home" if section in ("home", "menu", "help") else "song"
 
 
 def group_home(group):
@@ -464,7 +469,9 @@ class PanelMenu(discord.ui.Select):
             **{key: value[0] for key, value in FORM_COMMANDS.items()},
         }
         options.extend(
-            discord.SelectOption(label=labels.get(key, "匯入 Chunilib JSON"), value=key)
+            discord.SelectOption(
+                label=ui_text(ctx, labels.get(key, "匯入 Chunilib JSON")), value=key
+            )
             for key in related
             if key != section or group == "fun"
             if not (
@@ -474,20 +481,27 @@ class PanelMenu(discord.ui.Select):
             )
         )
         if group == "net" and section != "account" and row != 1:
-            options.insert(0, discord.SelectOption(label="返回主資料", value="account"))
+            options.insert(
+                0,
+                discord.SelectOption(label=ui_text(ctx, "返回主資料"), value="account"),
+            )
         if group == "fun" and any(
             group_for(route.section) == group for route in session_for(ctx).history
         ):
-            options.append(discord.SelectOption(label="返回上一層", value="back"))
+            options.append(
+                discord.SelectOption(label=ui_text(ctx, "返回上一層"), value="back")
+            )
         if not options:
-            options.append(discord.SelectOption(label="分類入口", value="home"))
+            options.append(
+                discord.SelectOption(label=ui_text(ctx, "主選單"), value="menu")
+            )
         super().__init__(
             placeholder={
-                "net": "個人紀錄",
-                "song": "單曲相關操作",
-                "fun": "Poopenguin 功能",
-                "tools": "其他計算工具",
-            }.get(group, "分類入口"),
+                "net": ui_text(ctx, "個人紀錄"),
+                "song": ui_text(ctx, "單曲相關操作"),
+                "fun": ui_text(ctx, "Poopenguin 功能"),
+                "tools": ui_text(ctx, "其他計算工具"),
+            }.get(group, ui_text(ctx, "分類入口")),
             custom_id="penguin:panel:navigation",
             row=row,
             options=options,
@@ -501,6 +515,9 @@ def attach_navigation(ctx, view):
     root = getattr(getattr(ctx, "command", None), "qualified_name", "").split(" ")[0]
     if root not in AUTO_PANEL_ROOTS and not getattr(ctx, "panel_session", None):
         return
+    from .navigation import add_back_button
+
+    add_back_button(ctx, view)
     if getattr(view, "_panel_navigation", False) or getattr(
         view, "_panel_own_navigation", False
     ):
@@ -531,8 +548,8 @@ def prepare_response(ctx, content, kwargs):
 
 
 def _prepare_panel_response(ctx, content, kwargs):
-    """Add interaction to normal slash outputs without changing text commands."""
-    if getattr(ctx, "interaction", None) is None or getattr(ctx, "bot", None) is None:
+    """Use the slash presentation for both command entry points."""
+    if getattr(ctx, "bot", None) is None:
         return content, kwargs
     root = getattr(getattr(ctx, "command", None), "qualified_name", "").split(" ")[0]
     if root in NO_AUTO_PANEL or root not in AUTO_PANEL_ROOTS:
@@ -547,7 +564,7 @@ def _prepare_panel_response(ctx, content, kwargs):
             mode, FORM_COMMANDS.get(mode, ("CHUNITHM Penguin",))[0]
         )
         kwargs["embed"] = discord.Embed(
-            title=title, description=str(content)[:4096], color=0x57B9CF
+            title=ui_text(ctx, title), description=str(content)[:4096], color=0x57B9CF
         )
         content = None
     if "view" not in kwargs:
@@ -569,10 +586,15 @@ def _prepare_panel_response(ctx, content, kwargs):
 
 class PanelButton(discord.ui.Button):
     def __init__(
-        self, ctx, label, action, *, row=0, style=discord.ButtonStyle.secondary
+        self, ctx, label, action, *, row=0, style=discord.ButtonStyle.secondary,
+        emoji=None,
     ):
         super().__init__(
-            label=label, row=row, style=style, custom_id=f"penguin:panel:{action}:{row}"
+            label=ui_text(ctx, label),
+            row=row,
+            style=style,
+            emoji=emoji,
+            custom_id=f"penguin:panel:{action}:{row}",
         )
         self.ctx, self.action = ctx, action
 
@@ -586,12 +608,12 @@ class SourceSelect(discord.ui.Select):
         source = session_for(ctx).route.source
         state = getattr(ctx, "_account_state", None)
         super().__init__(
-            placeholder="選擇成績來源",
+            placeholder=ui_text(ctx, "選擇成績來源"),
             custom_id="penguin:panel:source",
             row=2,
             options=[
                 discord.SelectOption(
-                    label=label,
+                    label=ui_text(ctx, label),
                     value=source
                     if value == "chunirec:jp2" and source.startswith("chunirec:")
                     else value,
@@ -615,12 +637,12 @@ class SourceSelect(discord.ui.Select):
         session = session_for(self.ctx)
         if interaction.user.id != session.owner_id:
             await interaction.response.send_message(
-                "此面板只供開啟者操作。", ephemeral=True
+                ui_text(self.ctx, "此面板只供開啟者操作。"), ephemeral=True
             )
             return
         if session.busy:
             await interaction.response.send_message(
-                "正在處理上一個操作，請稍候。", ephemeral=True
+                ui_text(self.ctx, "正在處理上一個操作，請稍候。"), ephemeral=True
             )
             return
         old = session.route
@@ -635,7 +657,7 @@ class ChunirecRegionSelect(discord.ui.Select):
         self.ctx = ctx
         source = session_for(ctx).route.source
         super().__init__(
-            placeholder="Chunirec 區域",
+            placeholder=ui_text(ctx, "Chunirec 區域"),
             row=4,
             options=[
                 discord.SelectOption(
@@ -651,12 +673,12 @@ class ChunirecRegionSelect(discord.ui.Select):
         session = session_for(self.ctx)
         if interaction.user.id != session.owner_id:
             await interaction.response.send_message(
-                "此面板只供開啟者操作。", ephemeral=True
+                ui_text(self.ctx, "此面板只供開啟者操作。"), ephemeral=True
             )
             return
         if session.busy or session.closed:
             await interaction.response.send_message(
-                "面板正在處理或已關閉，請稍後重試。", ephemeral=True
+                ui_text(self.ctx, "面板正在處理或已關閉，請稍後重試。"), ephemeral=True
             )
             return
         old = session.route
@@ -670,21 +692,21 @@ class SongPanelSelect(discord.ui.Select):
         session = session_for(ctx)
         if session.route.section == "alias":
             choices = [
-                ("新增別名", "alias_add"),
-                ("移除別名", "alias_remove"),
-                ("返回單曲", "song_return"),
+                (ui_text(ctx, "新增別名"), "alias_add"),
+                (ui_text(ctx, "移除別名"), "alias_remove"),
+                (ui_text(ctx, "返回單曲"), "song_return"),
             ]
             if getattr(ctx, "_can_reload_alias", False):
-                choices.insert(2, ("重新載入別名", "alias_reload"))
+                choices.insert(2, (ui_text(ctx, "重新載入別名"), "alias_reload"))
         else:
             action = "score" if session.route.section == "score" else "chart"
-            choices = [("搜尋歌曲／簡寫", "input:" + action)]
+            choices = [(ui_text(ctx, "搜尋歌曲／簡寫"), "input:" + action)]
             if session.song_card is not None:
-                choices.append(("返回單曲", "song_return"))
+                choices.append((ui_text(ctx, "返回單曲"), "song_return"))
             if session.chart_results is not None:
-                choices.append(("返回篩選結果", "return_results"))
+                choices.append((ui_text(ctx, "返回篩選結果"), "return_results"))
         super().__init__(
-            placeholder="選擇操作",
+            placeholder=ui_text(ctx, "選擇操作"),
             row=0,
             options=[
                 discord.SelectOption(label=label, value=value)
@@ -703,44 +725,62 @@ class PanelView(PenguinView):
         super().__init__(ctx, timeout=600)
         self.session = session_for(ctx)
         mode = self.session.route.section
+        self._is_main_menu = mode == "home"
         group = group_for(mode)
         state = getattr(ctx, "_account_state", None)
         selected = (
             state.source(self.session.route.source) if state is not None else None
         )
         buttons = {
-            "home": (
-                ("主資料介面", "account"),
-                ("Song", "chart"),
-                ("Poopenguin", "fun"),
-                ("計算工具", "tools"),
-            ),
+            "home": (),
             "account": (
                 (selected.primary_label, selected.primary_action),
-                ("帳號設定", "account_settings"),
+                (ui_text(ctx, "帳號設定"), "account_settings"),
             )
             if selected is not None
-            else (("連結帳號", "link_source"), ("帳號設定", "account_settings")),
+            else (
+                (ui_text(ctx, "連結帳號"), "link_source"),
+                (ui_text(ctx, "帳號設定"), "account_settings"),
+            ),
             "chart": (),
             "account_settings": (),
-            "fun": (("Poopenguin 主頁", "fun"), ("抽卡面板", "gacha")),
+            "fun": (
+                (ui_text(ctx, "Poopenguin 主頁"), "fun"),
+                (ui_text(ctx, "抽卡面板"), "gacha"),
+            ),
             "alias": (),
         }.get(mode, ())
         if mode == "account_settings":
             private = getattr(getattr(ctx, "user_config", None), "privacy_mode", False)
-            buttons = [("允許他人查詢" if private else "停止分享成績", "privacy")]
+            buttons = [
+                (
+                    ui_text(ctx, "允許他人查詢")
+                    if private
+                    else ui_text(ctx, "停止分享成績"),
+                    "privacy",
+                )
+            ]
             if selected is not None:
                 if selected.can_logout:
-                    buttons.append(("登出 NET", "confirm:logout"))
+                    buttons.append((ui_text(ctx, "登出 NET"), "confirm:logout"))
                 if selected.can_unlink:
-                    buttons.append(("解除目前來源", "confirm:unlink"))
+                    buttons.append((ui_text(ctx, "解除目前來源"), "confirm:unlink"))
                 if selected.can_token:
-                    buttons.append(("查看 NET 憑證", "token"))
-            buttons.append(("刪除全部本機資料", "confirm:delete_account"))
+                    buttons.append((ui_text(ctx, "查看 NET 憑證"), "token"))
+            buttons.append((ui_text(ctx, "刪除全部本機資料"), "confirm:delete_account"))
         if group == "fun" and mode != "fun":
-            buttons = (("Poopenguin 主頁", "fun"), ("抽卡面板", "gacha"))
+            buttons = (
+                (ui_text(ctx, "Poopenguin 主頁"), "fun"),
+                (ui_text(ctx, "抽卡面板"), "gacha"),
+            )
         for label, action in buttons:
             self.add_item(PanelButton(ctx, label, action))
+        if mode == "home":
+            from .navigation import NavigationButton, menu_categories
+
+            for action, label, emoji, _ in menu_categories(ctx):
+                self.add_item(PanelButton(ctx, label, action, emoji=emoji))
+            self.add_item(NavigationButton(ctx, "help", row=1))
         if group == "song" and mode in ("chart", "score", "alias"):
             self.add_item(SongPanelSelect(ctx))
         elif group != "home":
@@ -759,19 +799,21 @@ class PanelView(PenguinView):
                 self.add_item(ChunirecRegionSelect(ctx))
         if mode == "account" and self.session.route.source == "chunilib:export":
             self.add_item(
-                discord.ui.Button(label="開啟 Chunilib", url=CHUNILIB_URL, row=0)
+                discord.ui.Button(
+                    label=ui_text(ctx, "開啟 Chunilib"), url=CHUNILIB_URL, row=0
+                )
             )
         actions = {
-            "source_scores": (("查詢此來源成績", "input:source_scores"),),
-            "b50": (("重新整理", "refresh"),),
-            "recent": (("重新整理", "refresh"),),
-            "compare": (("選擇歌曲", "input:compare"),),
+            "source_scores": ((ui_text(ctx, "查詢此來源成績"), "input:source_scores"),),
+            "b50": ((ui_text(ctx, "重新整理"), "refresh"),),
+            "recent": ((ui_text(ctx, "重新整理"), "refresh"),),
+            "compare": ((ui_text(ctx, "選擇歌曲"), "input:compare"),),
             "fun": (
-                ("幫我選", "pick"),
-                ("問問企鵝", "ask"),
-                ("隨機數字", "rng"),
-                ("隨機顏色", "rcg"),
-                ("抽卡", "gacha"),
+                (ui_text(ctx, "幫我選"), "pick"),
+                (ui_text(ctx, "問問企鵝"), "ask"),
+                (ui_text(ctx, "隨機數字"), "rng"),
+                (ui_text(ctx, "隨機顏色"), "rcg"),
+                (ui_text(ctx, "抽卡"), "gacha"),
             ),
         }
         for label, action in actions.get(mode, ()):
@@ -782,7 +824,9 @@ class PanelView(PenguinView):
             self.add_item(CompareUserSelect(ctx))
         if group == "net":
             if mode != "account":
-                self.add_item(PanelButton(ctx, "返回主資料", "account", row=3))
+                self.add_item(
+                    PanelButton(ctx, ui_text(ctx, "返回主資料"), "account", row=3)
+                )
             if mode not in ("b50", "recent") and not (
                 mode == "account"
                 and selected is not None
@@ -791,9 +835,9 @@ class PanelView(PenguinView):
                 self.add_item(
                     PanelButton(
                         ctx,
-                        "重新整理狀態"
+                        ui_text(ctx, "重新整理狀態")
                         if mode in ("account", "account_settings")
-                        else "重試",
+                        else ui_text(ctx, "重試"),
                         "refresh",
                         row=3,
                     )
@@ -803,7 +847,7 @@ class PanelView(PenguinView):
                 self.add_item(
                     PanelButton(
                         ctx,
-                        "返回單曲",
+                        ui_text(ctx, "返回單曲"),
                         "song_return",
                         row=4 if mode == "compare" else 3,
                     )
@@ -812,7 +856,7 @@ class PanelView(PenguinView):
                 self.add_item(
                     PanelButton(
                         ctx,
-                        "返回歌曲搜尋",
+                        ui_text(ctx, "返回歌曲搜尋"),
                         "song_home",
                         row=4 if mode == "compare" else 3,
                     )
@@ -824,11 +868,14 @@ class PanelView(PenguinView):
         ):
             self.add_item(
                 PanelButton(
-                    ctx, "重試上次操作", "retry_last", row=4 if mode == "compare" else 3
+                    ctx,
+                    ui_text(ctx, "重試上次操作"),
+                    "retry_last",
+                    row=4 if mode == "compare" else 3,
                 )
             )
         if mode in FORM_COMMANDS and FORM_COMMANDS[mode][2] and mode != "alias":
-            self.add_item(PanelButton(ctx, "修改參數", mode, row=3))
+            self.add_item(PanelButton(ctx, ui_text(ctx, "修改參數"), mode, row=3))
         from .dismiss import ensure_close
 
         ensure_close(self, ctx.author.id, ctx=ctx)
@@ -845,9 +892,9 @@ class PanelView(PenguinView):
             return
         try:
             await self.message.edit(
-                content="面板已逾時，請重新開啟 /account。"
+                content=ui_text(self.ctx, "面板已逾時，請重新開啟 /account。")
                 if group == "net"
-                else "面板已逾時，請重新開啟 /chart。",
+                else ui_text(self.ctx, "面板已逾時，請重新開啟 /chart。"),
                 allowed_mentions=discord.AllowedMentions.none(),
             )
         except discord.HTTPException:
@@ -857,7 +904,7 @@ class PanelView(PenguinView):
 class CompareUserSelect(discord.ui.UserSelect):
     def __init__(self, ctx):
         super().__init__(
-            placeholder="選擇要比較的玩家",
+            placeholder=ui_text(ctx, "選擇要比較的玩家"),
             custom_id="penguin:panel:compare_user",
             row=3,
             min_values=1,
@@ -877,7 +924,7 @@ class CompareUserSelect(discord.ui.UserSelect):
 
 class PanelModal(discord.ui.Modal):
     def __init__(self, ctx, action, title, fields):
-        super().__init__(title=title, timeout=300)
+        super().__init__(title=ui_text(ctx, title)[:45], timeout=300)
         self.ctx, self.action = ctx, action
         self.inputs = {}
         for key, label, required in fields:
@@ -888,7 +935,10 @@ class PanelModal(discord.ui.Modal):
                 else session.parameters.get(action, {}).get(key)
             )
             item = discord.ui.TextInput(
-                label=label, required=required, max_length=300, default=default or None
+                label=ui_text(ctx, label)[:45],
+                required=required,
+                max_length=300,
+                default=default or None,
             )
             self.inputs[key] = item
             self.add_item(item)
@@ -896,7 +946,7 @@ class PanelModal(discord.ui.Modal):
     async def on_submit(self, interaction):
         if interaction.user.id != session_for(self.ctx).owner_id:
             await interaction.response.send_message(
-                "此表單只供開啟者操作。", ephemeral=True
+                ui_text(self.ctx, "此表單只供開啟者操作。"), ephemeral=True
             )
             return
         values = {key: item.value.strip() for key, item in self.inputs.items()}
@@ -904,7 +954,7 @@ class PanelModal(discord.ui.Modal):
 
     async def on_error(self, interaction, error):
         await logger.awarning("Panel modal failed", error_type=type(error).__name__)
-        message = "此操作暫時無法完成，請回到面板重試。"
+        message = ui_text(self.ctx, "此操作暫時無法完成，請回到面板重試。")
         updated = component_context(self.ctx, interaction)
         await defer_panel(updated, interaction)
         await show_panel(
@@ -925,34 +975,51 @@ async def show_panel(ctx, section="home", *, description=None):
         settings = await ctx.bot.services.users.fetch_user_config(ctx.author.id)
         ctx.user_config = settings
         description = (
-            "成績分享："
-            + ("僅本人可查詢" if settings.privacy_mode else "允許其他玩家查詢與比較")
-            + "。\n解除連結與刪除資料需要再次確認。"
+            ui_text(ctx, "成績分享：")
+            + (
+                ui_text(ctx, "僅本人可查詢")
+                if settings.privacy_mode
+                else ui_text(ctx, "允許其他玩家查詢與比較")
+            )
+            + ui_text(ctx, "。\n解除連結與刪除資料需要再次確認。")
         )
     descriptions = {
-        "home": "選擇要開啟的功能。操作會在同一則訊息中更新。",
-        "chart": "從選單搜尋歌曲，開啟視譜。",
-        "score": "從選單搜尋歌曲，開啟個人成績。",
-        "source_scores": "查詢目前來源的原始成績，包含尚未對應曲庫的匯入資料。",
-        "compare": "指定玩家與歌曲進行來源成績比較。最近訊息比較請使用 /compare。",
-        "account_settings": "設定成績分享，或管理目前來源的連結與本機資料。刪除與解除連結需要確認。",
-        "tools": "輸入數值試算，結果可繼續修改或回到其他功能。",
-        "fun": "選一個工具，填入內容後即可互動。更多娛樂功能在選單。",
-        "sync": "選擇來源後同步；Chunilib 請選取匯出檔來源並按匯入檔案。",
+        "home": ui_text(ctx, "選擇要開啟的功能。操作會在同一則訊息中更新。"),
+        "chart": ui_text(ctx, "從選單搜尋歌曲，開啟視譜。"),
+        "score": ui_text(ctx, "從選單搜尋歌曲，開啟個人成績。"),
+        "source_scores": ui_text(
+            ctx, "查詢目前來源的原始成績，包含尚未對應曲庫的匯入資料。"
+        ),
+        "compare": ui_text(
+            ctx, "指定玩家與歌曲進行來源成績比較。最近訊息比較請使用 /compare。"
+        ),
+        "account_settings": ui_text(
+            ctx,
+            "設定成績分享，或管理目前來源的連結與本機資料。刪除與解除連結需要確認。",
+        ),
+        "tools": ui_text(ctx, "輸入數值試算，結果可繼續修改或回到其他功能。"),
+        "fun": ui_text(ctx, "選一個工具，填入內容後即可互動。更多娛樂功能在選單。"),
+        "sync": ui_text(ctx, "選擇來源後同步；Chunilib 請選取匯出檔來源並按匯入檔案。"),
     }
     embed = discord.Embed(
-        title=dict(SECTIONS).get(section, "CHUNITHM Penguin"),
+        title=ui_text(ctx, dict(SECTIONS).get(section, "CHUNITHM Penguin")),
         description=description
-        or descriptions.get(section, "使用按鈕與選單繼續操作。"),
+        or descriptions.get(section, ui_text(ctx, "使用按鈕與選單繼續操作。")),
         color=0x57B9CF,
     )
     embed.set_footer(
-        text="只有開啟者能操作 · 10 分鐘無操作後請重新開啟 /account"
+        text=ui_text(ctx, "只有開啟者能操作 · 10 分鐘無操作後請重新開啟 /account")
         if group_for(section) == "net"
-        else "只有開啟者能操作 · 10 分鐘無操作後請重新開啟 /chart"
+        else ui_text(ctx, "只有開啟者能操作 · 10 分鐘無操作後請重新開啟 /chart")
         if group_for(section) == "song"
-        else "只有開啟者能操作"
+        else ui_text(ctx, "只有開啟者能操作")
     )
+    if section == "home":
+        from .navigation import main_menu_embed
+
+        embed = main_menu_embed(ctx)
+        if description:
+            embed.description = description + "\n\n" + (embed.description or "")
     await retire_previous(ctx)
     view = PanelView(ctx)
     view.message = await ctx.respond_or_edit(
@@ -966,14 +1033,22 @@ async def show_panel(ctx, section="home", *, description=None):
 
 async def retire_previous(ctx):
     previous = session_for(ctx).active_view
-    if previous is None or getattr(previous, "_panel_inactive", False):
+    if previous is None or getattr(previous, "_navigation_retired", False):
         return
+    previous._navigation_retired = True
     previous._panel_inactive = True
-    if hasattr(previous, "close_network"):
-        await previous.close_network()
-    if hasattr(previous, "deactivate"):
-        await previous.deactivate()
-    previous.stop()
+    try:
+        for method in ("close_network", "deactivate"):
+            cleanup = getattr(previous, method, None)
+            if cleanup is not None:
+                try:
+                    await cleanup()
+                except Exception as error:
+                    await logger.awarning(
+                        "Panel cleanup failed", error_type=type(error).__name__
+                    )
+    finally:
+        previous.stop()
 
 
 async def show_account(ctx, *, notice=None):
@@ -985,14 +1060,14 @@ async def show_account(ctx, *, notice=None):
     state = ctx._account_state = await load_account_state(ctx)
     selected = state.source(session.route.source)
     embed = discord.Embed(
-        title="主資料介面",
+        title=ui_text(ctx, "主資料介面"),
         description=notice[:3000]
         if notice
-        else "選擇來源，管理帳號連結、同步及個人紀錄。",
+        else ui_text(ctx, "選擇來源，管理帳號連結、同步及個人紀錄。"),
         color=0x57B9CF,
     )
     embed.add_field(
-        name="帳號連結",
+        name=ui_text(ctx, "帳號連結"),
         value="\n".join(
             f"**{source.label}**："
             + (
@@ -1008,12 +1083,17 @@ async def show_account(ctx, *, notice=None):
         inline=False,
     )
     embed.add_field(
-        name="目前來源",
-        value=f"{selected.label}\n最後同步：{selected.last_sync or '尚未同步'}"
+        name=ui_text(ctx, "目前來源"),
+        value=ui_text(
+            ctx,
+            "{0}\n最後同步：{1}",
+            selected.label,
+            selected.last_sync or ui_text(ctx, "尚未同步"),
+        )
         + (f"\n{selected.notice}" if selected.notice else ""),
         inline=False,
     )
-    embed.set_footer(text="只有開啟者能操作 · 逾時請重新開啟 /account")
+    embed.set_footer(text=ui_text(ctx, "只有開啟者能操作 · 逾時請重新開啟 /account"))
     await retire_previous(ctx)
     view = PanelView(ctx)
     view.message = await ctx.respond_or_edit(
@@ -1035,7 +1115,7 @@ async def show_song(ctx, query, *, tab="overview"):
 
     result = await ctx.find_songs(query, load_global_aliases=True)
     if result is None:
-        return
+        return None
     route = session_for(ctx).route
     view = SongDetailsView(
         ctx, result.songs, synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket
@@ -1046,6 +1126,7 @@ async def show_song(ctx, query, *, tab="overview"):
         network="chunithm_net" if route.source == "net" else route.source,
     )
     await view.start()
+    return view
 
 
 async def restore_song_panel(ctx):
@@ -1054,7 +1135,9 @@ async def restore_song_panel(ctx):
 
     saved = session_for(ctx).song_card
     if saved is None:
-        return await show_panel(ctx, "chart", description="請先搜尋歌曲。")
+        return await show_panel(
+            ctx, "chart", description=ui_text(ctx, "請先搜尋歌曲。")
+        )
     await retire_previous(ctx)
     view = SongDetailsView(
         ctx,
@@ -1075,12 +1158,12 @@ async def open_chart_result(ctx, interaction, chart, *, origin_view):
         origin_view, "_panel_inactive", False
     ):
         await interaction.response.send_message(
-            "請使用自己的目前篩選結果。", ephemeral=True
+            ui_text(ctx, "請使用自己的目前篩選結果。"), ephemeral=True
         )
         return
     if session.busy:
         await interaction.response.send_message(
-            "正在處理上一個操作，請稍候。", ephemeral=True
+            ui_text(ctx, "正在處理上一個操作，請稍候。"), ephemeral=True
         )
         return
     session.busy = True
@@ -1100,7 +1183,9 @@ async def open_chart_result(ctx, interaction, chart, *, origin_view):
             or actual.difficulty != chart.difficulty
         ):
             await show_panel(
-                updated, "chart", description="這張譜面已不存在，請重新篩選。"
+                updated,
+                "chart",
+                description=ui_text(ctx, "這張譜面已不存在，請重新篩選。"),
             )
             return
         session.chart_results = dict(
@@ -1132,7 +1217,9 @@ async def open_chart_result(ctx, interaction, chart, *, origin_view):
                 None,
             )
             if candidate is None:
-                raise commands.BadArgument("選取譜面已無法對應歌曲，請重新篩選。")
+                raise commands.BadArgument(
+                    ui_text(ctx, "選取譜面已無法對應歌曲，請重新篩選。")
+                )
             selected = next(
                 song for song in candidate.songs if song.id == actual.song_id
             )
@@ -1160,7 +1247,9 @@ async def open_chart_result(ctx, interaction, chart, *, origin_view):
             "Opening selected chart failed", error_type=type(error).__name__
         )
         await show_panel(
-            updated, "chart", description="此譜面暫時無法開啟，請返回篩選重試。"
+            updated,
+            "chart",
+            description=ui_text(ctx, "此譜面暫時無法開啟，請返回篩選重試。"),
         )
     finally:
         session.busy = False
@@ -1172,7 +1261,7 @@ async def restore_chart_results(ctx):
     saved = session_for(ctx).chart_results
     if saved is None:
         return await show_panel(
-            ctx, "chart", description="篩選結果已過期，請重新查詢。"
+            ctx, "chart", description=ui_text(ctx, "篩選結果已過期，請重新查詢。")
         )
     session = session_for(ctx)
     await retire_previous(ctx)
@@ -1215,13 +1304,13 @@ async def show_song_aliases(ctx, *, notice=""):
         if row.guild_id == 0 or ctx.guild is not None and row.guild_id == ctx.guild.id
     ]
     lines = [
-        f"{'全域' if row.guild_id == 0 else '本伺服器'}：{discord.utils.escape_markdown(row.alias)}"
+        f"{ui_text(ctx, '全域') if row.guild_id == 0 else ui_text(ctx, '本伺服器')}：{discord.utils.escape_markdown(row.alias)}"
         for row in visible
     ]
     ctx._can_reload_alias = await ctx.bot.is_owner(ctx.author)
     description = (
         f"**{discord.utils.escape_markdown(song.title)} [{saved['state'].difficulty}]**\n"
-        + ("\n".join(lines) if lines else "尚無可用別名。")
+        + ("\n".join(lines) if lines else ui_text(ctx, "尚無可用別名。"))
     )
     if notice:
         description = notice + "\n\n" + description
@@ -1263,22 +1352,26 @@ async def _render_route(ctx, action, values):
                 owner_id=ctx.author.id,
             )
         except ValueError as error:
-            raise commands.BadArgument("請使用 1–100 字的一般文字作為別名。") from error
+            raise commands.BadArgument(
+                ui_text(ctx, "請使用 1–100 字的一般文字作為別名。")
+            ) from error
         if result.status not in ("added", "already_exists"):
             titles = "、".join(
                 dict.fromkeys(conflict.title for conflict in result.conflicts)
             )
-            raise commands.BadArgument(f"名稱已指向 {titles[:800]}，請換個別名。")
+            raise commands.BadArgument(
+                ui_text(ctx, "名稱已指向 {0}，請換個別名。", titles[:800])
+            )
         await show_song_aliases(
             ctx,
-            notice="已加入本伺服器共用別名。"
+            notice=ui_text(ctx, "已加入本伺服器共用別名。")
             if result.status == "added"
-            else "此別名已存在，未重複新增。",
+            else ui_text(ctx, "此別名已存在，未重複新增。"),
         )
     elif action in FORM_COMMANDS:
         await invoke_existing(ctx, FORM_COMMANDS[action][1], values)
         if action in ("alias_remove", "alias_reload") and session.song_card is not None:
-            await show_song_aliases(ctx, notice="別名操作已完成。")
+            await show_song_aliases(ctx, notice=ui_text(ctx, "別名操作已完成。"))
     elif action in ("chart", "score", "source_scores"):
         if not route.query:
             await show_panel(ctx, action)
@@ -1289,7 +1382,7 @@ async def _render_route(ctx, action, values):
         else:
             rows = await players.matching_rows(ctx, route.query, route.source)
             embeds = [
-                ScoreCardEmbed(row["record"])
+                ScoreCardEmbed(row["record"], language=get_chunithm_language(ctx))
                 if "record" in row
                 else discord.Embed(
                     title=row["title"][:256],
@@ -1301,7 +1394,9 @@ async def _render_route(ctx, action, values):
                 await EmbedPaginationView(ctx, embeds).start()
             else:
                 await show_panel(
-                    ctx, action, description="此來源沒有符合的已遊玩成績。"
+                    ctx,
+                    action,
+                    description=ui_text(ctx, "此來源沒有符合的已遊玩成績。"),
                 )
     elif action in ("b50", "recent"):
         if route.source not in ("net", "kamaitachi"):
@@ -1309,7 +1404,10 @@ async def _render_route(ctx, action, values):
                 await show_panel(
                     ctx,
                     action,
-                    description="此來源沒有可驗證的最近遊玩歷史；PB 更新時間不能當作遊玩紀錄。",
+                    description=ui_text(
+                        ctx,
+                        "此來源沒有可驗證的最近遊玩歷史；PB 更新時間不能當作遊玩紀錄。",
+                    ),
                 )
                 return
             payload, row = await players.sources.records(ctx.author.id, route.source)
@@ -1325,7 +1423,9 @@ async def _render_route(ctx, action, values):
                 reverse=True,
             )[:50]
             if not ranked:
-                raise SourceError("此來源缺少可信定數，請先使用個人成績查詢。")
+                raise SourceError(
+                    ui_text(ctx, "此來源缺少可信定數，請先使用個人成績查詢。")
+                )
             embeds = [
                 discord.Embed(
                     title="Best 50",
@@ -1334,7 +1434,12 @@ async def _render_route(ctx, action, values):
                         for offset, (rating, r) in enumerate(ranked[index : index + 10])
                     ),
                 ).set_footer(
-                    text=f"{route.source} · 本機排序，並非遊戲內 Rating 組成 · {row.synced_at}"
+                    text=ui_text(
+                        ctx,
+                        "{0} · 本機排序，並非遊戲內 Rating 組成 · {1}",
+                        route.source,
+                        row.synced_at,
+                    )
                 )
                 for index in range(0, len(ranked), 10)
             ]
@@ -1344,7 +1449,9 @@ async def _render_route(ctx, action, values):
                 cookie = await ctx.bot.database.cookies.get_by_discord_id(ctx.author.id)
                 if cookie is None or not cookie.cookie.startswith("#LWP-Cookies-2.0"):
                     await show_panel(
-                        ctx, "account", description="NET 尚未登入，請按下登入。"
+                        ctx,
+                        "account",
+                        description=ui_text(ctx, "NET 尚未登入，請按下登入。"),
                     )
                     return
             if action == "b50":
@@ -1369,28 +1476,35 @@ async def _render_route(ctx, action, values):
         await invoke_existing(ctx, "login")
     elif action == "link_source":
         text = (
-            "Kamaitachi 需先由管理者配置並啟用原模組，再使用 /kamaitachi link 連結。"
+            ui_text(
+                ctx,
+                "Kamaitachi 需先由管理者配置並啟用原模組，再使用 /kamaitachi link 連結。",
+            )
             if route.source == "kamaitachi"
-            else "請選擇 Chunilib 匯出檔來源，按「匯入檔案」上傳自己的匯出檔。"
+            else ui_text(
+                ctx, "請選擇 Chunilib 匯出檔來源，按「匯入檔案」上傳自己的匯出檔。"
+            )
         )
         await show_account(ctx, notice=text)
     elif action == "logout":
         await invoke_existing(ctx, "logout")
-        await show_account(ctx, notice="已登出 NET。")
+        await show_account(ctx, notice=ui_text(ctx, "已登出 NET。"))
         await refresh_account_parent(ctx)
     elif action == "token":
         value = await ctx.bot.get_cog("Auth").token_value(ctx.author.id)
         await ctx.respond_or_edit(
-            f"NET 憑證：||{value}||\n請勿提供給其他人。", ephemeral=True
+            ui_text(ctx, "NET 憑證：||{0}||\n請勿提供給其他人。", value), ephemeral=True
         )
     elif action == "unlink":
         if route.source not in ("chunirec:jp2", "chunirec:jp", "chunilib:export"):
-            raise SourceError("NET 請使用登出；Kamaitachi 請使用其原帳號管理功能。")
+            raise SourceError(
+                ui_text(ctx, "NET 請使用登出；Kamaitachi 請使用其原帳號管理功能。")
+            )
         await players.sources.unlink(ctx.author.id, route.source)
-        await show_account(ctx, notice="已解除此來源並刪除本機匯入資料。")
+        await show_account(ctx, notice=ui_text(ctx, "已解除此來源並刪除本機匯入資料。"))
         await refresh_account_parent(ctx)
     elif action == "delete_account":
-        text = await players.delete_own_data(ctx.author.id)
+        text = await players.delete_own_data(ctx.author.id, ctx)
         await show_account(ctx, notice=text)
         await refresh_account_parent(ctx)
     elif action == "run_sync":
@@ -1399,14 +1513,16 @@ async def _render_route(ctx, action, values):
         command = panel_command(ctx.bot, "sync")
         for check in command.checks:
             if not await discord.utils.maybe_coroutine(check, ctx.interaction):
-                raise commands.CheckFailure("此功能目前無法使用。")
+                raise commands.CheckFailure(ui_text(ctx, "此功能目前無法使用。"))
         if route.source.startswith("chunirec:"):
             result = await players.sources.sync_chunirec(
                 ctx.author.id, region=route.source.split(":")[1]
             )
-            text = players.sync_result(result, route.source)
+            text = players.sync_result(result, route.source, ctx)
         elif route.source == "chunilib:export":
-            text = "請選擇 Chunilib 匯出檔來源，按「匯入檔案」上傳自己的匯出檔。"
+            text = ui_text(
+                ctx, "請選擇 Chunilib 匯出檔來源，按「匯入檔案」上傳自己的匯出檔。"
+            )
         else:
             text = await players.sync_native(ctx, route.source)
         await show_panel(ctx, "sync", description=text)
@@ -1428,7 +1544,10 @@ async def _render_route(ctx, action, values):
                 else []
             )
         await ChartResultsView(
-            ctx, charts, title="人工標籤", query_label=f"配置標籤：{values['tag']}"
+            ctx,
+            charts,
+            title=ui_text(ctx, "人工標籤"),
+            query_label=ui_text(ctx, "配置標籤：{0}", values["tag"]),
         ).start()
     elif action == "compare":
         target = values.get("user_id", "")
@@ -1436,10 +1555,10 @@ async def _render_route(ctx, action, values):
             await show_panel(ctx, "compare")
             return
         if not target.isdecimal() or not 0 < int(target) < 2**64:
-            raise commands.BadArgument("請輸入有效的 Discord 玩家 ID。")
+            raise commands.BadArgument(ui_text(ctx, "請輸入有效的 Discord 玩家 ID。"))
         settings = await ctx.bot.services.users.fetch_user_config(int(target))
         if int(target) != ctx.author.id and settings.privacy_mode:
-            raise SourceError("該玩家尚未允許分享成績。")
+            raise SourceError(ui_text(ctx, "該玩家尚未允許分享成績。"))
         saved = session.song_card
         selected_song = (
             saved["songs"][saved["state"].song_index] if saved is not None else None
@@ -1482,18 +1601,34 @@ async def _render_route(ctx, action, values):
             if (r["id"], r["diff"]) in theirs
         ]
         lines = [
-            f"**{discord.utils.escape_markdown(a['title'][:150])}** [{a['diff']}]\n{a['score']:,} vs {b['score']:,} · 差 {a['score'] - b['score']:+,}"
+            ui_text(
+                ctx,
+                "**{0}** [{1}]\n{2:,} vs {3:,} · 差 {4:+,}",
+                discord.utils.escape_markdown(a["title"][:150]),
+                a["diff"],
+                a["score"],
+                b["score"],
+                a["score"] - b["score"],
+            )
             for a, b in pairs
         ]
         deltas = [a["score"] - b["score"] for a, b in pairs]
         summary = (
-            f"共同譜面 {len(deltas)} 張 · 領先 {sum(d > 0 for d in deltas)}／平手 {sum(d == 0 for d in deltas)}／落後 {sum(d < 0 for d in deltas)} · 平均分差 {sum(deltas) / len(deltas):+,.1f}\n\n"
+            ui_text(
+                ctx,
+                "共同譜面 {0} 張 · 領先 {1}／平手 {2}／落後 {3} · 平均分差 {4:+,.1f}\n\n",
+                len(deltas),
+                sum(d > 0 for d in deltas),
+                sum(d == 0 for d in deltas),
+                sum(d < 0 for d in deltas),
+                sum(deltas) / len(deltas),
+            )
             if deltas
             else ""
         )
         embeds = [
             discord.Embed(
-                title="成績比較",
+                title=ui_text(ctx, "成績比較"),
                 description=summary + "\n\n".join(lines[index : index + 5]),
             ).set_footer(text=route.source)
             for index in range(0, len(lines), 5)
@@ -1502,23 +1637,29 @@ async def _render_route(ctx, action, values):
             await EmbedPaginationView(ctx, embeds).start()
         else:
             await show_panel(
-                ctx, action, description="雙方沒有此來源可對應的共同成績。"
+                ctx,
+                action,
+                description=ui_text(ctx, "雙方沒有此來源可對應的共同成績。"),
             )
     else:
         await show_panel(ctx, action)
 
 
 async def navigate(ctx, interaction, action, *, values=None, remember=True):
+    if action in ("menu", "help"):
+        from .navigation import open_navigation
+
+        return await open_navigation(ctx, interaction, action)
     session = session_for(ctx)
     origin_session = session
     if session.closed:
         await interaction.response.send_message(
-            "面板已關閉，請重新開啟對應指令。", ephemeral=True
+            ui_text(ctx, "面板已關閉，請重新開啟對應指令。"), ephemeral=True
         )
         return
     if interaction.user.id != session.owner_id:
         await interaction.response.send_message(
-            "此面板只供開啟者操作。", ephemeral=True
+            ui_text(ctx, "此面板只供開啟者操作。"), ephemeral=True
         )
         return
     current_group = group_for(session.route.section)
@@ -1539,7 +1680,9 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         await show_panel(
             updated,
             session.route.section,
-            description="此功能屬於其他類別，請使用對應指令開啟獨立介面。",
+            description=ui_text(
+                ctx, "此功能屬於其他類別，請使用對應指令開啟獨立介面。"
+            ),
         )
         return
     pending = session.pending_login
@@ -1549,7 +1692,7 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         await asyncio.gather(pending, return_exceptions=True)
     if session.busy:
         await interaction.response.send_message(
-            "正在處理上一個操作，請稍候。", ephemeral=True
+            ui_text(ctx, "正在處理上一個操作，請稍候。"), ephemeral=True
         )
         return
     if action == "retry_last":
@@ -1562,9 +1705,9 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         session.chart_results = None
     if action.startswith("input:"):
         kind = action.split(":", 1)[1]
-        fields = (("query", "歌曲名稱或別名", True),)
+        fields = (("query", ui_text(ctx, "歌曲名稱或別名"), True),)
         await interaction.response.send_modal(
-            PanelModal(ctx, kind, "查詢歌曲與成績", fields)
+            PanelModal(ctx, kind, ui_text(ctx, "查詢歌曲與成績"), fields)
         )
         return
     if (
@@ -1579,7 +1722,7 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         if action == "alias" and session.song_card is not None:
             fields = ()
         if action == "alias_add" and session.song_card is not None:
-            fields = (("added_alias", "新增別名（本伺服器共用）", True),)
+            fields = (("added_alias", ui_text(ctx, "新增別名（本伺服器共用）"), True),)
         if fields:
             await interaction.response.send_modal(
                 PanelModal(ctx, action, title, fields)
@@ -1587,7 +1730,12 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
             return
     if action == "tags" and values is None:
         await interaction.response.send_modal(
-            PanelModal(ctx, action, "搜尋人工標籤", (("tag", "配置標籤", True),))
+            PanelModal(
+                ctx,
+                action,
+                ui_text(ctx, "搜尋人工標籤"),
+                (("tag", ui_text(ctx, "配置標籤"), True),),
+            )
         )
         return
     if action == "import":
@@ -1610,7 +1758,7 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
             await check_route(component_context(ctx, interaction), "account")
         except commands.CommandError:
             await interaction.response.send_message(
-                "此功能目前無法使用。", ephemeral=True
+                ui_text(ctx, "此功能目前無法使用。"), ephemeral=True
             )
             return
         await interaction.response.send_modal(
@@ -1627,14 +1775,19 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         target_action = action.split(":", 1)[1]
         view = ConfirmPanel(confirm_ctx, target_action)
         prompt = {
-            "logout": "確定要登出自己的 NET 帳號嗎？",
-            "unlink": "確定解除目前來源並刪除此來源的本機匯入資料？",
-            "delete_account": "確定刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景？來源網站資料不受影響。",
+            "logout": ui_text(ctx, "確定要登出自己的 NET 帳號嗎？"),
+            "unlink": ui_text(ctx, "確定解除目前來源並刪除此來源的本機匯入資料？"),
+            "delete_account": ui_text(
+                ctx,
+                "確定刪除自己的本機帳號、成績、偏好、譜面評價與評論者背景？來源網站資料不受影響。",
+            ),
         }[target_action]
         if private_message(interaction.message):
             await interaction.response.edit_message(
                 content=None,
-                embeds=[discord.Embed(title="確認操作", description=prompt)],
+                embeds=[
+                    discord.Embed(title=ui_text(ctx, "確認操作"), description=prompt)
+                ],
                 attachments=[],
                 view=view,
             )
@@ -1642,7 +1795,7 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
             bind_panel_message(confirm_ctx, view.message)
         else:
             await interaction.response.send_message(
-                embed=discord.Embed(title="確認操作", description=prompt),
+                embed=discord.Embed(title=ui_text(ctx, "確認操作"), description=prompt),
                 view=view,
                 ephemeral=True,
             )
@@ -1704,11 +1857,7 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
 
             updated._account_state = await load_account_state(updated)
         if previous is not None:
-            previous._panel_inactive = True
-        if previous is not None and hasattr(previous, "close_network"):
-            await previous.close_network()
-        if previous is not None and hasattr(previous, "deactivate"):
-            await previous.deactivate()
+            await retire_previous(updated)
         if values:
             session.parameters[session.route.section] = {
                 **session.parameters.get(session.route.section, {}),
@@ -1730,14 +1879,16 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         session.retry_action = {"action": action, "values": values}
         session.route, session.history = before, old_history
         updated = component_context(ctx, interaction)
-        await show_panel(updated, before.section, description=str(error)[:1500])
+        await show_panel(
+            updated, before.section, description=ui_text(ctx, str(error))[:1500]
+        )
     except discord.app_commands.CommandOnCooldown:
         session.retry_action = {"action": action, "values": values}
         session.route, session.history = before, old_history
         await show_panel(
             component_context(ctx, interaction),
             before.section,
-            description="操作太頻繁，請稍後再試。",
+            description=ui_text(ctx, "操作太頻繁，請稍後再試。"),
         )
     except Exception as error:
         session.retry_action = {"action": action, "values": values}
@@ -1749,31 +1900,36 @@ async def navigate(ctx, interaction, action, *, values=None, remember=True):
         await show_panel(
             updated,
             before.section,
-            description="此操作暫時無法完成，請重新整理或切換功能。",
+            description=ui_text(ctx, "此操作暫時無法完成，請重新整理或切換功能。"),
         )
     finally:
         session.busy = False
         origin_session.busy = False
-        if previous is not None and session.active_view is not previous:
+        if (
+            previous is not None
+            and session.active_view is not previous
+            and not getattr(previous, "_navigation_retired", False)
+        ):
             previous._panel_inactive = True
             previous.stop()
 
 
 class ImportPlayerModal(discord.ui.Modal, title="匯入自己的 Chunilib 匯出檔"):
     def __init__(self, ctx):
-        super().__init__(timeout=300)
+        super().__init__(title=ui_text(ctx, "匯入自己的 Chunilib 匯出檔"), timeout=300)
         self.ctx = ctx
         self.upload = discord.ui.FileUpload(min_values=1, max_values=1)
         self.add_item(
             discord.ui.Label(
-                text="自己的 player-data JSON（最大 5 MiB）", component=self.upload
+                text=ui_text(ctx, "自己的 player-data JSON（最大 5 MiB）"),
+                component=self.upload,
             )
         )
 
     async def on_submit(self, interaction):
         if interaction.user.id != session_for(self.ctx).owner_id:
             await interaction.response.send_message(
-                "此表單只供本人使用。", ephemeral=True
+                ui_text(self.ctx, "此表單只供本人使用。"), ephemeral=True
             )
             return
         ctx = sensitive_context(self.ctx, interaction)
@@ -1784,10 +1940,12 @@ class ImportPlayerModal(discord.ui.Modal, title="匯入自己的 Chunilib 匯出
 
             for check in panel_command(ctx.bot, "sync").checks:
                 if not await discord.utils.maybe_coroutine(check, interaction):
-                    raise commands.CheckFailure("此操作目前無法使用。")
+                    raise commands.CheckFailure(
+                        ui_text(self.ctx, "此操作目前無法使用。")
+                    )
             attachment = self.upload.values[0]
             if attachment.size > 5 * 1024 * 1024:
-                raise SourceError("匯出檔不可超過 5 MiB。")
+                raise SourceError(ui_text(self.ctx, "匯出檔不可超過 5 MiB。"))
             players = ctx.bot.get_cog("V2Players")
             result = await players.sources.import_chunilib(
                 ctx.author.id, await attachment.read()
@@ -1797,7 +1955,7 @@ class ImportPlayerModal(discord.ui.Modal, title="匯入自己的 Chunilib 匯出
                 "account", old.query, "chunilib:export", old.difficulty
             )
             await show_account(
-                ctx, notice=players.sync_result(result, "chunilib:export")
+                ctx, notice=players.sync_result(result, "chunilib:export", ctx)
             )
             await refresh_account_parent(ctx)
         except (
@@ -1805,7 +1963,7 @@ class ImportPlayerModal(discord.ui.Modal, title="匯入自己的 Chunilib 匯出
             discord.app_commands.CommandOnCooldown,
             SourceError,
         ) as error:
-            await show_account(ctx, notice=str(error)[:1000])
+            await show_account(ctx, notice=ui_text(ctx, str(error))[:1000])
 
     async def on_error(self, interaction, error):
         await logger.awarning(
@@ -1813,7 +1971,9 @@ class ImportPlayerModal(discord.ui.Modal, title="匯入自己的 Chunilib 匯出
         )
         ctx = sensitive_context(self.ctx, interaction)
         await defer_panel(ctx, interaction)
-        await show_account(ctx, notice="匯入失敗，請確認匯出檔格式後重試。")
+        await show_account(
+            ctx, notice=ui_text(self.ctx, "匯入失敗，請確認匯出檔格式後重試。")
+        )
 
 
 class ConfirmPanel(PenguinView):
@@ -1822,9 +1982,11 @@ class ConfirmPanel(PenguinView):
     def __init__(self, ctx, action):
         super().__init__(ctx, timeout=60)
         self.add_item(
-            PanelButton(ctx, "確認操作", action, style=discord.ButtonStyle.danger)
+            PanelButton(
+                ctx, ui_text(ctx, "確認操作"), action, style=discord.ButtonStyle.danger
+            )
         )
-        self.add_item(PanelButton(ctx, "取消", "account"))
+        self.add_item(PanelButton(ctx, ui_text(ctx, "取消"), "account"))
         from .dismiss import ensure_close
 
         ensure_close(self, ctx.author.id, ctx=ctx)

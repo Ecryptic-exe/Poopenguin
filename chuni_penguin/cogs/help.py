@@ -9,6 +9,7 @@ from discord.ext.commands.core import hooked_wrapped_callback
 from rapidfuzz import fuzz, process
 
 from chuni_penguin.constants import SIMILARITY_THRESHOLD
+from chuni_penguin.context import PenguinContext
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -152,11 +153,23 @@ async def help_slash(
         await help_command._command_impl.dispatch_error(ctx, e)
 
 
+@commands.hybrid_command(name="menu", description="Open the main menu.")
+async def menu_command(ctx: PenguinContext):
+    """Open the main menu."""
+    from chuni_penguin.ui.navigation import show_main_menu
+
+    await ctx.defer()
+    await show_main_menu(ctx)
+
+
 async def setup(bot: "ChuniBot"):
     bot.help_command = HelpCommand()
     bot.tree.add_command(help_slash)
+    bot.add_command(menu_command.copy())
 
 
 async def teardown(bot: "ChuniBot"):
+    bot.remove_command("menu")
+    bot.tree.remove_command("menu")
     bot.help_command = None
     bot.tree.remove_command("help")

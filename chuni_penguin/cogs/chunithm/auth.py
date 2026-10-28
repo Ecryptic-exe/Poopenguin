@@ -21,6 +21,7 @@ from chuni_penguin.context import PenguinContext
 from chuni_penguin.database import Cookie
 from chuni_penguin.logging import logged_app_command, logged_prefix_command, logger
 from chuni_penguin.ui import LoginFlowView
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -44,16 +45,18 @@ class AuthCog(commands.Cog, name="Auth"):
         """
         accounts = self.bot.services.accounts
         if accounts.user_locks[ctx.author.id].locked():
-            await ctx.reply("帳號正在同步或變更，請稍後再登出。")
+            await ctx.reply(ui_text(ctx, "帳號正在同步或變更，請稍後再登出。"))
             return
         async with accounts.user_locks[ctx.author.id]:
             if accounts.active_users.get(ctx.author.id, 0):
-                await ctx.reply("請先關閉正在使用帳號的成績分頁，再登出。")
+                await ctx.reply(
+                    ui_text(ctx, "請先關閉正在使用帳號的成績分頁，再登出。")
+                )
                 return
             await self._logout_unlocked(ctx, invalidate=invalidate)
 
     async def _logout_unlocked(self, ctx, *, invalidate=False):
-        msg = "Successfully logged out."
+        msg = ui_text(ctx, "Successfully logged out.")
 
         if invalidate:
             logged_out = False
@@ -95,7 +98,10 @@ class AuthCog(commands.Cog, name="Auth"):
         async with self.bot.services.accounts.user_locks[id]:
             if self.bot.services.accounts.active_users.get(id, 0):
                 return AuthenticationError(
-                    "請先關閉正在使用帳號的成績分頁，再重新登入。"
+                    ui_text(
+                        getattr(self, "ctx", None),
+                        "請先關閉正在使用帳號的成績分頁，再重新登入。",
+                    )
                 )
             return await self._verify_and_login_unlocked(id, clal)
 
@@ -240,8 +246,10 @@ class AuthCog(commands.Cog, name="Auth"):
                 return await ctx.respond_or_edit(
                     embed=discord.Embed(
                         color=discord.Color.green(),
-                        title="Successfully logged in",
-                        description="You can now use the bot's CHUNITHM-NET commands.",
+                        title=ui_text(ctx, "Successfully logged in"),
+                        description=ui_text(
+                            ctx, "You can now use the bot's CHUNITHM-NET commands."
+                        ),
                     ),
                 )
 
@@ -265,13 +273,17 @@ class AuthCog(commands.Cog, name="Auth"):
 
         if ctx.channel == channel or ctx.interaction is not None:
             msg = await view.start(
-                content=f"If you're trying to link your Kamaitachi account, use `{ctx.clean_prefix}kamaitachi link` instead!",
+                content=ui_text(
+                    ctx, "若要連結 Kamaitachi 帳號，請改用 `/kamaitachi link`。"
+                ),
             )
         else:
             try:
                 msg = await view.start_in(
                     channel,
-                    content=f"If you're trying to link your Kamaitachi account, use `{ctx.clean_prefix}kamaitachi link` instead!",
+                    content=ui_text(
+                        ctx, "若要連結 Kamaitachi 帳號，請改用 `/kamaitachi link`。"
+                    ),
                 )
             except discord.errors.Forbidden:
                 await logger.awarning(
@@ -299,8 +311,10 @@ class AuthCog(commands.Cog, name="Auth"):
                     msg,
                     discord.Embed(
                         color=discord.Color.green(),
-                        title="Successfully logged in",
-                        description="You can now use the bot's CHUNITHM-NET commands.",
+                        title=ui_text(ctx, "Successfully logged in"),
+                        description=ui_text(
+                            ctx, "You can now use the bot's CHUNITHM-NET commands."
+                        ),
                     ),
                 )
             else:
@@ -315,8 +329,8 @@ class AuthCog(commands.Cog, name="Auth"):
                     msg,
                     discord.Embed(
                         color=discord.Color.red(),
-                        title="Failed to login",
-                        description="登入憑證驗證失敗，請重新登入。",
+                        title=ui_text(ctx, "Failed to login"),
+                        description=ui_text(ctx, "登入憑證驗證失敗，請重新登入。"),
                     ),
                 )
         except TimeoutError:
@@ -345,16 +359,26 @@ class AuthCog(commands.Cog, name="Auth"):
 
         async with ctx.typing():
             value = await self.token_value(ctx.author.id)
-        await ctx.reply(f"Your token: ||{value}|| (click to reveal, DO NOT show to other people.)", mention_author=False)
+        await ctx.reply(
+            ui_text(ctx, "你的登入權杖：||{0}||（點擊顯示，請勿分享給他人。）", value),
+            mention_author=False,
+        )
 
     async def token_value(self, user_id):
         raw_jar = await self.utils.login_check(user_id)
         jar = LWPCookieJar()
-        jar._really_load(io.StringIO(raw_jar), "?", ignore_discard=False, ignore_expires=False)
+        jar._really_load(
+            io.StringIO(raw_jar), "?", ignore_discard=False, ignore_expires=False
+        )
         for cookie in jar:
             if cookie.name == "clal" and cookie.domain == "lng-tgk-aime-gw.am-all.net":
                 return cookie.value
-        raise commands.CommandError("Could not find your token. This is probably a bug.")
+        raise commands.CommandError(
+            ui_text(
+                getattr(self, "ctx", None),
+                "Could not find your token. This is probably a bug.",
+            )
+        )
 
     @app_commands.command(name="token", description="Show your current token.")
     @logged_app_command
@@ -370,12 +394,16 @@ class AuthCog(commands.Cog, name="Auth"):
         for cookie in jar:
             if cookie.name == "clal" and cookie.domain == "lng-tgk-aime-gw.am-all.net":
                 await interaction.followup.send(
-                    content=f"Your token: ||{cookie.value}|| (click to reveal, DO NOT show to other people.)",
+                    content=ui_text(
+                        interaction,
+                        "你的登入權杖：||{0}||（點擊顯示，請勿分享給他人。）",
+                        cookie.value,
+                    ),
                     ephemeral=True,
                 )
                 return
 
-        msg = "Could not find your token. This is probably a bug."
+        msg = ui_text(interaction, "Could not find your token. This is probably a bug.")
         raise app_commands.AppCommandError(msg)
 
 

@@ -4,9 +4,16 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from chuni_penguin.config import Config, use_config
 from chuni_penguin.database import Chart, Song
 from chuni_penguin.ui.chart_results import ChartResultSelect, ChartResultsView
 from chuni_penguin.ui.panel import attach_navigation, session_for
+
+
+@pytest.fixture(autouse=True)
+def chinese_ui():
+    with use_config(Config.from_mapping({"fun": {"language": "chinese"}})):
+        yield
 
 
 class FakeMessage:
@@ -168,9 +175,12 @@ async def test_pagination_edits_the_same_message_and_rebuilds_current_page_optio
     assert interaction.edit_original_response.await_count == 1
     edited = ctx.response.payloads[-1]
     assert edited["view"] is view
-    assert [int(option.value) for option in next(
-        item for item in view.children if isinstance(item, ChartResultSelect)
-    ).options] == [chart.id for chart in entries[10:20]]
+    assert [
+        int(option.value)
+        for option in next(
+            item for item in view.children if isinstance(item, ChartResultSelect)
+        ).options
+    ] == [chart.id for chart in entries[10:20]]
     assert edited["embed"].footer.text == "第 2/3 頁"
 
 
@@ -184,11 +194,21 @@ def test_components_stay_within_discord_limits_and_own_their_navigation():
     assert view._panel_own_navigation is True
     assert len(components) <= 5
     assert all(len(row["components"]) <= 5 for row in components)
-    assert all(len(item.get("options", [])) <= 25 for row in components for item in row["components"])
-    assert len([item for item in view.children if isinstance(item, ChartResultSelect)]) == 1
-    assert [int(option.value) for option in next(
-        item for item in view.children if isinstance(item, ChartResultSelect)
-    ).options] == list(range(1, 11))
+    assert all(
+        len(item.get("options", [])) <= 25
+        for row in components
+        for item in row["components"]
+    )
+    assert (
+        len([item for item in view.children if isinstance(item, ChartResultSelect)])
+        == 1
+    )
+    assert [
+        int(option.value)
+        for option in next(
+            item for item in view.children if isinstance(item, ChartResultSelect)
+        ).options
+    ] == list(range(1, 11))
 
 
 @pytest.mark.asyncio
@@ -203,7 +223,7 @@ async def test_owner_and_inactive_guards_report_stale_controls():
     stale = fake_interaction(ctx)
     view._panel_inactive = True
     assert await view.interaction_check(stale) is False
-    assert stale.response.messages[0][0][0] == "此譜面結果頁已失效，請重新搜尋。"
+    assert stale.response.messages[0][0][0] == "此頁面已失效，請使用 /menu 重新開啟。"
     assert stale.response.messages[0][1]["ephemeral"] is True
 
 
@@ -215,7 +235,7 @@ async def test_expired_controls_are_reported():
     interaction = fake_interaction(ctx)
 
     assert await view.interaction_check(interaction) is False
-    assert interaction.response.messages[0][0][0] == "此譜面結果頁已失效，請重新搜尋。"
+    assert interaction.response.messages[0][0][0] == "此頁面已失效，請使用 /menu 重新開啟。"
 
 
 @pytest.mark.asyncio

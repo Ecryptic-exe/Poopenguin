@@ -13,6 +13,8 @@ from discord import Interaction
 from discord.ext.commands import Context
 from discord.utils import escape_markdown
 
+from chuni_penguin.utils.chunithm_i18n import ui_text
+
 from ._base import MessageKwargs, PenguinView
 
 if TYPE_CHECKING:
@@ -82,8 +84,10 @@ class JumpToPageModal(discord.ui.Modal, title="Jump to page"):
     )
 
     def __init__(self, view: "PaginationView"):
-        super().__init__()
+        super().__init__(title=ui_text(view.ctx, "Jump to page"))
         self.view = view
+        self.page.text = ui_text(view.ctx, "Page")
+        self.page.description = ui_text(view.ctx, "The page number to jump to.")
 
     async def on_submit(self, interaction: Interaction["ChuniBot"], /) -> None:  # pyright: ignore[reportIncompatibleMethodOverride]
         assert isinstance(self.page.component, discord.ui.TextInput)
@@ -92,7 +96,11 @@ class JumpToPageModal(discord.ui.Modal, title="Jump to page"):
             page_number = int(self.page.component.value)
         except ValueError:
             await interaction.response.send_message(
-                f'Invalid page number: Cannot parse "{escape_markdown(self.page.component.value)}" as a number.',
+                ui_text(
+                    self.view.ctx,
+                    'Invalid page number: Cannot parse "{0}" as a number.',
+                    escape_markdown(self.page.component.value),
+                ),
                 ephemeral=True,
             )
             return
@@ -101,9 +109,15 @@ class JumpToPageModal(discord.ui.Modal, title="Jump to page"):
 
         if page_number < 1 or (max_pages is not None and page_number > max_pages):
             if max_pages is None:
-                message = "Invalid page number: Must be larger than 1."
+                message = ui_text(
+                    self.view.ctx, "Invalid page number: Must be larger than 1."
+                )
             else:
-                message = f"Invalid page number: Must be between 1 and {max_pages}."
+                message = ui_text(
+                    self.view.ctx,
+                    "Invalid page number: Must be between 1 and {0}.",
+                    max_pages,
+                )
 
             await interaction.response.send_message(message, ephemeral=True)
             return

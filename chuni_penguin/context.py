@@ -92,6 +92,8 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
 
         self.response = msg
         bind_panel_message(self, msg)
+        if isinstance(kwargs.get("view"), discord.ui.View):
+            kwargs["view"].message = msg
 
         return msg
 
@@ -266,6 +268,26 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
             elif not isinstance(self.response, WebhookMessage):
                 edit_kwargs["suppress"] = kwargs.get("suppress_embeds", False)
                 edit_kwargs["delete_after"] = kwargs.get("delete_after")
+
+            if getattr(self, "_panel_edit", False) and self.interaction is not None:
+                # Always edit the clicked component's response. This also keeps
+                # ephemeral navigation on the webhook API and acknowledges an
+                # interaction that has not been deferred yet.
+                interaction_kwargs = {
+                    key: value for key, value in edit_kwargs.items()
+                    if key not in ("suppress", "delete_after")
+                }
+                if self.interaction.response.is_done():
+                    self.response = await self.interaction.edit_original_response(
+                        **interaction_kwargs
+                    )
+                else:
+                    await self.interaction.response.edit_message(**interaction_kwargs)
+                    self.response = await self.interaction.original_response()
+                bind_panel_message(self, self.response)
+                if isinstance(kwargs.get("view"), discord.ui.View):
+                    kwargs["view"].message = self.response
+                return self.response
 
             with contextlib.suppress(discord.errors.NotFound):
                 self.response = await self.response.edit(**edit_kwargs)

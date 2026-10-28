@@ -26,6 +26,12 @@ from chuni_penguin.errors import Banned, CommandDisabled
 from chuni_penguin.logging import logger
 from chuni_penguin.ui.components import BannedEmbed
 from chuni_penguin.ui.dismiss import CloseView
+from chuni_penguin.utils.chunithm_i18n import (
+    get_chunithm_language,
+    localize_chunithm_embed,
+    t,
+    ui_text,
+)
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -59,11 +65,14 @@ class CommandErrorService:
             with contextlib.suppress(discord.NotFound):
                 if interaction.response.is_done():
                     await interaction.edit_original_response(
-                        embed=embed, view=CloseView(interaction.user.id)
+                        embed=embed,
+                        view=CloseView(interaction.user.id, ctx=interaction),
                     )
                 else:
                     await interaction.response.send_message(
-                        embed=embed, ephemeral=True, view=CloseView(interaction.user.id)
+                        embed=embed,
+                        ephemeral=True,
+                        view=CloseView(interaction.user.id, ctx=interaction),
                     )
 
             return
@@ -75,15 +84,17 @@ class CommandErrorService:
             exc_info=exc,
         )
 
-        embed.description = "操作未完成，請稍後重試。"
+        embed.description = ui_text(interaction, "操作未完成，請稍後重試。")
 
         if interaction.response.is_done():
             await interaction.edit_original_response(
-                embed=embed, view=CloseView(interaction.user.id)
+                embed=embed, view=CloseView(interaction.user.id, ctx=interaction)
             )
         else:
             await interaction.response.send_message(
-                embed=embed, ephemeral=True, view=CloseView(interaction.user.id)
+                embed=embed,
+                ephemeral=True,
+                view=CloseView(interaction.user.id, ctx=interaction),
             )
 
         await self.submit_error_to_webhook(interaction, exc)
@@ -123,7 +134,7 @@ class CommandErrorService:
             exc_info=exc,
         )
 
-        embed.description = "操作未完成，請稍後重試。"
+        embed.description = ui_text(ctx, "操作未完成，請稍後重試。")
 
         if self.settings.bot.support_server_invite:
             embed.description += "\n"
@@ -141,36 +152,15 @@ class CommandErrorService:
         command_name: str | None,
         exc: Exception,
     ):
+        language = get_chunithm_language(context_or_interaction)
         embed = discord.Embed(
             color=discord.Color.red(),
             title="Error",
         )
         delete_after: float | None = None
 
-        # text_prefix is for the help command, since we don't have a slash help
-        # command (yet)
-        if isinstance((interaction := context_or_interaction), discord.Interaction) or (
-            isinstance(context_or_interaction, Context)
-            and (interaction := context_or_interaction.interaction) is not None
-        ):
-            if (guild_id := interaction.guild_id) is not None:
-                text_prefix = interaction.client.prefixes.get(
-                    guild_id, self.settings.bot.default_prefix
-                )
-            else:
-                text_prefix = self.settings.bot.default_prefix
-
-            prefix = "/"
-        else:
-            # The type checker is not smart enough to realize that the upper branch
-            # already ensures that context_or_interaction cannot be an Interaction
-            # down here.
-            assert isinstance(context_or_interaction, Context)
-
-            prefix = text_prefix = (
-                context_or_interaction.clean_prefix or self.settings.bot.default_prefix
-            )
-
+        # Use the public slash help/login spelling in both presentations.
+        prefix = text_prefix = "/"
         match exc:
             # Network adapter errors
             case MaintenanceError():
@@ -210,13 +200,10 @@ class CommandErrorService:
                 embed.set_image(url=f"https://http.cat/{exc.code}.jpg")
                 embed.set_footer(text="Image from https://http.cat")
             case NetworkError():
-                embed.description = (
-                    "An error occurred while communicating with the network. Please try again later (or re-login).\n"
-                    "\n"
-                    "Detailed error:\n"
-                    "```python\n"
-                    "來源連線失敗；請稍後重試。\n"
-                    "```"
+                embed.description = t(
+                    language,
+                    "An error occurred while communicating with the network. Please try again later (or re-login).",
+                    "網路通訊時發生錯誤，請稍後再試或重新登入。",
                 )
 
             # Discord HTTP errors
@@ -347,16 +334,15 @@ class CommandErrorService:
             ):
                 embed.description = "Timed out trying to connect to the network."
             case httpx.TransportError() | aiohttp.ClientConnectionError():
-                embed.description = (
-                    "An unknown network error occured trying to connect to the network.\n"
-                    "\n"
-                    "Detailed error:\n"
-                    "```python\n"
-                    "來源連線失敗；請稍後重試。\n"
-                    "```"
+                embed.description = t(
+                    language,
+                    "An unknown network error occured trying to connect to the network.",
+                    "連線時發生未知網路錯誤，請稍後再試。",
                 )
 
-        return embed, delete_after
+        return localize_chunithm_embed(
+            embed, get_chunithm_language(context_or_interaction)
+        ), delete_after
 
     async def send_error(
         self,

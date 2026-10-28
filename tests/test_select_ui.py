@@ -100,6 +100,7 @@ async def test_candidate_recovery_uses_select_and_retains_score_entry(ctx):
     result = DiscoveryResult("fi", (SongCandidate(song, 90, "fuzzy"),), True, False)
     view = SongSearchView(ctx, result, tab="scores")
     assert [c.label for c in view.children if isinstance(c, discord.ui.Button)] == [
+        "返回主選單",
         "關閉"
     ]
     menu = next(c for c in view.children if isinstance(c, SongSearchActionSelect))
@@ -141,6 +142,7 @@ async def test_alias_remove_returns_to_same_song_context_without_extra_buttons(c
     assert session_for(ctx).route.section == "alias"
     assert session_for(ctx).message is public
     assert [c.label for c in view.children if isinstance(c, discord.ui.Button)] == [
+        "返回主選單",
         "關閉"
     ]
     menu = next(c for c in view.children if isinstance(c, SongPanelSelect))

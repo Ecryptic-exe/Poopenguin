@@ -5,6 +5,7 @@ import discord.ui
 from discord.ext.commands import Context
 
 from chuni_penguin.ui import ScoreCardEmbed
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 
 from ._pagination import ListPageSource, PaginationView
 
@@ -58,7 +59,11 @@ class RecentRecordsPageSource(ListPageSource[list["RecentScore"]]):
     ) -> dict[str, Any]:
         scores = page[0]
         embeds: list[discord.Embed] = [
-            ScoreCardEmbed(s, synthesis_alt_jacket=self.synthesis_alt_jacket)
+            ScoreCardEmbed(
+                s,
+                synthesis_alt_jacket=self.synthesis_alt_jacket,
+                language=get_chunithm_language(menu.ctx),
+            )
             for s in scores
         ]
 
@@ -163,6 +168,7 @@ class RecentRecordsView(PaginationView):
                     score,
                     synthesis_alt_jacket=self.synthesis_alt_jacket,
                     detailed=True,
+                    language=get_chunithm_language(interaction),
                 ),
             )
         else:
@@ -172,6 +178,7 @@ class RecentRecordsView(PaginationView):
                     score,
                     synthesis_alt_jacket=self.synthesis_alt_jacket,
                     detailed=True,
+                    language=get_chunithm_language(interaction),
                 ),
                 view=self,
             )

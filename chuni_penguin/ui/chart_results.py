@@ -10,6 +10,7 @@ from discord.utils import escape_markdown
 
 from chuni_penguin.database import Chart
 from chuni_penguin.types import Difficulty
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 from ._base import MessageKwargs, PenguinView
 from .song_labels import availability_label
@@ -31,7 +32,7 @@ class ChartResultSelect(discord.ui.Select["ChartResultsView"]):
     def __init__(self, view: "ChartResultsView") -> None:
         charts = view.page_charts
         super().__init__(
-            placeholder="選擇譜面以開啟歌曲資訊",
+            placeholder=ui_text(view.ctx, "選擇譜面以開啟歌曲資訊"),
             custom_id="chart_results:chart",
             row=0,
             min_values=1,
@@ -44,8 +45,14 @@ class ChartResultSelect(discord.ui.Select["ChartResultsView"]):
                     )[:100],
                     value=str(chart.id),
                     description=(
-                        f"收錄版本 {chart.version or chart.song.version or '未知'} · "
-                        f"{availability_label(chart.song)}"
+                        ui_text(
+                            view.ctx,
+                            "收錄版本 {0} · {1}",
+                            chart.version
+                            or chart.song.version
+                            or ui_text(view.ctx, "未知"),
+                            availability_label(chart.song, ctx=view.ctx),
+                        )
                     )[:100],
                 )
                 for chart in charts
@@ -113,7 +120,7 @@ class ChartResultsView(PenguinView["PenguinContext"]):
     ) -> None:
         super().__init__(ctx, timeout=600)
         self.charts = tuple(charts)
-        self.title = title
+        self.title = ui_text(ctx, title)
         self.query_label = query_label
         self.page = max(0, min(page, self.page_count - 1))
         self._expired = False
@@ -135,36 +142,55 @@ class ChartResultsView(PenguinView["PenguinContext"]):
             self.add_item(ChartResultSelect(self))
         if self.page_count > 1:
             self.add_item(
-                ChartResultsButton("上一頁", "previous", row=1, disabled=self.page <= 0)
+                ChartResultsButton(
+                    ui_text(self.ctx, "上一頁"),
+                    "previous",
+                    row=1,
+                    disabled=self.page <= 0,
+                )
             )
             self.add_item(
                 ChartResultsButton(
-                    "下一頁",
+                    ui_text(self.ctx, "下一頁"),
                     "next",
                     row=1,
                     disabled=self.page >= self.page_count - 1,
                 )
             )
-        self.add_item(ChartResultsButton("修改條件", "modify", row=2))
-        self.add_item(ChartResultsButton("返回歌曲搜尋", "song_home", row=2))
+        self.add_item(
+            ChartResultsButton(ui_text(self.ctx, "修改條件"), "modify", row=2)
+        )
+        self.add_item(
+            ChartResultsButton(ui_text(self.ctx, "返回歌曲搜尋"), "song_home", row=2)
+        )
         from .dismiss import ensure_close
 
         ensure_close(self, self.ctx.author.id, ctx=self.ctx)
 
     def _description(self) -> str:
         if not self.charts:
-            return "沒有符合條件的譜面。"
+            return ui_text(self.ctx, "沒有符合條件的譜面。")
 
         lines = []
         first_number = self.page * self.page_size + 1
         for number, chart in enumerate(self.page_charts, start=first_number):
             difficulty = _difficulty_label(chart.difficulty)
             title = escape_markdown(chart.song.title.replace("\n", " "))[:140]
-            version = escape_markdown(chart.version or chart.song.version or "未知")
-            status = availability_label(chart.song)
+            version = escape_markdown(
+                chart.version or chart.song.version or ui_text(self.ctx, "未知")
+            )
+            status = availability_label(chart.song, ctx=self.ctx)
             lines.append(
-                f"{number}. **{chart.level} · {difficulty}** {title}\n"
-                f"   收錄版本：{version} · 狀態：{status}"
+                ui_text(
+                    self.ctx,
+                    "{0}. **{1} · {2}** {3}\n   收錄版本：{4} · 狀態：{5}",
+                    number,
+                    chart.level,
+                    difficulty,
+                    title,
+                    version,
+                    status,
+                )
             )
         return "\n".join(lines)[:4096]
 
@@ -174,7 +200,7 @@ class ChartResultsView(PenguinView["PenguinContext"]):
             description=self._description(),
             color=0x57B9CF,
         )
-        footer = f"第 {self.page + 1}/{self.page_count} 頁"
+        footer = ui_text(self.ctx, "第 {0}/{1} 頁", self.page + 1, self.page_count)
         if self.query_label:
             footer = f"{escape_markdown(self.query_label)[:180]} · {footer}"
         embed.set_footer(text=footer[:2048])
@@ -198,7 +224,7 @@ class ChartResultsView(PenguinView["PenguinContext"]):
             or self._expired
             or self.is_finished()
         ):
-            message = "此譜面結果頁已失效，請重新搜尋。"
+            message = ui_text(self.ctx, "此譜面結果頁已失效，請重新搜尋。")
             if interaction.response.is_done():
                 await interaction.followup.send(message, ephemeral=True)
             else:
@@ -213,7 +239,9 @@ class ChartResultsView(PenguinView["PenguinContext"]):
         if self.message is not None and not getattr(self, "_panel_inactive", False):
             try:
                 await self.message.edit(
-                    content="篩選結果已逾時，請重新開啟 /chart 篩選。",
+                    content=ui_text(
+                        self.ctx, "篩選結果已逾時，請重新開啟 /chart 篩選。"
+                    ),
                     allowed_mentions=discord.AllowedMentions.none(),
                 )
             except discord.HTTPException:
@@ -232,7 +260,7 @@ class ChartResultsView(PenguinView["PenguinContext"]):
             (item for item in self.page_charts if item.id == selected_id), None
         )
         if chart is None:
-            message = "這個譜面結果已失效，請重新搜尋。"
+            message = ui_text(self.ctx, "這個譜面結果已失效，請重新搜尋。")
             if interaction.response.is_done():
                 await interaction.followup.send(message, ephemeral=True)
             else:

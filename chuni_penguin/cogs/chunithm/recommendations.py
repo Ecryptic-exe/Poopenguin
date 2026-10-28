@@ -34,6 +34,7 @@ from chuni_penguin.ui import ChartCardEmbed
 from chuni_penguin.utils import (
     round_to_nearest,
 )
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -227,7 +228,9 @@ class RecommendationsCog(commands.Cog, name="Recommendations"):
 
             embeds: list[discord.Embed] = [
                 ChartCardEmbed(
-                    chart, synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket
+                    chart,
+                    synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    language=get_chunithm_language(ctx),
                 )
                 for chart in charts
             ]
@@ -306,6 +309,7 @@ class RecommendationsCog(commands.Cog, name="Recommendations"):
                         chart,
                         target_score=target_score,
                         synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                        language=get_chunithm_language(ctx),
                     )
                 )
 

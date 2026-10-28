@@ -9,6 +9,7 @@ import discord
 import pytest
 from discord.ext import commands
 
+from chuni_penguin.config import Config, use_config
 from chuni_penguin.database import Alias, Chart, SdvxinChartView, Song
 from chuni_penguin.services.song_details import (
     SongDetailsData,
@@ -36,6 +37,12 @@ from chuni_penguin.ui.song_details import (
     SongDetailsView,
     SongMoreSelect,
 )
+
+
+@pytest.fixture(autouse=True)
+def chinese_ui():
+    with use_config(Config.from_mapping({"fun": {"language": "chinese"}})):
+        yield
 
 
 def make_song(song_id=1, *, difficulties=("BAS", "EXP", "MAS", "ULT")):
@@ -140,6 +147,7 @@ async def test_review_groups_and_pagination_leave_room_for_close_and_share_canon
     assert [o.value for o in review.options] == ["write", "overall", "rating_bucket"]
     assert any(isinstance(c, SongPageSelect) for c in view.children)
     assert [c.label for c in view.children if isinstance(c, discord.ui.Button)] == [
+        "返回主選單",
         "關閉"
     ]
     rows = view.to_components()
@@ -166,6 +174,7 @@ async def test_search_starts_with_all_tabs_and_no_remote_requests():
     assert {
         child.label for child in view.children if isinstance(child, discord.ui.Button)
     } == {label for tab, label in TABS if tab in COMMON_TABS and tab != "reviews"} | {
+        "返回主選單",
         "關閉",
     }
     menu = next(child for child in view.children if isinstance(child, SongMoreSelect))
@@ -544,7 +553,9 @@ async def test_search_command_starts_the_unified_view(monkeypatch):
         created.append(view)
         return view
 
-    monkeypatch.setattr(search, "SongDetailsView", build)
+    from chuni_penguin.ui import song_details
+
+    monkeypatch.setattr(song_details, "SongDetailsView", build)
     await search.SearchCog(ctx.bot)._info_inner(ctx, query="song", detailed=True)
     ctx.find_songs.assert_awaited_once_with("song", load_global_aliases=True)
     assert ctx.respond_or_edit.await_count == 1
@@ -576,12 +587,12 @@ async def test_other_users_including_owner_cannot_load_requesters_scores():
 
 
 @pytest.mark.asyncio
-async def test_timeout_removes_controls_and_prevents_further_loads():
+async def test_timeout_disables_controls_and_prevents_further_loads():
     view, data = make_view(make_song())
     await view._before_start()
     data.close = AsyncMock()
     await view.on_timeout()
-    assert view.children == []
+    assert view.children and all(item.disabled for item in view.children)
     assert view.is_finished()
     data.close.assert_awaited_once()
     last = interaction()

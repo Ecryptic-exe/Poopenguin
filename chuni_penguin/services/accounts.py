@@ -320,7 +320,12 @@ class AccountService:
 
     @contextlib.asynccontextmanager
     async def network(self, ctx, id=None, *, kamaitachi=False, chunithm_net=False):
-        author_id = ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        # An integer owner ID supports silent jobs using the same account locks,
+        # active-reader tracking, stored cookies, and session cleanup as commands.
+        author_id = (
+            ctx if isinstance(ctx, int)
+            else ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        )
         target_id = id or author_id
         async with self.user_locks[target_id]:
             manager = self._network_unlocked(
@@ -344,15 +349,18 @@ class AccountService:
     @contextlib.asynccontextmanager
     async def _network_unlocked(
         self,
-        ctx: commands.Context | discord.Interaction,
+        ctx: commands.Context | discord.Interaction | int,
         id: int | None = None,
         *,
         kamaitachi: bool = False,
         chunithm_net: bool = False,
     ) -> AsyncGenerator[NetworkAdapter, None]:
-        author_id = ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        author_id = (
+            ctx if isinstance(ctx, int)
+            else ctx.author.id if isinstance(ctx, commands.Context) else ctx.user.id
+        )
         target_id = id or author_id
-        is_interaction = (
+        is_interaction = not isinstance(ctx, int) and (
             isinstance(ctx, discord.Interaction) or ctx.interaction is not None
         )
         user_config = await self.users.fetch_user_config(target_id)

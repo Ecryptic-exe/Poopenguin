@@ -12,6 +12,7 @@ from chuni_penguin.config import config
 from chuni_penguin.database import Chart, Song
 from chuni_penguin.types import Difficulty
 from chuni_penguin.utils import get_jacket_url, sdvxin_link, yt_search_link
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, t, ui_text
 
 from ._pagination import FormatPageReturn, ListPageSource, PaginationView
 
@@ -25,7 +26,9 @@ class SongInfoEmbed(discord.Embed):
         detailed: bool = False,
         synthesis_alt_jacket: str | None = None,
         fun_mode: bool = False,
+        language: str | None = None,
     ):
+        language = language or get_chunithm_language()
         song_description_parts = []
 
         aliases = [escape_markdown(x.alias) for x in song.aliases if x.guild_id == 0]
@@ -36,16 +39,26 @@ class SongInfoEmbed(discord.Embed):
 
         if not song.available:
             if song.removed:
-                song_description_parts.append("\n**This song is removed.**\n\n")
+                song_description_parts.append(
+                    t(
+                        language,
+                        "\n**This song is removed.**\n\n",
+                        "\n**此歌曲已下架。**\n\n",
+                    )
+                )
             else:
                 song_description_parts.append(
-                    "\n**This song is not available in CHUNITHM International.**\n\n"
+                    t(
+                        language,
+                        "\n**This song is not available in CHUNITHM International.**\n\n",
+                        "\n**此歌曲尚未在 CHUNITHM 國際版開放。**\n\n",
+                    )
                 )
         else:
             song_description_parts.append("\n")
 
         displayed_version = song.version
-        displayed_bpm = "Unknown"
+        displayed_bpm = ui_text(language, "Unknown")
 
         if song.release is not None:
             displayed_version += f" ({song.release})"
@@ -61,9 +74,9 @@ class SongInfoEmbed(discord.Embed):
                 displayed_bpm = f"{displayed_bpm} ({song.min_bpm}~{song.max_bpm})"
 
         song_description_parts.append(
-            f"**Artist**: {escape_markdown(song.artist)}\n"
-            f"**Category**: {song.genre}\n"
-            f"**Version**: {displayed_version}\n"
+            f"**{ui_text(language, 'Artist')}**: {escape_markdown(song.artist)}\n"
+            f"**{ui_text(language, 'Category')}**: {song.genre}\n"
+            f"**{ui_text(language, 'Version')}**: {displayed_version}\n"
         )
 
         for chart in charts:
@@ -71,14 +84,14 @@ class SongInfoEmbed(discord.Embed):
                 difficulty = Difficulty(chart.difficulty)
 
                 song_description_parts.append(
-                    f"**Version ({difficulty})**: {chart.version}\n"
+                    f"**{ui_text(language, 'Version')} ({difficulty})**: {chart.version}\n"
                 )
 
         song_description_parts.append(f"**BPM**: {displayed_bpm}\n")
 
         if song.duration is not None:
             song_description_parts.append(
-                f"**Duration**: {song.duration // 60000}:{song.duration % 60000 // 1000:02}\n"
+                f"**{ui_text(language, 'Duration')}**: {song.duration // 60000}:{song.duration % 60000 // 1000:02}\n"
             )
 
         super().__init__(title=song.title, color=discord.Color.yellow())
@@ -136,7 +149,7 @@ class SongInfoEmbed(discord.Embed):
                     desc += f" ({chart.const:.1f})"
 
             if detailed and chart.charter is not None:
-                desc += f" Designer: {escape_markdown(chart.charter)}"
+                desc += f" {ui_text(language, 'NOTES DESIGNER')}: {escape_markdown(chart.charter)}"
 
             if detailed:
                 maxcombo = chart.maxcombo or "-"
@@ -149,7 +162,7 @@ class SongInfoEmbed(discord.Embed):
             chart_level_desc.append(desc)
 
         if len(chart_level_desc) > 0:
-            song_description_parts.append("\n**Level**:\n")
+            song_description_parts.append(f"\n**{ui_text(language, 'Level')}**:\n")
 
             if detailed:
                 song_description_parts.append(
@@ -201,6 +214,7 @@ class SongInfoPageSource(ListPageSource[Song]):
                         detailed=self.detailed,
                         synthesis_alt_jacket=self.synthesis_alt_jacket,
                         fun_mode=self.fun_mode,
+                        language=get_chunithm_language(menu.ctx),
                     )
                 )
 

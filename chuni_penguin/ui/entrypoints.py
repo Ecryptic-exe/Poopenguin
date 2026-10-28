@@ -2,8 +2,10 @@
 
 import discord
 from discord import app_commands
+from discord.ext import commands
 
 from chuni_penguin.context import PenguinContext
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 MOVED_ROOTS = frozenset(
     {
@@ -40,40 +42,53 @@ def panel_command(bot, name):
 
 
 async def open_entry(interaction, section):
+    await interaction.response.defer(thinking=True)
+    ctx = await PenguinContext.from_interaction(interaction)
+    return await show_entry(ctx, section)
+
+
+async def show_entry(ctx, section):
     from .panel import show_panel
     from .processing import processing_response
 
-    await interaction.response.defer(thinking=True)
-    ctx = await PenguinContext.from_interaction(interaction)
-    async with processing_response(ctx, "開啟介面"):
-        await show_panel(ctx, section)
+    async with processing_response(ctx, ui_text(ctx, "開啟介面")):
+        return await show_panel(ctx, section)
 
 
-@app_commands.command(name="account", description="帳號狀態、連結、同步與個人紀錄")
+@app_commands.command(
+    name="account", description="Account status, links, syncing and personal records"
+)
 async def account_entry(interaction: discord.Interaction):
     await open_entry(interaction, "account")
 
 
 async def open_song_entry(interaction, query, *, section, tab):
+    await interaction.response.defer(thinking=True)
+    ctx = await PenguinContext.from_interaction(interaction)
+    return await show_song_entry(ctx, query, section=section, tab=tab)
+
+
+async def show_song_entry(ctx, query, *, section, tab):
     from .panel import session_for, show_song
     from .processing import processing_response
 
     if not query:
-        await open_entry(interaction, section)
-        return
-    await interaction.response.defer(thinking=True)
-    ctx = await PenguinContext.from_interaction(interaction)
+        return await show_entry(ctx, section)
     session_for(ctx).parameters.clear()
-    async with processing_response(ctx, "搜尋歌曲"):
-        await show_song(ctx, query, tab=tab)
+    async with processing_response(ctx, ui_text(ctx, "搜尋歌曲")):
+        return await show_song(ctx, query, tab=tab)
 
 
-@app_commands.command(name="chart", description="搜尋歌曲並開啟視譜")
+@app_commands.command(
+    name="chart", description="Search for a song and open its chart view"
+)
 async def chart_entry(interaction: discord.Interaction, query: str | None = None):
     await open_song_entry(interaction, query, section="chart", tab="view")
 
 
-@app_commands.command(name="score", description="搜尋歌曲並開啟個人成績")
+@app_commands.command(
+    name="score", description="Search for a song and view your scores"
+)
 async def score_entry(interaction: discord.Interaction, query: str | None = None):
     await open_song_entry(interaction, query, section="score", tab="scores")
 
@@ -90,13 +105,27 @@ async def chart_query_complete(interaction: discord.Interaction, current: str):
 score_entry.autocomplete("query")(chart_query_complete)
 
 
-@app_commands.command(name="tools", description="Rating、定數、容錯與餡蜜計算")
+@app_commands.command(
+    name="tools", description="Rating, chart constant, border and anmitsu calculators"
+)
 async def tools_entry(interaction: discord.Interaction):
     await open_entry(interaction, "tools")
 
 
+@commands.command(name="tools")
+async def tools_prefix(ctx: PenguinContext):
+    """Open the same calculator panel as /tools."""
+    await show_entry(ctx, "tools")
+
+
+@commands.command(name="account")
+async def account_prefix(ctx: PenguinContext):
+    """Open the same account panel as /account."""
+    await show_entry(ctx, "account")
+
+
 @app_commands.command(
-    name="compare", description="依原版方式，查看最近成績訊息對應的最佳成績"
+    name="compare", description="Compare personal bests with recent score messages"
 )
 async def compare_entry(
     interaction: discord.Interaction,
@@ -131,6 +160,9 @@ def configure_entrypoints(bot):
                 cached[child.qualified_name] = child
         bot.tree.remove_command(command.name)
     bot.panel_commands = cached
+    for command in (tools_prefix, account_prefix):
+        if bot.get_command(command.name) is None:
+            bot.add_command(command.copy())
     for command in (
         account_entry,
         chart_entry,

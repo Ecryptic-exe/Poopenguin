@@ -13,6 +13,7 @@ import discord
 from discord.ext import commands
 
 from chuni_penguin.context import PenguinContext
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -27,12 +28,7 @@ class FunCog(commands.Cog, name="Fun"):
         self.settings = bot.settings.fun
 
     def _lang(self, ctx: PenguinContext) -> str:
-        guild_id = ctx.guild.id if ctx.guild else None
-        if guild_id in self.settings.english_guilds:
-            return "english"
-        if guild_id in self.settings.chinese_guilds:
-            return "chinese"
-        return self.settings.language
+        return get_chunithm_language(ctx)
 
     @commands.hybrid_command(
         name="ask",

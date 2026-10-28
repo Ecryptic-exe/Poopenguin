@@ -219,7 +219,7 @@ async def test_private_default_and_comparison_access(database, tmp_path):
         records=AsyncMock(return_value=({"records": []}, None))
     )
     ctx = SimpleNamespace(author=SimpleNamespace(id=1))
-    with pytest.raises(SourceError, match="分享"):
+    with pytest.raises(SourceError, match="sharing"):
         await cog.source_rows(ctx, "chunirec:jp2", SimpleNamespace(id=500))
     cog.sources.records.assert_not_awaited()
     settings = await users.fetch_user_config(500)
@@ -424,7 +424,8 @@ async def test_core_source_commands_deliver_private_scores_b50_and_history_limit
     await PlayersCog.recent.callback(cog, recent, source="chunirec:jp2")
     assert recent.followup.send.call_args.kwargs["ephemeral"] is True
     assert (
-        "不能當作最近遊玩" in recent.followup.send.call_args.kwargs["embed"].description
+        "not recent play history"
+        in recent.followup.send.call_args.kwargs["embed"].description
     )
     other = fake_interaction()
     await users.save_user_config(
@@ -438,7 +439,10 @@ async def test_core_source_commands_deliver_private_scores_b50_and_history_limit
         query="source title",
         source="chunirec:jp2",
     )
-    assert "尚未允許分享" in other.followup.send.call_args.kwargs["embed"].description
+    assert (
+        "not enabled score sharing"
+        in other.followup.send.call_args.kwargs["embed"].description
+    )
 
 
 @pytest.mark.asyncio
@@ -665,7 +669,10 @@ async def test_delete_refuses_an_active_recent_view(database, tmp_path, monkeypa
     interaction = fake_interaction()
     await PlayersCog.delete_account.callback(cog, interaction, confirm=True)
     assert await service.get(11, "chunirec:jp2") is not None
-    assert "先關閉" in interaction.followup.send.call_args.kwargs["embed"].description
+    assert (
+        "Close score tabs"
+        in interaction.followup.send.call_args.kwargs["embed"].description
+    )
 
 
 @pytest.mark.asyncio
@@ -705,7 +712,6 @@ async def test_native_failure_is_recorded_without_false_success(
 async def test_find_filters_difficulty_version_and_reviewed_tags(monkeypatch):
     from contextlib import asynccontextmanager
 
-    import chuni_penguin.cogs.chunithm.search as module
     from chuni_penguin.cogs.chunithm.search import SearchCog
     from chuni_penguin.converters import Level
 
@@ -732,19 +738,22 @@ async def test_find_filters_difficulty_version_and_reviewed_tags(monkeypatch):
     captured = []
 
     class View:
-        def __init__(self, ctx, selected):
+        def __init__(self, ctx, selected, **kwargs):
             captured.extend(selected)
 
         async def start(self):
             pass
 
-    monkeypatch.setattr(module, "SonglistView", View)
+    from chuni_penguin.ui import chart_results
+
+    monkeypatch.setattr(chart_results, "ChartResultsView", View)
 
     @asynccontextmanager
     async def typing():
         yield
 
     ctx = SimpleNamespace(
+        author=SimpleNamespace(id=11),
         typing=typing,
         reply=AsyncMock(),
         bot=SimpleNamespace(

@@ -16,6 +16,7 @@ import discord
 
 from chuni_penguin.config import config
 from chuni_penguin.logging import logger
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 if TYPE_CHECKING:
     from chuni_penguin.context import PenguinContext
@@ -47,10 +48,9 @@ class PenguinViewMixin(Generic[ContextT]):
     ) -> discord.Message:
         kwargs = await self._before_start(content=content)
 
-        if getattr(self.ctx, "interaction", None) is not None:
-            from .panel import attach_navigation
+        from .panel import attach_navigation
 
-            attach_navigation(self.ctx, self)
+        attach_navigation(self.ctx, self)
 
         from .dismiss import ensure_close
 
@@ -120,10 +120,12 @@ class PenguinViewMixin(Generic[ContextT]):
 
     async def interaction_check(self, interaction: discord.Interaction, /) -> bool:
         if interaction.user.id == self.ctx.author.id:
-            return True
+            from .navigation import navigation_check
+
+            return await navigation_check(self.ctx, interaction, self)
 
         await interaction.response.send_message(
-            "This menu cannot be controlled by you, sorry!",
+            ui_text(self.ctx, "This menu cannot be controlled by you, sorry!"),
             ephemeral=True,
         )
         return False
@@ -152,13 +154,13 @@ class PenguinViewMixin(Generic[ContextT]):
                         await interaction.followup.send(
                             embed=embed,
                             ephemeral=True,
-                            view=CloseView(self.ctx.author.id),
+                            view=CloseView(self.ctx.author.id, ctx=self.ctx),
                         )
                     else:
                         await interaction.response.send_message(
                             embed=embed,
                             ephemeral=True,
-                            view=CloseView(self.ctx.author.id),
+                            view=CloseView(self.ctx.author.id, ctx=self.ctx),
                         )
 
                 return
@@ -169,8 +171,8 @@ class PenguinViewMixin(Generic[ContextT]):
 
         embed = discord.Embed(
             color=discord.Color.red(),
-            title="操作未完成",
-            description="此操作暫時無法完成，請稍後重試。",
+            title=ui_text(self.ctx, "操作未完成"),
+            description=ui_text(self.ctx, "此操作暫時無法完成，請稍後重試。"),
         )
 
         if config.bot.support_server_invite:
@@ -184,11 +186,15 @@ class PenguinViewMixin(Generic[ContextT]):
 
         if interaction.response.is_done():
             await interaction.followup.send(
-                embed=embed, ephemeral=True, view=CloseView(self.ctx.author.id)
+                embed=embed,
+                ephemeral=True,
+                view=CloseView(self.ctx.author.id, ctx=self.ctx),
             )
         else:
             await interaction.response.send_message(
-                embed=embed, ephemeral=True, view=CloseView(self.ctx.author.id)
+                embed=embed,
+                ephemeral=True,
+                view=CloseView(self.ctx.author.id, ctx=self.ctx),
             )
 
         if errors is not None:
@@ -239,27 +245,13 @@ class PenguinView(PenguinViewMixin[ContextT], discord.ui.View):
         discord.ui.View.__init__(self, timeout=timeout)
 
         self.ctx = ctx
+        self.message = None
 
     @override
     async def on_timeout(self) -> None:
-        if getattr(self, "_panel_inactive", False):
-            return
-        for item in self.children:
-            if (
-                not isinstance(item, discord.ui.Button)
-                or item.style != discord.ButtonStyle.link
-            ):
-                self.remove_item(item)
+        from .navigation import expire_navigation
 
-        if self.message is not None:
-            from .dismiss import CloseView
-
-            await self.message.edit(
-                view=CloseView(self.ctx.author.id),
-                allowed_mentions=discord.AllowedMentions.none(),
-            )
-
-        self.stop()
+        await expire_navigation(self)
 
 
 class PenguinLayoutView(PenguinViewMixin[ContextT], discord.ui.LayoutView):

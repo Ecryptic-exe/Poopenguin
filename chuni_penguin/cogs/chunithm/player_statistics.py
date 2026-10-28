@@ -45,6 +45,7 @@ from chuni_penguin.ui import (
     ScoreCardEmbed,
 )
 from chuni_penguin.utils import floor_to_ndp
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
 from chuni_penguin.utils.formatting import bold, bold_if
 
 if TYPE_CHECKING:
@@ -530,6 +531,7 @@ class PlayerStatisticsCog(commands.Cog, name="PlayerStatistics"):
                 ScoreCardEmbed(
                     await self.scores.convert_to_network_pb(pb),
                     synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    language=get_chunithm_language(ctx),
                 )
                 for pb in featured_scores
             ]

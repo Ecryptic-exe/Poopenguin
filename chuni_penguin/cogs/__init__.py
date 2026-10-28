@@ -222,6 +222,7 @@ DEFAULT_EXTENSIONS = (
       for spec in DEFAULT_EXTENSIONS),
     ExtensionSpec(_ROOT + "v2_players", ("V2Players",), required_services=("database", "users", "accounts", "catalog", "errors")),
     ExtensionSpec(_ROOT + "v2_chart", ("V2Chart",), required_services=("database", "catalog")),
+    ExtensionSpec(_ROOT + "chunithm.dailyupdate", ("DailyUpdate",), required_services=("accounts",), selection_parents=(_ROOT + "chunithm.records",)),
     *(ExtensionSpec(
         _ROOT + "poopenguin." + key + "_cog", (name,),
         required_services=("permissions",), optional=optional,
