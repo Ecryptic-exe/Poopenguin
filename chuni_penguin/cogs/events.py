@@ -12,9 +12,10 @@ from discord.ext import commands, tasks
 from chuni_penguin.context import PenguinContext
 from chuni_penguin.logging import logger
 from chuni_penguin.privacy import private_command
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 STATUS_MESSAGES = (
-    "Type {prefix}help or ping me for full command manual",
+    "Open /menu or ping me to get started",
     "Listening to Ice - Floor Of Lava",
     "ね、簡単でしょ？",
     "Contact natherox on Discord for support",
@@ -63,7 +64,9 @@ class EventsCog(commands.Cog, name="Events"):
     @tasks.loop(seconds=10, reconnect=True)
     async def rotate_status(self):
         prefix = self.bot.settings.bot.default_prefix
-        status = STATUS_MESSAGES[self._status_index].format(prefix=prefix)
+        status = ui_text(
+            self.bot.settings.fun.language, STATUS_MESSAGES[self._status_index]
+        ).format(prefix=prefix)
         self._status_index = (self._status_index + 1) % len(STATUS_MESSAGES)
         await self.bot.change_presence(activity=discord.Game(name=status))
 

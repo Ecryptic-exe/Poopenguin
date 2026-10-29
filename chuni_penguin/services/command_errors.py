@@ -26,6 +26,7 @@ from chuni_penguin.errors import Banned, CommandDisabled
 from chuni_penguin.logging import logger
 from chuni_penguin.ui.components import BannedEmbed
 from chuni_penguin.ui.dismiss import CloseView
+from chuni_penguin.ui.owner_view import edit_view_message, send_view_message
 from chuni_penguin.utils.chunithm_i18n import (
     get_chunithm_language,
     localize_chunithm_embed,
@@ -64,12 +65,14 @@ class CommandErrorService:
         if embed.description is not None:
             with contextlib.suppress(discord.NotFound):
                 if interaction.response.is_done():
-                    await interaction.edit_original_response(
+                    await edit_view_message(
+                        interaction,
                         embed=embed,
                         view=CloseView(interaction.user.id, ctx=interaction),
                     )
                 else:
-                    await interaction.response.send_message(
+                    await send_view_message(
+                        interaction,
                         embed=embed,
                         ephemeral=True,
                         view=CloseView(interaction.user.id, ctx=interaction),
@@ -87,11 +90,13 @@ class CommandErrorService:
         embed.description = ui_text(interaction, "操作未完成，請稍後重試。")
 
         if interaction.response.is_done():
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 embed=embed, view=CloseView(interaction.user.id, ctx=interaction)
             )
         else:
-            await interaction.response.send_message(
+            await send_view_message(
+                interaction,
                 embed=embed,
                 ephemeral=True,
                 view=CloseView(interaction.user.id, ctx=interaction),

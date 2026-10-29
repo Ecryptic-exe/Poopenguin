@@ -51,17 +51,19 @@ an individual value can no longer contain a space (e.g. a two-word
 song title) - see GAPS.md for this trade-off and what filling that
 gap would look like.
 """
-from typing import List
-
 import math
+from typing import List
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
+from chuni_penguin.ui.dismiss import dismiss_message
+from chuni_penguin.ui.owner_view import bind_owner_view
+
 from .config import load_settings
-from .i18n import t, get_guild_language
-from .copypasta_manager import CopypastaManager, CopypastaError, extract_placeholders
+from .copypasta_manager import CopypastaError, CopypastaManager, extract_placeholders
+from .i18n import get_guild_language, t
 
 # How many copypasta types are shown per page in the `!copypasta list` menu.
 COPYPASTA_PAGE_SIZE = 5
@@ -162,6 +164,8 @@ class CopypastaMenu(discord.ui.View):
         self.clear_button.label = t(language, "Clear Search", "清除搜尋")
         self.close_button.label = t(language, "Close", "關閉")
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     def _total_pages(self):
         return max(1, math.ceil(len(self.filtered_items) / self.page_size))
 
@@ -173,7 +177,7 @@ class CopypastaMenu(discord.ui.View):
 
         title = t(self.language, "Copypasta Types", "迷因文本類型")
         if self.search_term:
-            title += t(self.language, f' — search: "{self.search_term}"', f'－搜尋：「{self.search_term}」')
+            title += t(self.language, f' — search: "{self.search_term}"', f"－搜尋：「{self.search_term}」")
 
         embed = discord.Embed(title=title, color=discord.Color.blue())
 
@@ -248,9 +252,7 @@ class CopypastaMenu(discord.ui.View):
 
     @discord.ui.button(style=discord.ButtonStyle.red, row=1)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(
-            content=t(self.language, "Copypasta menu closed.", "迷因文本選單已關閉。"), embed=None, view=None)
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
 
 class CopypastaValuesModal(discord.ui.Modal):
@@ -455,6 +457,8 @@ class CopypastaInfoMenu(discord.ui.View):
             self.template_select = CopypastaTemplateSelect(self)
             self.add_item(self.template_select)
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     def _total_pages(self):
         return max(1, math.ceil(len(self.templates) / TEMPLATE_PAGE_SIZE))
 
@@ -552,9 +556,7 @@ class CopypastaInfoMenu(discord.ui.View):
 
     @discord.ui.button(style=discord.ButtonStyle.red, row=0)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(
-            content=t(self.language, "Copypasta menu closed.", "迷因文本選單已關閉。"), embed=None, view=None)
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
     async def close_menu(self):
         """Closes this menu's message (drops the embed/Select/buttons)

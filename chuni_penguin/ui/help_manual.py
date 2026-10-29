@@ -176,8 +176,8 @@ _COMMAND_NOTES = {
         "抽卡結果及個人目標會按使用者儲存。管理設定指令可能需要機械人擁有者權限。",
     ),
     "chat": (
-        "Requires the local AI service to be configured and enabled. Mention the bot with a message to start a conversation; a bare mention opens this manual.",
-        "需要先設定並啟用本機 AI 服務。提及機械人並附上文字即可開始對話；單獨提及機械人會開啟此手冊。",
+        "Requires the local AI service to be configured and enabled. Mention the bot with a message to start a conversation; a bare mention opens the main menu.",
+        "需要先設定並啟用本機 AI 服務。提及機械人並附上文字即可開始對話；單獨提及機械人會開啟主選單。",
     ),
     "chart": (
         "Song and chart availability depends on the configured CHUNITHM catalog and data sources.",
@@ -656,8 +656,8 @@ def _home_page(
     if bot.get_cog("AICog") is not None or "chat" in names:
         chat = t(
             language,
-            "**AI Chat:** Mention me with a message to chat; a bare mention opens this manual.",
-            "**AI 對話：** 提及機械人並附上訊息即可聊天；單獨提及機械人會開啟此手冊。",
+            "**AI Chat:** Mention me with a message to chat; a bare mention opens the main menu.",
+            "**AI 對話：** 提及機械人並附上訊息即可聊天；單獨提及機械人會開啟主選單。",
         )
         if "chatreset" in names:
             chat += t(
@@ -686,8 +686,8 @@ def _home_page(
         t(language, "🔹 **Command Prefix**", "🔹 **指令前綴**"),
         t(
             language,
-            f"Use `{prefix}` as the command prefix (for example, `{prefix}help`).",
-            f"使用 `{prefix}` 作為指令前綴（例如 `{prefix}help`）。",
+            f"Use `{prefix}` as the command prefix (for example, `{prefix}menu`).",
+            f"使用 `{prefix}` 作為指令前綴（例如 `{prefix}menu`）。",
         ),
         "",
         t(language, "🔹 **Features**", "🔹 **功能**"),
@@ -696,8 +696,8 @@ def _home_page(
         t(language, "🔹 **Navigation**", "🔹 **瀏覽方式**"),
         t(
             language,
-            "Use Previous and Next to browse individual command details. A bare mention opens this manual; mention me with text to chat.",
-            "使用「上一頁」和「下一頁」瀏覽個別指令說明。單獨提及機械人會開啟此手冊；提及時附上文字則會開始聊天。",
+            "Use Previous and Next to browse individual command details. A bare mention opens the main menu; mention me with text to chat.",
+            "使用「上一頁」和「下一頁」瀏覽個別指令說明。單獨提及機械人會開啟主選單；提及時附上文字則會開始聊天。",
         ),
     ]
     embed = discord.Embed(

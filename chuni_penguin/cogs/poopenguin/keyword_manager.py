@@ -2,13 +2,13 @@
 Manages "keyword sets": named groups of trigger keywords + candidate
 response texts that the bot scans every message against.
 
-This is intentionally global (one shared data/keyword_sets.json for the
+This is intentionally global (one shared data/poopenguin/keyword_sets.json for the
 whole bot, not per-server) because that mirrors how the original hardcoded
 keyword chain behaved - it fired the same way in every server the bot was
 in. If per-server keyword sets are wanted later, this is the module to
 extend (key the top-level dict by guild_id instead of being flat).
 
-Data shape (data/keyword_sets.json):
+Data shape (data/poopenguin/keyword_sets.json):
 {
   "sets": {
     "<set_id>": {

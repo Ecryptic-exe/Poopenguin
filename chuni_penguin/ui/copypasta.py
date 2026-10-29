@@ -3,7 +3,7 @@
 Derived from Ecryptic-exe/Poopenguin 3594787; MIT notice in LICENSES/Poopenguin-MIT.txt.
 """
 
-# Preserve original bilingual messages and the HTTPException-only close handler.
+# Preserve bilingual content; message dismissal uses the shared owner helper.
 # ruff: noqa: RUF001, SIM105
 import math
 from typing import TYPE_CHECKING
@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 import discord
 
 from chuni_penguin.services.copypasta import CopypastaError, extract_placeholders
+from chuni_penguin.ui.dismiss import dismiss_message
+from chuni_penguin.ui.owner_view import bind_owner_view
 from chuni_penguin.utils.localization import t
 
 if TYPE_CHECKING:
@@ -117,6 +119,8 @@ class CopypastaMenu(discord.ui.View):
         self.clear_button.label = t(language, "Clear Search", "清除搜尋")
         self.close_button.label = t(language, "Close", "關閉")
         self.service.track_view(self)
+
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
 
     def _total_pages(self):
         return max(1, math.ceil(len(self.filtered_items) / self.page_size))
@@ -235,12 +239,7 @@ class CopypastaMenu(discord.ui.View):
     async def close_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        await interaction.response.edit_message(
-            content=t(self.language, "Copypasta menu closed.", "迷因文本選單已關閉。"),
-            embed=None,
-            view=None,
-        )
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
 
 class CopypastaValuesModal(discord.ui.Modal):
@@ -493,6 +492,8 @@ class CopypastaInfoMenu(discord.ui.View):
             self.add_item(self.template_select)
         self.service.track_view(self)
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     def _total_pages(self):
         return max(1, math.ceil(len(self.templates) / TEMPLATE_PAGE_SIZE))
 
@@ -610,12 +611,7 @@ class CopypastaInfoMenu(discord.ui.View):
     async def close_button(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ):
-        await interaction.response.edit_message(
-            content=t(self.language, "Copypasta menu closed.", "迷因文本選單已關閉。"),
-            embed=None,
-            view=None,
-        )
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
     async def close_menu(self):
         """Closes this menu's message (drops the embed/Select/buttons)

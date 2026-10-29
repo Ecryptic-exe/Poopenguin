@@ -1,12 +1,13 @@
 # Discord 入口與 Embed 路徑
 
-更新：2026-10-19。Account 與 Song 依最新要求精簡；Poopenguin 保留既有互動。
+更新：2026-10-29。Account 與 Song 依最新要求精簡；Poopenguin 保留既有互動。
 
 ## 入口
 
 | 入口 | 功能 |
 |---|---|
-| `/help` | 主資料、Song、Poopenguin、計算工具入口 |
+| `/menu` | 主資料、Song、Poopenguin、計算工具主選單 |
+| `/help` | 指令說明及使用手冊，可返回主選單 |
 | `/account` | NET／Chunirec／Chunilib 帳號狀態、連結、同步及個人紀錄 |
 | `/chart [query]` | 開啟同一套歌曲卡，初始為視譜；不帶 query 時開搜尋選單 |
 | `/score [query]` | 開啟同一套歌曲卡，初始為分數；不帶 query 時開搜尋選單 |
@@ -14,7 +15,7 @@
 | `/compare` | 原 A 的最近成績訊息比較，保留 user／kamaitachi 參數 |
 | `/permissions` | 原管理者伺服器權限設定 |
 
-Poopenguin 的 `/ask`、`/pick`、`/rng`、`/rcg`、`/gacha`、`/copypasta`、`/keyword` 與子指令保留。總計 14 個斜線根入口及訊息選單 **View your score**。選配管理、訊息、投票、公告與 AI 模組保留既有啟用條件。
+Poopenguin 的 `/ask`、`/pick`、`/rng`、`/rcg`、`/gacha`、`/copypasta`、`/keyword` 與子指令保留。實際斜線根入口數量依啟用的模組而定，並保留訊息選單 **View your score**。選配管理、訊息、投票、公告與 AI 模組保留既有啟用條件。
 
 ## Account
 
@@ -32,7 +33,7 @@ Poopenguin 的 `/ask`、`/pick`、`/rng`、`/rcg`、`/gacha`、`/copypasta`、`/
 
 ## Song／Chart
 
-歌曲卡只留「關閉」按鈕，其餘集中在 **選擇單曲功能** 選單：
+歌曲卡保留「返回主選單」與「關閉」按鈕；容錯頁另有自訂 JUSTICE 按鈕，其餘集中在 **選擇單曲功能** 選單：
 
 | 選項 | 顯示內容／後續操作 |
 |---|---|

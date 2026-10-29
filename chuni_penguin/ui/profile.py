@@ -158,6 +158,9 @@ class PersistentSendFriendRequestButton(
 
 
 class ProfileView(PenguinView):
+    # Keep the existing persistent hide-friend-code privacy action after timeout.
+    _preserve_timeout_view = True
+
     def __init__(
         self,
         ctx: PenguinContext,
@@ -342,15 +345,17 @@ class ProfileView(PenguinView):
             from .dismiss import ensure_close
 
             ensure_close(persistent_view, self.ctx.author.id)
-            await self.message.edit(view=persistent_view)
+            persistent_view.message = await self.message.edit(view=persistent_view)
         elif self.friend_code_visible:
             from .dismiss import CloseView
 
-            await self.message.edit(content="_ _", view=CloseView(self.ctx.author.id))
+            view = CloseView(self.ctx.author.id, ctx=self.ctx)
+            view.message = await self.message.edit(content="_ _", view=view)
         else:
             from .dismiss import CloseView
 
-            await self.message.edit(view=CloseView(self.ctx.author.id))
+            view = CloseView(self.ctx.author.id, ctx=self.ctx)
+            view.message = await self.message.edit(view=view)
 
     @discord.ui.button(label="Show friend code")
     async def show_hide_friend_code(

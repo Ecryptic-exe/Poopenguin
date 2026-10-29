@@ -298,7 +298,8 @@ async def finish_login(ctx, message, embed):
     else:
         from .dismiss import CloseView
 
-        await message.edit(content=None, embed=embed, view=CloseView(ctx.author.id))
+        view = CloseView(ctx.author.id, ctx=ctx)
+        view.message = await message.edit(content=None, embed=embed, view=view)
 
 
 def private_message(message):

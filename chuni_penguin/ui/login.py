@@ -17,6 +17,7 @@ from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, t, ui_text
 from ._pagination import FormatPageReturn, PaginationView
 from .dismiss import CloseView
 from .embeds import EmbedPageSource
+from .owner_view import send_view_message
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -83,7 +84,8 @@ class SegaIDLoginModal(discord.ui.Modal, title="Login with SEGA ID"):
                 correct_username_password = True
 
                 if not self.otp.value:
-                    await interaction.followup.send(
+                    await send_view_message(
+                        interaction,
                         embed=discord.Embed(
                             color=discord.Color.red(),
                             title=ui_text(self.ctx or interaction, "Error"),
@@ -116,7 +118,8 @@ class SegaIDLoginModal(discord.ui.Modal, title="Login with SEGA ID"):
                         self.ctx or interaction, "Invalid username or password."
                     )
 
-                await interaction.followup.send(
+                await send_view_message(
+                    interaction,
                     embed=discord.Embed(
                         color=discord.Color.red(),
                         title=ui_text(self.ctx or interaction, "Error"),
@@ -130,7 +133,8 @@ class SegaIDLoginModal(discord.ui.Modal, title="Login with SEGA ID"):
             clal = client.cookies.get("clal", domain="lng-tgk-aime-gw.am-all.net")
 
             if clal is None:
-                await interaction.followup.send(
+                await send_view_message(
+                    interaction,
                     embed=discord.Embed(
                         color=discord.Color.red(),
                         title=ui_text(self.ctx or interaction, "Error"),
@@ -146,7 +150,8 @@ class SegaIDLoginModal(discord.ui.Modal, title="Login with SEGA ID"):
 
             interaction.client.dispatch(f"chunithm_login_{self.code}", clal)
 
-            await interaction.followup.send(
+            await send_view_message(
+                interaction,
                 embed=discord.Embed(
                     color=discord.Color.green(),
                     title=ui_text(self.ctx or interaction, "Success"),
@@ -293,7 +298,8 @@ class LoginFlowView(PaginationView):
         label="Login with SEGA ID", style=discord.ButtonStyle.danger, row=1
     )
     async def login_with_sega_id(self, interaction: Interaction, _: discord.ui.Button):
-        await interaction.response.send_message(
+        await send_view_message(
+            interaction,
             content=t(
                 get_chunithm_language(self.ctx),
                 "If you use SEGA ID to log in, you can use this method instead of the normal login process.\n"

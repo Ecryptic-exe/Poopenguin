@@ -26,9 +26,12 @@ import math
 import discord
 from discord.ext import commands
 
+from chuni_penguin.ui.dismiss import dismiss_message
+from chuni_penguin.ui.owner_view import bind_owner_view
+
 from .config import load_settings
-from .i18n import t, get_guild_language
-from .keyword_manager import KeywordManager, KeywordError
+from .i18n import get_guild_language, t
+from .keyword_manager import KeywordError, KeywordManager
 
 # How many keyword sets are shown per page in the `!keyword list` menu.
 KEYWORD_PAGE_SIZE = 5
@@ -106,6 +109,8 @@ class KeywordMenu(discord.ui.View):
         self.clear_button.label = t(language, "Clear Search", "清除搜尋")
         self.close_button.label = t(language, "Close", "關閉")
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     def _total_pages(self):
         return max(1, math.ceil(len(self.filtered_items) / self.page_size))
 
@@ -117,7 +122,7 @@ class KeywordMenu(discord.ui.View):
 
         title = t(self.language, "Keyword Sets", "關鍵詞組")
         if self.search_term:
-            title += t(self.language, f' — search: "{self.search_term}"', f'－搜尋：「{self.search_term}」')
+            title += t(self.language, f' — search: "{self.search_term}"', f"－搜尋：「{self.search_term}」")
 
         embed = discord.Embed(title=title, color=discord.Color.blue())
 
@@ -196,9 +201,7 @@ class KeywordMenu(discord.ui.View):
 
     @discord.ui.button(style=discord.ButtonStyle.red, row=1)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(
-            content=t(self.language, "Keyword menu closed.", "關鍵詞選單已關閉。"), embed=None, view=None)
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
 
 class KeywordShowMenu(discord.ui.View):
@@ -226,6 +229,8 @@ class KeywordShowMenu(discord.ui.View):
             self.remove_item(self.previous_button)
             self.remove_item(self.next_button)
             self.remove_item(self.jump_button)
+
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
 
     def _total_pages(self):
         return max(1, math.ceil(len(self.responses) / self.RESPONSE_PAGE_SIZE))
@@ -297,9 +302,7 @@ class KeywordShowMenu(discord.ui.View):
 
     @discord.ui.button(style=discord.ButtonStyle.red, row=0)
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.edit_message(
-            content=t(self.language, "Keyword menu closed.", "關鍵詞選單已關閉。"), embed=None, view=None)
-        self.stop()
+        await dismiss_message(interaction, self, self.ctx.author.id, ctx=self.ctx)
 
 
 class KeywordsCog(commands.Cog, name="keywords"):

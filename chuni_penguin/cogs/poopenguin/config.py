@@ -1,8 +1,8 @@
 """
 Central place for file paths and generic JSON load/save helpers.
 
-Every persistent JSON file the bot uses lives under DATA_DIR so the
-project root stays clean.
+The Poopenguin managers below store their JSON files under DATA_DIR.
+Other services manage their own storage paths.
 """
 import json
 import os
@@ -21,7 +21,7 @@ DEFAULT_SETTINGS = {"required_votes": 3, "admin_only": False, "language": {}, "a
 DEFAULT_KEYWORDS = {"sets": {}}
 DEFAULT_COPYPASTA = {"types": {}}
 
-# Default gacha pool - only used if data/gacha_pool.json doesn't exist yet
+# Default gacha pool - only used if data/poopenguin/gacha_pool.json doesn't exist yet
 # (first run). Once created, the file on disk is the source of truth and
 # can be hand-edited at any time (rates, "featured" rate-up character,
 # and the three/two/one-star rosters) - see gacha_manager.py.

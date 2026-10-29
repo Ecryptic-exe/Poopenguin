@@ -108,6 +108,7 @@ async def test_back_button_injection_is_idempotent_and_preserves_controls(ctx):
 
 @pytest.mark.asyncio
 async def test_expiration_disables_controls_and_stale_click_explains_how_to_reopen(ctx):
+    ctx.message.flags.ephemeral = False
     view = await show_main_menu(ctx)
     await view.on_timeout()
     payload = ctx.message.payloads[-1]
@@ -265,6 +266,7 @@ async def test_menu_uses_bot_avatar_and_lists_only_loaded_commands(ctx, monkeypa
 
 @pytest.mark.asyncio
 async def test_plain_view_helper_enforces_owner_and_runs_original_timeout(ctx):
+    ctx.message.flags.ephemeral = False
     view = discord.ui.View()
     view.add_item(discord.ui.UserSelect())
     cleanup = AsyncMock()

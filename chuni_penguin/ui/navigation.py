@@ -89,7 +89,7 @@ def main_menu_embed(ctx):
         title=ui_text(ctx, "Poop Penguin bot 主選單"),
         description=ui_text(
             ctx,
-            "*點下方按鈕選功能；每個子面板都有「⬅️ 返回主選單」可回來。\n其他指令輸入 `/` 就看得到。*",
+            "*點下方按鈕選功能。\n其他指令輸入 `/` 就看得到。*",
         )
         + "\n\n"
         + "\n\n".join(groups),
@@ -172,33 +172,18 @@ def add_back_button(ctx, view):
 
 
 def _guard_plain_view(ctx, view):
-    from ._base import PenguinView
+    from .owner_view import bind_owner_view
 
-    if isinstance(view, PenguinView) or getattr(view, "_navigation_guarded", False):
-        return
-    view._navigation_guarded = True
-    if getattr(view, "ctx", None) is None:
-        view.ctx = ctx
-    original_check, original_timeout = view.interaction_check, view.on_timeout
-
-    async def check(interaction):
-        return await navigation_check(ctx, interaction, view) and await original_check(
-            interaction
-        )
-
-    async def timeout():
-        try:
-            await original_timeout()
-        finally:
-            if not getattr(view, "_navigation_expired", False):
-                await expire_navigation(view)
-
-    view.interaction_check = check
-    view.on_timeout = timeout
+    bind_owner_view(view, ctx.author.id, ctx=ctx)
 
 
 async def expire_navigation(view):
     """Leave visibly disabled controls and a localized instruction to reopen."""
+    from .owner_view import expire_owner_view, protected_dailyupdate
+
+    if not protected_dailyupdate(view):
+        return await expire_owner_view(view)
+    # Preserve the existing dailyupdate path, including its cleanup semantics.
     if getattr(view, "_panel_inactive", False):
         return
     view._navigation_expired = True

@@ -4,6 +4,7 @@ import discord
 
 from chuni_penguin.services.rating_analysis import RatingAnalysisService
 from chuni_penguin.services.rating_search import RatingSong
+from chuni_penguin.ui.owner_view import edit_view_message
 
 from .dismiss import CloseView, ensure_close
 
@@ -41,7 +42,8 @@ async def deliver_rating_chart(
         embed.set_image(url="attachment://" + filename)
         attachment = discord.File(result["image"], filename=filename)
         try:
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 content=None,
                 embed=embed,
                 attachments=[attachment],
@@ -51,7 +53,8 @@ async def deliver_rating_chart(
         finally:
             attachment.close()
     except service.error_type as error:
-        await interaction.edit_original_response(
+        await edit_view_message(
+            interaction,
             content=str(error),
             embed=None,
             attachments=[],
@@ -107,7 +110,8 @@ class RatingChoiceView(discord.ui.View):
         self.started = True
         song = self.songs[self.select.values[0]]
         await interaction.response.defer()
-        await interaction.edit_original_response(
+        await edit_view_message(
+            interaction,
             content=f"正在處理 {discord.utils.escape_markdown(song.title)}／{self.difficulty}…",
             view=None,
             allowed_mentions=discord.AllowedMentions.none(),

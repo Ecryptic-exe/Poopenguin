@@ -12,7 +12,7 @@ runtime access without loading duplicate cogs or state.
 | `gacha_cog` | `poopenguin.gacha_cog` | On | Pull menu; target selection; 200-pull personal pity; records and confirmed reset; roster browsing, rates, and owner artwork/pool management. |
 | `copypasta_cog` | `poopenguin.copypasta_cog` | On | Type browsing and generation, named placeholders, and owner CRUD for templates. |
 | `keywords_cog` | `poopenguin.keywords_cog` | On | Trigger-set browsing, substring matching, independent trigger rates, and owner CRUD. |
-| `messages_cog` | `poopenguin.messages_cog` | Optional, off | Ordered message processing for auto-ban, auto-reaction, mention/help/AI routing, keywords, and repeat echoes. |
+| `messages_cog` | `poopenguin.messages_cog` | Optional, off | Ordered message processing for auto-ban, auto-reaction, mention/menu/help/AI routing, keywords, and repeat echoes. |
 | `vote_cog` | `poopenguin.vote_cog` | Optional, off | Timeout voting, reaction tally, threshold configuration, and optional admin-only voting. |
 | `admin_cog` | `poopenguin.admin_cog` | Optional, off | Channel/role permissions, auto-reaction and auto-ban configuration, and language selection. |
 | `feed_cog` | `poopenguin.feed_cog` | Optional, off | Bluesky feed management and scheduled polling. |

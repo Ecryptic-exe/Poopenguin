@@ -14,6 +14,7 @@ from chuni_penguin.services.chart_reviews import (
     ChartReviewService,
     _profile,
 )
+from chuni_penguin.ui.owner_view import bind_owner_view, edit_view_message
 from chuni_penguin.utils.chunithm_i18n import ui_text
 
 from .dismiss import CloseView, dismiss_message, ensure_close
@@ -119,7 +120,7 @@ class ReviewEntryButton(discord.ui.Button):
         view = ReviewPrivateView(
             service, interaction.user.id, self.chart, profile, own, ctx=self.ctx
         )
-        await interaction.edit_original_response(embed=view.embed(), view=view)
+        await edit_view_message(interaction, embed=view.embed(), view=view)
 
 
 class ReviewEntrySelect(discord.ui.Select):
@@ -219,6 +220,8 @@ class ReviewPrivateView(discord.ui.View):
             if isinstance(item, discord.ui.Button) and item.label:
                 item.label = ui_text(ctx, item.label)
 
+        bind_owner_view(self, owner_id, ctx=ctx)
+
     async def interaction_check(self, interaction):
         if interaction.user.id == self.owner_id:
             return True
@@ -279,6 +282,11 @@ class ReviewPrivateView(discord.ui.View):
 
     @discord.ui.button(label="刪除此張評價", style=discord.ButtonStyle.danger)
     async def remove(self, interaction, button):
+        replacement = ReviewDeleteView(self)
+        replacement.message = getattr(interaction, "message", None) or getattr(self, "message", None)
+        from .owner_view import remember_interaction
+
+        remember_interaction(replacement, interaction)
         await interaction.response.edit_message(
             embed=discord.Embed(
                 title=ui_text(self.ctx, "刪除此張評價？"),
@@ -286,8 +294,10 @@ class ReviewPrivateView(discord.ui.View):
                     self.ctx, "會刪除這張譜面的評價與修改紀錄，並從統計移除。"
                 ),
             ),
-            view=ReviewDeleteView(self),
+            view=replacement,
         )
+        self._panel_inactive = True
+        self.stop()
 
     @discord.ui.button(label="關閉")
     async def close(self, interaction, button):
@@ -396,7 +406,12 @@ class ReviewerProfileModal(discord.ui.Modal):
             draft=profile,
             ctx=self.panel.ctx,
         )
+        view.message = getattr(interaction, "message", None) or getattr(self.panel, "message", None)
+        from .owner_view import remember_interaction
+
+        remember_interaction(view, interaction)
         await interaction.response.edit_message(embed=view.embed(), view=view)
+        self.panel._panel_inactive = True
         self.panel.stop()
 
 
@@ -479,7 +494,8 @@ class ChartReviewModal(discord.ui.Modal):
         except (ValueError, IndexError, StopIteration) as error:
             if getattr(self.panel, "_embed_closed", False):
                 return
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 embed=discord.Embed(
                     title=ui_text(self.panel.ctx, "尚未儲存"),
                     description=ui_text(self.panel.ctx, str(error))
@@ -491,7 +507,8 @@ class ChartReviewModal(discord.ui.Modal):
             return
         if getattr(self.panel, "_embed_closed", False):
             return
-        await interaction.edit_original_response(
+        await edit_view_message(
+            interaction,
             embed=discord.Embed(
                 title=ui_text(self.panel.ctx, "已儲存匿名評價"),
                 description=ui_text(
@@ -516,7 +533,7 @@ class ReviewDeleteView(discord.ui.View):
                 item.label = ui_text(panel.ctx, item.label)
 
     async def interaction_check(self, interaction):
-        return await self.panel.interaction_check(interaction)
+        return interaction.user.id == self.panel.owner_id
 
     async def deactivate(self):
         self.panel._embed_closed = True
@@ -528,7 +545,8 @@ class ReviewDeleteView(discord.ui.View):
         await self.panel.service.delete(interaction.user.id, self.panel.chart.id)
         if getattr(self, "_embed_closed", False):
             return
-        await interaction.edit_original_response(
+        await edit_view_message(
+            interaction,
             embed=discord.Embed(
                 title=ui_text(self.panel.ctx, "已刪除"),
                 description=ui_text(
@@ -542,7 +560,16 @@ class ReviewDeleteView(discord.ui.View):
 
     @discord.ui.button(label="取消")
     async def cancel(self, interaction, button):
+        panel = self.panel
+        replacement = ReviewPrivateView(
+            panel.service, panel.owner_id, panel.chart, panel.profile, panel.own,
+            draft=panel.draft, ctx=panel.ctx,
+        )
+        replacement.message = getattr(interaction, "message", None) or getattr(self, "message", None)
+        from .owner_view import remember_interaction
+
+        remember_interaction(replacement, interaction)
         await interaction.response.edit_message(
-            embed=self.panel.embed(), view=self.panel
+            embed=replacement.embed(), view=replacement
         )
         self.stop()

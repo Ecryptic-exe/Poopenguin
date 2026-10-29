@@ -29,16 +29,19 @@ class CloseButton(discord.ui.Button):
 
 
 async def dismiss_message(interaction, view, owner_id, *, ctx=None):
+    from .owner_view import private_notice
+
+    if ctx is None:
+        ctx = getattr(view, "ctx", None)
     if interaction.user.id != owner_id:
-        await interaction.response.send_message(
-            ui_text(ctx, "只有開啟者能關閉此訊息。"), ephemeral=True
-        )
+        await private_notice(interaction, ctx, "只有開啟者能關閉此訊息。")
         return
     if view is not None:
         view._embed_closed = True
         view._panel_inactive = True
     if not interaction.response.is_done():
-        await interaction.response.defer()
+        with suppress(discord.HTTPException):
+            await interaction.response.defer()
     session = getattr(ctx, "panel_session", None)
     anchor = getattr(session, "message", None)
     current = getattr(interaction, "message", None)
@@ -57,7 +60,9 @@ async def dismiss_message(interaction, view, owner_id, *, ctx=None):
         active = session.active_view
         if active is not None and active is not view:
             targets.append(active)
-    elif ctx is not None and session is None:
+    elif ctx is not None and session is None and hasattr(ctx, "__dict__"):
+        # Error views may carry an Interaction for i18n; its slots do not
+        # support the Context-only cancellation flag.
         ctx._embed_closed = True
     for target in targets:
         target._panel_inactive = True
@@ -99,14 +104,20 @@ class CloseView(discord.ui.View):
     _menu_navigation_disabled = True
 
     def __init__(self, owner_id, *, ctx=None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=600)
         self.add_item(CloseButton(owner_id, ctx=ctx))
+        from .owner_view import bind_owner_view
+
+        bind_owner_view(self, owner_id, ctx=ctx)
 
 
 def ensure_close(view, owner_id, *, ctx=None):
     """Add exactly one close action after a view finishes rebuilding controls."""
     if getattr(view, "_embed_closed", False):
         return view
+    from .owner_view import bind_owner_view
+
+    bind_owner_view(view, owner_id, ctx=ctx)
     from .navigation import add_back_button
 
     add_back_button(ctx, view)
@@ -133,6 +144,7 @@ def ensure_close(view, owner_id, *, ctx=None):
         raise ValueError("Embed controls must reserve one slot for the close button")
     button.row = row
     view.add_item(button)
+    bind_owner_view(view, owner_id, ctx=ctx)
     return view
 
 

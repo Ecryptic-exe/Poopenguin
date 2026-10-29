@@ -248,7 +248,7 @@ async def test_real_discord_dismiss_uses_message_webhook_for_both_visibilities(
         ),
         delete_original_interaction_response=AsyncMock(),
     )
-    view = CloseView(11)
+    view = CloseView(11, ctx=interaction)
     token = async_context.set(adapter)
     try:
         await view.children[0].callback(interaction)

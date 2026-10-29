@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from chuni_penguin.services.song_discovery import SongDiscoveryService, search_key
 from chuni_penguin.types import Difficulty
+from chuni_penguin.ui.owner_view import bind_owner_view, edit_view_message
 from chuni_penguin.utils.chunithm_i18n import ui_text
 
 from ._base import PenguinView
@@ -253,6 +254,8 @@ class AliasOfferView(discord.ui.View):
         if status.status != "available":
             self.remove_item(self.add_alias)
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     async def interaction_check(self, interaction):
         if interaction.user.id == self.ctx.author.id:
             return True
@@ -297,7 +300,8 @@ class AliasOfferView(discord.ui.View):
                 ),
                 "title_conflict": ui_text(self.ctx, "這是既有歌曲名稱，請換個別名。"),
             }[result.status]
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 embed=discord.Embed(
                     title=ui_text(self.ctx, "別名結果"), description=text
                 ),
@@ -307,7 +311,8 @@ class AliasOfferView(discord.ui.View):
         except (commands.CommandError, ValueError):
             if getattr(self, "_embed_closed", False):
                 return
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 embed=discord.Embed(
                     title=ui_text(self.ctx, "無法加入別名"),
                     description=ui_text(
@@ -361,7 +366,8 @@ class AliasRenameModal(discord.ui.Modal):
         except ValueError:
             if getattr(self.offer, "_embed_closed", False):
                 return
-            await interaction.edit_original_response(
+            await edit_view_message(
+                interaction,
                 embed=discord.Embed(
                     title=ui_text(self.offer.ctx, "別名格式不合適"),
                     description=ui_text(self.offer.ctx, "請改用 1–100 字的一般文字。"),
@@ -372,7 +378,8 @@ class AliasRenameModal(discord.ui.Modal):
         if getattr(self.offer, "_embed_closed", False):
             return
         view = AliasOfferView(self.offer.ctx, alias, self.offer.song, status)
-        await interaction.edit_original_response(
+        await edit_view_message(
+            interaction,
             embed=alias_offer_embed(alias, self.offer.song, status, self.offer.ctx),
             view=view,
         )

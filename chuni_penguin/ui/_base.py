@@ -16,6 +16,7 @@ import discord
 
 from chuni_penguin.config import config
 from chuni_penguin.logging import logger
+from chuni_penguin.ui.owner_view import edit_view_message, send_view_message
 from chuni_penguin.utils.chunithm_i18n import ui_text
 
 if TYPE_CHECKING:
@@ -151,13 +152,15 @@ class PenguinViewMixin(Generic[ContextT]):
             if embed.description is not None:
                 with contextlib.suppress(discord.NotFound):
                     if interaction.response.is_done():
-                        await interaction.followup.send(
+                        await send_view_message(
+                            interaction,
                             embed=embed,
                             ephemeral=True,
                             view=CloseView(self.ctx.author.id, ctx=self.ctx),
                         )
                     else:
-                        await interaction.response.send_message(
+                        await send_view_message(
+                            interaction,
                             embed=embed,
                             ephemeral=True,
                             view=CloseView(self.ctx.author.id, ctx=self.ctx),
@@ -185,13 +188,15 @@ class PenguinViewMixin(Generic[ContextT]):
             )
 
         if interaction.response.is_done():
-            await interaction.followup.send(
+            await send_view_message(
+                interaction,
                 embed=embed,
                 ephemeral=True,
                 view=CloseView(self.ctx.author.id, ctx=self.ctx),
             )
         else:
-            await interaction.response.send_message(
+            await send_view_message(
+                interaction,
                 embed=embed,
                 ephemeral=True,
                 view=CloseView(self.ctx.author.id, ctx=self.ctx),
@@ -210,7 +215,7 @@ class PenguinViewMixin(Generic[ContextT]):
 
         if private_message(getattr(self, "message", None)):
             if interaction.response.is_done():
-                self.message = await interaction.edit_original_response(
+                self.message = await edit_view_message(interaction,
                     **kwargs, view=self
                 )
             else:
@@ -256,6 +261,7 @@ class PenguinView(PenguinViewMixin[ContextT], discord.ui.View):
 
 class PenguinLayoutView(PenguinViewMixin[ContextT], discord.ui.LayoutView):
     """Common code for all layout views."""
+    _preserve_timeout_view = True
 
     def __init__(self, ctx: ContextT, *, timeout: float | None = 180.0) -> None:
         discord.ui.LayoutView.__init__(self, timeout=timeout)

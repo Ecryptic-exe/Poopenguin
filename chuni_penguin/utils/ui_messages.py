@@ -1,8 +1,10 @@
 """Interface templates only; song titles, input, credentials and stored keys stay unchanged."""
 
 MESSAGES = {
+    "輸入 /menu 或提及我開始使用": "Open /menu or ping me to get started",
+    "未找到名為 `{0}` 的命令。使用 `/menu` 開始使用。": "No command named `{0}` found. Use `/menu` to get started.",
     "Poop Penguin bot 主選單": "Poop Penguin bot main menu",
-    "*點下方按鈕選功能；每個子面板都有「⬅️ 返回主選單」可回來。\n其他指令輸入 `/` 就看得到。*": "*Choose a feature below; every subpanel has a ⬅️ Back to main menu button.\nType `/` to see other commands.*",
+    "*點下方按鈕選功能。\n其他指令輸入 `/` 就看得到。*": "*Choose a feature below.\nType `/` to see other commands.*",
     "{0} · 只有開啟者能操作 · 閒置 10 分鐘後逾時": "{0} · Owner only · Expires after 10 minutes of inactivity",
     "返回主選單": "Back to main menu",
     "說明": "Help",

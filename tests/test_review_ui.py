@@ -40,12 +40,14 @@ def interaction(user=11):
     return SimpleNamespace(
         user=SimpleNamespace(id=user),
         response=SimpleNamespace(
+            is_done=lambda: False,
             defer=AsyncMock(),
             send_message=AsyncMock(),
             edit_message=AsyncMock(),
             send_modal=AsyncMock(),
         ),
         edit_original_response=AsyncMock(),
+        message=None,
     )
 
 

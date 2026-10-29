@@ -75,6 +75,8 @@ docstring for the pity rule in detail.
 import discord
 from discord.ext import commands
 
+from chuni_penguin.ui.owner_view import bind_owner_view
+
 from .config import load_settings
 from .gacha_manager import PITY_LIMIT, STARS, GachaError, GachaManager
 from .i18n import get_guild_language, t
@@ -146,6 +148,8 @@ class GachaMenuView(discord.ui.View):
         self.pull_target = None
         self.pull_page = 0
         self._build_main()
+
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
 
     async def on_timeout(self):
         from chuni_penguin.ui.navigation import expire_navigation
@@ -453,6 +457,8 @@ class GachaResetConfirmView(discord.ui.View):
         self.confirm_button.label = t(language, "Confirm Reset", "確認重置")
         self.cancel_button.label = t(language, "Cancel", "取消")
 
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
+
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
             await interaction.response.send_message(
@@ -496,6 +502,8 @@ class GachaTargetConfirmView(discord.ui.View):
 
         self.confirm_button.label = t(language, "✅ Confirm", "✅ 確認")
         self.cancel_button.label = t(language, "Cancel", "取消")
+
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
 
     async def _check_owner(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
@@ -542,6 +550,8 @@ class GachaRecordView(discord.ui.View):
         self.page = 0
         self.message = None
         self._build()
+
+        bind_owner_view(self, ctx.author.id, ctx=ctx)
 
     def _build(self):
         self.clear_items()

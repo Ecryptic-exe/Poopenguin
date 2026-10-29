@@ -3,7 +3,7 @@ Everything that used to live inside the single giant on_message() in
 vto.py, split into named steps:
 
   1. auto-react to messages in configured channels
-  2. bot-mention -> show help
+  2. bare bot-mention -> show the main menu
   3. process !commands
   4. keyword-triggered copypasta responses (now data-driven, see
      keyword_manager.py, instead of the old hardcoded if/elif chain)
@@ -18,8 +18,9 @@ keyword matches).
 import discord
 from discord.ext import commands
 
+from chuni_penguin.utils.chunithm_i18n import ui_text
+
 from .config import load_settings, save_settings
-from .i18n import get_guild_language
 from .keyword_manager import KeywordManager
 
 # How many identical consecutive messages (from different authors) in a
@@ -120,11 +121,16 @@ class MessagesCog(commands.Cog, name="messages"):
         )
         ctx = await self.bot.get_context(message)
 
-        # A bare mention opens the manual. A mention with text is a chat prompt;
+        # A bare mention opens the menu. A mention with text is a chat prompt;
         # an image-only mention goes through the AI vision path.
         has_image = any(
             (a.content_type or "").startswith("image/") for a in message.attachments)
-        if (not command and not has_image) or command in ("poop penguin", "help"):
+        if (not command and not has_image) or command in ("poop penguin", "menu"):
+            from chuni_penguin.ui.navigation import show_main_menu
+
+            await show_main_menu(ctx)
+            return True
+        if command == "help":
             help_command = self.bot.help_command
             if help_command is not None:
                 help_command = help_command.copy()
@@ -143,12 +149,9 @@ class MessagesCog(commands.Cog, name="messages"):
         if ai_cog:
             await ai_cog.respond_to_mention(message, raw_prompt)
         else:
-            language = get_guild_language(load_settings(), message.guild.id)
-            from .i18n import t
-            prefix = self.bot.settings.bot.default_prefix
-            await message.channel.send(t(language,
-                f"No command named `{command}` found. Use `{prefix}help` to see all available commands.",
-                f"未找到名為 `{command}` 的命令。使用 `{prefix}help` 查看所有可用命令。"))
+            await message.channel.send(ui_text(
+                ctx, "未找到名為 `{0}` 的命令。使用 `/menu` 開始使用。", command
+            ))
         return True
 
     async def _handle_keywords(self, message):
