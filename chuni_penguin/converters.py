@@ -304,8 +304,9 @@ class VersionConverter(commands.Converter[ChunithmVersion]):
         if argument_upper.endswith("+"):
             argument_upper = f"{argument_upper[:-1]} PLUS"
 
-        if argument_upper in ChunithmVersion.__args__:
-            return argument_upper  # pyright: ignore[reportReturnType]
+        for version in ChunithmVersion.__args__:
+            if argument_upper == version.upper():
+                return version
 
         if argument_upper.startswith("ORIGIN"):
             return "CHUNITHM PLUS" if argument_upper.endswith("PLUS") else "CHUNITHM"

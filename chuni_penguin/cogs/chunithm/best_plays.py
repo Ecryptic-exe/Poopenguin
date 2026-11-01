@@ -16,6 +16,7 @@ from discord.ext import commands
 
 from chuni_penguin import flags
 from chuni_penguin.adapters.chunithm_net import ChunithmNetAdapter
+from chuni_penguin.adapters.kamaitachi import KamaitachiAdapter
 from chuni_penguin.adapters.utils import calculate_ongeki_rating_breakdown
 from chuni_penguin.constants import CACHE_DIR, CURRENT_CHUNITHM_VERSION, ChunithmVersion
 from chuni_penguin.context import PenguinContext
@@ -285,7 +286,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                 record_slots,
                 new_records,
                 new_record_slots,
-                "default",
+                "xversex" if isinstance(client, KamaitachiAdapter) else "default",
                 classic=classic,
             )
 
@@ -299,7 +300,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
         record_slots: int,
         new_records: list[PersonalBest] | None,
         new_record_slots: int,
-        theme: Literal["default", "xverse"],
+        theme: Literal["default", "xverse", "xversex"],
         *,
         classic: bool,
     ):
@@ -324,7 +325,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
 
             return
 
-        uncross_verse = self._random.random() <= 0.1
+        uncross_verse = theme in ("xverse", "xversex") and self._random.random() <= 0.1
 
         if uncross_verse:
             await self.database.user_found_easter_egg(

@@ -121,7 +121,10 @@ def _render_b30_template(
         overlay_path = ASSETS_DIR / "b50" / "b50_overlay.webp"
 
     if logo_path is None:
-        if uncross_verse:
+        if (
+            uncross_verse
+            and (ASSETS_DIR / "b50" / "default" / "logo_uncrossverse.webp").is_file()
+        ):
             logo_path = ASSETS_DIR / "b50" / "default" / "logo_uncrossverse.webp"
         else:
             logo_path = ASSETS_DIR / "b50" / "default" / "logo.webp"
@@ -139,13 +142,15 @@ def _render_b30_template(
         part_new_path = ASSETS_DIR / "b50" / "b50_part_new.webp"
 
     cache_parts = [
-        1,  # version number for when constants like fonts, etc. need to be updated
+        2,  # Include theme paths; ZIP assets can share the same modification time.
         record_slots,
         new_record_slots,
         rating_title,
         footer_text,
         invite_link,
         uncross_verse,
+        str(bg_path.resolve()),
+        str(logo_path.resolve()),
         bg_path.stat().st_mtime,
         overlay_path.stat().st_mtime,
         part_header_path.stat().st_mtime,
@@ -490,7 +495,7 @@ def render_b30(
     current_rating: float | None = None,
     user_config: "UserConfig | None" = None,
     uncross_verse: bool = False,
-    theme: Literal["xverse", "default"] = "default",
+    theme: Literal["xverse", "xversex", "default"] = "default",
     output_format: str = "PNG",
     output_params: dict[str, Any] | None = None,
 ):
@@ -502,6 +507,9 @@ def render_b30(
         msg = "More new records provided than number of new record slots"
         raise ValueError(msg)
 
+    if theme == "default":
+        uncross_verse = False
+
     if theme != "default":
         bg_path = ASSETS_DIR / "b50" / theme / "bg.webp"
         logo_path = (
@@ -509,6 +517,8 @@ def render_b30(
             if uncross_verse
             else ASSETS_DIR / "b50" / theme / "logo.webp"
         )
+        if not logo_path.is_file():
+            logo_path = ASSETS_DIR / "b50" / theme / "logo.webp"
     else:
         bg_path = None
         logo_path = None

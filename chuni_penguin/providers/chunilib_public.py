@@ -15,7 +15,7 @@ from typing import cast
 
 import httpx
 
-from .chunilib_snapshot import BASE, ChunilibSnapshotProvider, _decode
+from .chunilib_snapshot import BASE, VERSIONS, ChunilibSnapshotProvider, _decode
 from .models import CatalogSnapshot, ProviderDescriptor
 from .registry import ProviderError
 
@@ -31,8 +31,7 @@ class ChunilibPublicProvider:
         *,
         transport: httpx.AsyncBaseTransport | None = None,
     ):
-        # Only this version's public frontend requests were verified.
-        if game_version != "crossversex":
+        if game_version not in VERSIONS:
             raise ProviderError(KEY, "unsupported_game_version")
         self.decoder = ChunilibSnapshotProvider(Path(), game_version)
         self.descriptor = ProviderDescriptor(
@@ -40,8 +39,8 @@ class ChunilibPublicProvider:
             "chunilib",
             self.decoder.descriptor.scope,
             (
-                "2026-10-12 public GET idx.json, song-const/crossversex.json, version.json returned 200",
-                "CHUNILIB helps-group-BaIqOEJk.js fetchSongData uses these exact URLs",
+                "Public idx.json + song-const/<game_version>.json + version.json",
+                "Mate and crossversex schemas inspected on 2026-10-30; automated requests may require a local export",
             ),
             auth_mode="public_unauthenticated_get",
         )
@@ -133,7 +132,9 @@ class ChunilibPublicProvider:
                 documents = {
                     "version.json": version,
                     "idx.json": await self._get("idx.json"),
-                    "constant.json": await self._get("song-const/crossversex.json"),
+                    "constant.json": await self._get(
+                        f"song-const/{self.descriptor.scope.game_version}.json"
+                    ),
                 }
                 if version != await self._get("version.json"):
                     raise ProviderError(KEY, "version_changed_during_read")
@@ -156,7 +157,7 @@ class ChunilibPublicProvider:
                                 "sha256": digest,
                                 "url": BASE
                                 + (
-                                    "song-const/crossversex.json"
+                                    f"song-const/{self.descriptor.scope.game_version}.json"
                                     if name == "constant.json"
                                     else name
                                 ),

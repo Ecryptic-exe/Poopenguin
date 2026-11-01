@@ -103,8 +103,8 @@ async def test_distribution_select_renders_canonical_chart_png_on_same_public_me
     public, view = await _public_song(ctx)
 
     menu = next(item for item in view.children if isinstance(item, SongMoreSelect))
-    assert any(option.value == "tab:rating" for option in menu.options)
-    menu = await _select_more(view, ctx, public, "tab:rating")
+    assert any(option.value == "tab:rating_model" for option in menu.options)
+    menu = await _select_more(view, ctx, public, "tab:rating_model")
 
     chart = analysis.await_args.args[0]
     assert isinstance(chart, Chart)
@@ -112,7 +112,7 @@ async def test_distribution_select_renders_canonical_chart_png_on_same_public_me
     assert chart.song_id == 900000001
     assert chart.difficulty == "MAS"
     assert chart.song.title == "Offline fixture"
-    assert view.state.tab == "rating"
+    assert view.state.tab == "rating_model"
     assert session_for(ctx).message is public
     assert view.message is public
 
@@ -127,8 +127,38 @@ async def test_distribution_select_renders_canonical_chart_png_on_same_public_me
     assert payload["attachments"][0].filename == "score-distribution.png"
     _assert_valid_png(*public.attachment_snapshots[-1][0])
     assert any(
-        option.value == "tab:rating" and option.default for option in menu.options
+        option.value == "tab:rating_model" and option.default for option in menu.options
     )
+    assert_rows(view)
+    await view.deactivate()
+
+
+@pytest.mark.asyncio
+async def test_chunilib_statistics_use_the_public_anchor_and_existing_pagination(ctx):
+    import httpx
+
+    from chuni_penguin.services.tsaibee_statistics import TsaibeeStatistics
+
+    def respond(request):
+        if request.url.path.endswith("lib-stat-song"):
+            payload = {"MAS": [[900000001, 1030, 997096, 2, 148, 245, 362, 595, 946, 126, 196]]}
+        else:
+            payload = {"MAS": {"900000001": [[float(f"{160 + i}e-1"), 17, 985569, 0, 0, 0, 0, 1, 12] for i in range(18)]}}
+        return httpx.Response(200, json=payload)
+
+    ctx.bot.tsaibee_statistics = TsaibeeStatistics(transport=httpx.MockTransport(respond))
+    public, view = await _public_song(ctx)
+    await _select_more(view, ctx, public, "tab:rating")
+    assert view.state.tab == "rating"
+    assert session_for(ctx).message is public and view.message is public
+    assert public.payloads[-1]["embeds"][0].footer.text.endswith("1/4")
+    text = " ".join(field.value for field in public.payloads[-1]["embeds"][0].fields)
+    assert "1,030" in text and "126" in text and "196" in text
+    changed = interaction(ctx)
+    changed.message = public
+    await view.transition(changed, page=1)
+    assert view.state.page == 1 and view.message is public
+    assert any("BEST30" in field.name for field in public.payloads[-1]["embeds"][0].fields)
     assert_rows(view)
     await view.deactivate()
 
@@ -143,7 +173,7 @@ async def test_distribution_difficulty_change_loads_second_chart_without_bundle(
     monkeypatch.setattr(extras, "analysis", analysis)
     monkeypatch.setattr(extras, "statistic_for", statistic_for)
     public, view = await _public_song(ctx)
-    await _select_more(view, ctx, public, "tab:rating")
+    await _select_more(view, ctx, public, "tab:rating_model")
 
     difficulty = next(
         item for item in view.children if isinstance(item, SongDifficultySelect)
@@ -167,7 +197,7 @@ async def test_distribution_difficulty_change_loads_second_chart_without_bundle(
         for chart in (first_chart, second_chart)
     )
     assert statistic_for.return_value is None
-    assert view.state.tab == "rating"
+    assert view.state.tab == "rating_model"
     assert view.state.difficulty == "ULT"
     assert session_for(ctx).message is public
     payload = public.payloads[-1]
@@ -185,7 +215,7 @@ async def test_switching_from_distribution_to_overview_clears_image_attachment(
     monkeypatch.setattr(extras, "analysis", AsyncMock(return_value=(_origin(), PNG)))
     monkeypatch.setattr(extras, "statistic_for", Mock(return_value=None))
     public, view = await _public_song(ctx)
-    await _select_more(view, ctx, public, "tab:rating")
+    await _select_more(view, ctx, public, "tab:rating_model")
     await _select_more(view, ctx, public, "tab:overview")
 
     payload = public.payloads[-1]
@@ -213,11 +243,11 @@ async def test_unavailable_distribution_has_next_step_and_no_fake_image(
     monkeypatch.setattr(extras, "analysis", AsyncMock(side_effect=unavailable))
     monkeypatch.setattr(extras, "statistic_for", Mock(return_value=None))
     public, view = await _public_song(ctx)
-    await _select_more(view, ctx, public, "tab:rating")
+    await _select_more(view, ctx, public, "tab:rating_model")
 
     payload = public.payloads[-1]
     embed = payload["embeds"][0]
-    assert view.state.tab == "rating"
+    assert view.state.tab == "rating_model"
     assert not embed.image.url
     assert payload["attachments"] == []
     assert public.attachment_snapshots[-1] == []

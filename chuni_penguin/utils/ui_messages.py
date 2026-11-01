@@ -1,6 +1,15 @@
 """Interface templates only; song titles, input, credentials and stored keys stay unchanged."""
 
 MESSAGES = {
+    "Chunirec 分佈／模型": "Chunirec distribution / model",
+    "CHUNILIB 公開玩家統計。各門檻為累積人數；來源沒有獨立的 S+ 欄位。": "CHUNILIB public player statistics. Threshold counts are cumulative; this source has no separate S+ field.",
+    "此譜面目前沒有可用的 CHUNILIB 統計，請切換難度或稍後重試。": "No CHUNILIB statistics are available for this chart. Try another difficulty or retry later.",
+    "玩家人數／平均分": "Players / average score",
+    "達成人數／比例": "Players reaching each threshold / percentage",
+    "即時來源暫時不可用，顯示上述日期的已保存統計。": "The live source is unavailable. Showing saved statistics from the date above.",
+    "依 BEST30 平均值分組（16.0–17.7）；各組只計入有遊玩此譜面的玩家。": "Grouped by BEST30 average (16.0–17.7); each group includes only players who have played this chart.",
+    "BEST30 {0:.1f} · {1:,} 人 · 平均 {2:,}": "BEST30 {0:.1f} · {1:,} players · average {2:,}",
+    "統計擷取：{0}": "Statistics retrieved: {0}",
     "輸入 /menu 或提及我開始使用": "Open /menu or ping me to get started",
     "未找到名為 `{0}` 的命令。使用 `/menu` 開始使用。": "No command named `{0}` found. Use `/menu` to get started.",
     "Poop Penguin bot 主選單": "Poop Penguin bot main menu",

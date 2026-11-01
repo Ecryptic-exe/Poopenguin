@@ -23,6 +23,7 @@ from chuni_penguin.types import ComboLamp
 from chuni_penguin.utils import get_loop_factory
 
 from .chunirec import update_db
+from .chunilib import DEFAULT_CATALOG_DIR, update_chunilib
 from .jackets import update_jackets
 from .merge_options import merge_options
 from .sdvxin import update_sdvxin
@@ -61,7 +62,25 @@ async def main():
         "update", help="Fill the database with data from various sources"
     )
     update.add_argument(
-        "source", choices=["chunirec", "sdvxin", "jackets", "alias", "dump", "tachi"]
+        "source",
+        choices=["chunirec", "chunilib", "sdvxin", "jackets", "alias", "dump", "tachi"],
+    )
+    update.add_argument(
+        "--game-version", choices=["crossversex", "mate"], default="mate"
+    )
+    update.add_argument(
+        "--catalog-dir",
+        type=Path,
+        default=DEFAULT_CATALOG_DIR,
+        help="TSAIBEE catalog JSONs (default: assets/tsaibee/catalog in this project)",
+    )
+    update.add_argument(
+        "--apply",
+        action="store_true",
+        help="Commit the TSAIBEE catalog update (default: preview)",
+    )
+    update.add_argument(
+        "--report", type=Path, help="Write the TSAIBEE catalog update report"
     )
     update.add_argument(
         "--data-dir",
@@ -139,6 +158,21 @@ async def main():
         alembic.command.stamp(alembic_config, "head")
 
     if args.command == "update":
+        if args.source == "chunilib":
+            try:
+                success = await update_chunilib(
+                    logger,
+                    engine,
+                    game_version=args.game_version,
+                    catalog_dir=args.catalog_dir,
+                    apply=args.apply,
+                    report_path=args.report,
+                )
+            finally:
+                await engine.dispose()
+            if not success:
+                raise SystemExit(1)
+            return
         if args.source == "chunirec":
             await update_db(logger)
         if args.source == "jackets":

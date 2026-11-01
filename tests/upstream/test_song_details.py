@@ -186,6 +186,7 @@ async def test_search_starts_with_all_tabs_and_no_remote_requests():
         "tab:reviews",
         "tab:overview",
         "tab:rating",
+        "tab:rating_model",
         "tab:borders",
     }
     assert view.state.difficulty == "MAS"

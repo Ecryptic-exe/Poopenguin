@@ -56,6 +56,7 @@ async def test_reviews_combine_poopenguin_notes_and_anonymous_summary_for_select
         "tab:reviews",
         "tab:overview",
         "tab:rating",
+        "tab:rating_model",
         "tab:borders",
         "panel:alias",
         "action:correct",

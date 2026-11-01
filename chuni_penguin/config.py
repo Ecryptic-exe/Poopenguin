@@ -154,7 +154,7 @@ class ProvidersConfig(msgspec.Struct):
     # Opt-in, ordered list. Existing command routing is unchanged by this setting.
     enabled: str = ""
     chunilib_snapshot_path: Path | None = None
-    chunilib_game_version: str = "crossversex"
+    chunilib_game_version: str = "mate"
     timeout_seconds: float = 10
 
 

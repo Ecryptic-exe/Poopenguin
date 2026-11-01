@@ -25,7 +25,9 @@ from .models import (
 )
 from .registry import ProviderError
 
-VERSIONS = {"crossversex": "international", "mate": "japan"}
+# CHUNILIB's International catalog displays Mate as of 2026-10-30.
+# The game version is independent of the namespace used for song IDs.
+VERSIONS = {"crossversex": "international", "mate": "international"}
 DIFFICULTIES = ("BAS", "ADV", "EXP", "MAS", "ULT")
 BASE = "https://chuni.tsaibee.org/data/"
 KEY = "chunilib_snapshot"

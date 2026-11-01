@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "captured_on": "2026-10-30",
+  "source_mode": "user_supplied_public_response",
+  "game_version": null,
+  "hashes": {
+    "lib-stat-song.json": "55246bc1521be6c903b5f6fc620853b76e1ea16fc9532aa9ad354c6ae2509260",
+    "lib-stat-songr.json": "99bbf2c9dde23c3abf937baeefe9c8844b6bf00b028e3df8ca61e39f45cc35e8"
+  },
+  "requests": {
+    "lib-stat-song": {
+      "method": "POST",
+      "url": "https://chuni-api.tsaibee.org/lib-stat-song",
+      "payload": {}
+    },
+    "lib-stat-songr": {
+      "method": "POST",
+      "url": "https://chuni-api.tsaibee.org/lib-stat-songr",
+      "payload": {
+        "diff": "MAS"
+      }
+    }
+  },
+  "columns": [
+    "id_or_best30",
+    "players",
+    "average_score",
+    "MAX",
+    "SSS+",
+    "SSS",
+    "SS+",
+    "SS",
+    "S",
+    "AJ (overall only)",
+    "FC (overall only)"
+  ]
+}

@@ -43,6 +43,7 @@ Tab = Literal[
     "scores",
     "leaderboard",
     "rating",
+    "rating_model",
     "reviews",
     "view",
     "jacket",
@@ -56,6 +57,7 @@ TABS: tuple[tuple[Tab, str], ...] = (
     ("scores", "分數"),
     ("leaderboard", "排行榜"),
     ("rating", "成績分佈"),
+    ("rating_model", "Chunirec 分佈／模型"),
     ("reviews", "評價／社群評價"),
     ("view", "視譜"),
     ("jacket", "曲繪"),
@@ -227,6 +229,7 @@ class SongMoreSelect(discord.ui.Select["SongDetailsView"]):
                 ("reviews", "評價／社群評價"),
                 ("overview", "譜面詳情"),
                 ("rating", "成績分佈"),
+                ("rating_model", "Chunirec 分佈／模型"),
                 ("borders", "容錯／失分"),
             )
         ]
@@ -616,6 +619,10 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 )
             pages = _embed_pages(embed)
         elif state.tab == "rating":
+            from .tsaibee_statistics import statistics_embeds
+
+            pages = await statistics_embeds(self.ctx, song, chart)
+        elif state.tab == "rating_model":
             from chuni_penguin.services.distribution_source import (
                 DistributionUnavailable,
             )

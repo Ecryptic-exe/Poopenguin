@@ -41,6 +41,7 @@ __all__ = (
     "LinkedGateCondition",
     "PendingKamaitachiImport",
     "PersonalBest",
+    "PlayerSource",
     "Prefix",
     "SdvxinChartView",
     "Song",
