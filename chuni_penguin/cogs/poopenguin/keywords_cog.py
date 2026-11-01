@@ -390,7 +390,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(embed=menu.get_embed(), view=menu)
 
     @keyword.command(name="create", description="Creates a new, empty keyword set.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_create(self, ctx, set_id: str):
         """Creates a new, empty keyword set."""
         language = self._lang(ctx)
@@ -402,7 +402,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"使用 `!keyword addresponse {set_id} <內容>` 新增回應。"))
 
     @keyword.command(name="delete", description="Deletes a keyword set entirely.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_delete(self, ctx, set_id: str):
         """Deletes a keyword set entirely."""
         language = self._lang(ctx)
@@ -410,7 +410,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Deleted keyword set `{set_id}`.", f"已刪除關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="enable", description="Enables a keyword set so it starts matching messages again.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_enable(self, ctx, set_id: str):
         """Enables a keyword set so it starts matching messages again."""
         language = self._lang(ctx)
@@ -418,7 +418,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Enabled keyword set `{set_id}`.", f"已啟用關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="disable", description="Disables a keyword set without deleting it.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_disable(self, ctx, set_id: str):
         """Disables a keyword set without deleting it."""
         language = self._lang(ctx)
@@ -426,7 +426,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
         await ctx.send(t(language, f"Disabled keyword set `{set_id}`.", f"已停用關鍵詞組 `{set_id}`。"))
 
     @keyword.command(name="addkeyword", description="Adds a trigger keyword to a set.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_addkeyword(self, ctx, set_id: str, *, keyword: str):
         """Adds a trigger keyword to a set."""
         language = self._lang(ctx)
@@ -436,7 +436,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將觸發詞 `{keyword}` 加入 `{set_id}`。"))
 
     @keyword.command(name="removekeyword", description="Removes a trigger keyword from a set.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_removekeyword(self, ctx, set_id: str, *, keyword: str):
         """Removes a trigger keyword from a set."""
         language = self._lang(ctx)
@@ -446,7 +446,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將觸發詞 `{keyword}` 從 `{set_id}` 移除。"))
 
     @keyword.command(name="addresponse", description="Adds a candidate response text to a set.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_addresponse(self, ctx, set_id: str, *, response: str):
         """Adds a candidate response text to a set."""
         language = self._lang(ctx)
@@ -458,7 +458,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將回應 #{index} 加入 `{set_id}`。"))
 
     @keyword.command(name="removeresponse", description="Removes a response by its index.")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_removeresponse(self, ctx, set_id: str, index: int):
         """Removes a response by its index (see `!keyword info <id>`)."""
         language = self._lang(ctx)
@@ -468,7 +468,7 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"已將回應 #{index} 從 `{set_id}` 移除。"))
 
     @keyword.command(name="rate", description="Sets a set's independent trigger chance (0-100%).")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def keyword_rate(self, ctx, set_id: str, rate: float):
         """Sets how often a set fires once its keyword matches a message.
 

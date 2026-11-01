@@ -709,7 +709,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
 
     @copypasta.command(name="create", description="Creates a new, empty copypasta type.")
     @app_commands.describe(type="Name for the new copypasta type")
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_create(self, ctx, type: str):
         """Creates a new, empty copypasta type."""
         language = self._lang(ctx)
@@ -723,7 +723,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
     @copypasta.command(name="delete", description="Deletes a copypasta type entirely.")
     @app_commands.describe(type="Copypasta type to delete")
     @app_commands.autocomplete(type=type_autocomplete)
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_delete(self, ctx, type: str):
         """Deletes a copypasta type entirely."""
         language = self._lang(ctx)
@@ -734,7 +734,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
     @copypasta.command(name="enable", description="Enables a copypasta type so !copypasta can pick it again.")
     @app_commands.describe(type="Copypasta type to enable")
     @app_commands.autocomplete(type=type_autocomplete)
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_enable(self, ctx, type: str):
         """Enables a copypasta type so !copypasta can pick it again."""
         language = self._lang(ctx)
@@ -745,7 +745,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
     @copypasta.command(name="disable", description="Disables a copypasta type without deleting it.")
     @app_commands.describe(type="Copypasta type to disable")
     @app_commands.autocomplete(type=type_autocomplete)
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_disable(self, ctx, type: str):
         """Disables a copypasta type without deleting it."""
         language = self._lang(ctx)
@@ -758,7 +758,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         type="Copypasta type to add a template to",
         template="Template text, containing at least one {placeholder}, e.g. '{text} is handsome'")
     @app_commands.autocomplete(type=type_autocomplete)
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_add(self, ctx, type: str, *, template: str):
         """Adds a template to a type. Must contain a {text} placeholder."""
         language = self._lang(ctx)
@@ -775,7 +775,7 @@ class CopypastaCog(commands.Cog, name="copypasta"):
         type="Copypasta type to remove a template from",
         index="Index of the template to remove (see /copypasta info)")
     @app_commands.autocomplete(type=type_autocomplete)
-    @commands.is_owner()
+    @commands.has_guild_permissions(administrator=True)
     async def copypasta_remove(self, ctx, type: str, index: int):
         """Removes a template by its index (see `!copypasta info <type>`)."""
         language = self._lang(ctx)
