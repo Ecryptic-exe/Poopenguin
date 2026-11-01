@@ -467,15 +467,16 @@ class KeywordsCog(commands.Cog, name="keywords"):
             f"Removed response #{index} from `{set_id}`.",
             f"已將回應 #{index} 從 `{set_id}` 移除。"))
 
-    @keyword.command(name="rate", description="Sets a set's independent trigger chance (0-100%).")
+    @keyword.command(name="rate", description="Sets a set's pseudo-random trigger rate (0-100%).")
     @commands.has_guild_permissions(administrator=True)
     async def keyword_rate(self, ctx, set_id: str, rate: float):
         """Sets how often a set fires once its keyword matches a message.
 
-        `rate` is a percentage from 0 (never fires) to 100 (always fires,
-        the default for newly-created sets). Each keyword set rolls this
-        chance independently of every other set, so lowering one set's
-        rate doesn't affect how often any other set fires."""
+        `rate` is the target average percentage from 0 (never fires) to
+        100 (always fires, the default for newly-created sets). The
+        pseudo-random distribution increases the chance after each miss
+        and resets it after a trigger, reducing streaks while preserving
+        the configured long-run average."""
         language = self._lang(ctx)
         self.manager.set_trigger_rate(set_id, rate)
         await ctx.send(t(language,

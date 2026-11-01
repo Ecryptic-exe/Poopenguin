@@ -161,7 +161,7 @@ class MessagesCog(commands.Cog, name="messages"):
         content = message.content.strip()
         if not content:
             return
-        match = self.keywords.find_match(content)
+        match = self.keywords.find_match(content, guild_id=message.guild.id)
         if not match:
             return
         set_id, response = match
