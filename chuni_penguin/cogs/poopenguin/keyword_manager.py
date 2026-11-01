@@ -22,12 +22,15 @@ Data shape (data/poopenguin/keyword_sets.json):
 }
 
 `trigger_rate` is a percentage (0-100) for the long-run average chance
-that THIS set fires once its keyword has matched a message. A
-pseudo-random distribution (PRD) raises the chance after each miss and
-resets it after a trigger, reducing streaks while keeping approximately
-the configured long-run rate. The PRD history is kept per set and guild
-in memory; keyword data itself remains global. History resets if the bot
-restarts or the set's trigger rate, enabled state, or keywords change.
+that THIS set fires once its keyword has matched a message. A soft
+pseudo-random distribution raises the chance after each miss, but caps
+it at three times the configured rate instead of forcing a trigger
+after a fixed number of misses. Below 100%, the cap remains just below
+100%, so there is no guaranteed attempt number. The ramp is calibrated
+to keep approximately the configured long-run rate. History is kept
+per set and guild in memory; keyword data itself remains global. History
+resets if the bot restarts or the set's trigger rate, enabled state, or
+keywords change.
 
 Matching rule: a set is a "candidate" if any of its keywords appear as
 a case-insensitive substring of the message. Each candidate uses its
@@ -36,7 +39,6 @@ one is picked at random. A random response from the chosen set is sent
 (reproducing the original "some groups had one response, some had a
 random pick of several" behaviour uniformly).
 """
-import math
 import random
 from functools import lru_cache
 
@@ -45,41 +47,50 @@ from .config import load_keywords, save_keywords
 DEFAULT_TRIGGER_RATE = 100
 
 
-def _expected_prd_interval(constant: float) -> float:
-    """Return the expected number of attempts between PRD triggers."""
+def _prd_parameters(probability: float) -> tuple[float, float]:
+    """Return the initial chance and soft cap for a 0.0-1.0 target rate."""
+    cap = max(probability, min(probability * 3.0, 1.0 - 1e-12))
+    start = min(probability, max(probability * 0.5, 1.0 - cap * (1.0 / probability - 1.0)))
+    return start, cap
+
+
+def _expected_prd_interval(start: float, increment: float, cap: float) -> float:
+    """Return the expected number of attempts between soft-PRD triggers."""
     survival = 1.0
     expected = 1.0
     attempt = 0
     while survival > 1e-12 and attempt < 100_000:
-        attempt += 1
-        chance = min(constant * attempt, 1.0)
+        chance = min(start + increment * attempt, cap)
         survival *= 1.0 - chance
         expected += survival
         if chance >= 1.0:
             break
+        attempt += 1
     return expected
 
 
 @lru_cache(maxsize=256)
-def _prd_constant(rate: float) -> float:
-    """Find the PRD ramp constant for the configured average percentage."""
+def _prd_increment(rate: float) -> float:
+    """Find the soft-PRD ramp increment for the configured average rate."""
     rate = max(0.0, min(100.0, float(rate)))
     probability = rate / 100.0
     if probability <= 0.0:
         return 0.0
     if probability >= 1.0:
-        return 1.0
+        return 0.0
 
-    # At very low rates the PRD constant approaches pi/2 * p^2. Using
-    # that limit avoids a long calibration loop for unusually tiny rates.
+    start, cap = _prd_parameters(probability)
+
+    # At very low rates the ramp increment scales with p^2. This
+    # approximation avoids a long calibration loop for tiny rates.
     if probability < 0.001:
-        return (math.pi / 2.0) * probability * probability
+        return 0.65 * probability * probability
 
     target_interval = 1.0 / probability
     low, high = 0.0, 1.0
     for _ in range(48):
         middle = (low + high) / 2.0
-        if _expected_prd_interval(middle) > target_interval:
+        if _expected_prd_interval(start, middle, cap) > target_interval:
             low = middle
         else:
             high = middle
@@ -87,13 +98,15 @@ def _prd_constant(rate: float) -> float:
 
 
 def _prd_chance(rate: float, misses: int) -> float:
-    """Return the current PRD chance as a 0.0-1.0 probability."""
+    """Return the current soft-PRD chance as a 0.0-1.0 probability."""
     rate = max(0.0, min(100.0, float(rate)))
     if rate <= 0.0:
         return 0.0
     if rate >= 100.0:
         return 1.0
-    return min(_prd_constant(rate) * (misses + 1), 1.0)
+    probability = rate / 100.0
+    start, cap = _prd_parameters(probability)
+    return min(start + _prd_increment(rate) * misses, cap)
 
 
 class KeywordError(Exception):

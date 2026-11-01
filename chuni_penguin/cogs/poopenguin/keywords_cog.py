@@ -474,9 +474,10 @@ class KeywordsCog(commands.Cog, name="keywords"):
 
         `rate` is the target average percentage from 0 (never fires) to
         100 (always fires, the default for newly-created sets). The
-        pseudo-random distribution increases the chance after each miss
-        and resets it after a trigger, reducing streaks while preserving
-        the configured long-run average."""
+        soft pseudo-random distribution increases the chance after each
+        miss, up to three times the configured rate (maximum 100%), and
+        resets it after a trigger. It reduces long streaks without
+        forcing a trigger at a fixed attempt count."""
         language = self._lang(ctx)
         self.manager.set_trigger_rate(set_id, rate)
         await ctx.send(t(language,
