@@ -153,12 +153,17 @@ class TsaibeeStatistics:
 
     async def _read(self, endpoint, *, difficulty=None):
         key = endpoint, difficulty
-        now = time.monotonic()
-        if now < self._expires.get(key, 0):
-            return self._cache[key]
+        if time.monotonic() < self._expires.get(key, 0):
+            source = self._cache[key]
+            if source is None:
+                raise StatisticsUnavailable("No public statistics available")
+            return source
+        retry_ttl = min(self.ttl, 300)
         try:
             if self.offline:
                 raise ValueError("Offline statistics requested")
+            if difficulty is not None:
+                await asyncio.sleep(0.25)
             async with httpx.AsyncClient(
                 transport=self.transport, timeout=10, follow_redirects=False
             ) as client:
@@ -197,12 +202,13 @@ class TsaibeeStatistics:
                 try:
                     source = await asyncio.to_thread(self._saved, endpoint)
                 except (OSError, ValueError, KeyError, TypeError) as exc:
+                    self._cache[key] = None
+                    self._expires[key] = time.monotonic() + retry_ttl
                     raise StatisticsUnavailable(
                         "No public statistics available"
                     ) from exc
         self._cache[key] = source
-        # Retry unavailable sources after five minutes, rather than once per user.
-        self._expires[key] = now + (min(self.ttl, 300) if source.stale else self.ttl)
+        self._expires[key] = time.monotonic() + (retry_ttl if source.stale else self.ttl)
         return source
 
     async def chart(self, song_id: int, difficulty: str) -> ChartStatistics:
@@ -215,7 +221,6 @@ class TsaibeeStatistics:
                 raise StatisticsUnavailable("No sample for this chart")
             bands, band_source = (), None
             if difficulty in {"MAS", "ULT"}:
-                await asyncio.sleep(0.25)
                 try:
                     band_source = await self._read(
                         "lib-stat-songr", difficulty=difficulty
