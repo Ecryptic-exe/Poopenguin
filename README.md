@@ -86,7 +86,7 @@ Kamaitachi 帳號綁定需配置 A 原有 client 設定並顯式啟用 `chunithm
 
 預設載入 `/ask`、`/pick`、`/rng`、`/rcg`、`/gacha`、`/copypasta`（文字別名 `cp`）、`/keyword` 及其原有子指令／互動。文字模板與關鍵字從新的空資料開始，抽卡使用原預設卡池；舊資料沒有自動複製或覆寫。
 
-所有非 CHUNITHM 的 B 功能與支援模組集中在 `chuni_penguin/cogs/poopenguin/`，原 `legacy_b` import／設定名稱仍相容；持久資料仍位於 `data/poopenguin/`。全伺服器共用的模板、關鍵字及卡池修改需 Bot owner；查詢與一般使用保持開放。JSON 寫入保留前一版 `.bak` 並原子替換，損壞資料會拒絕覆寫。
+所有非 CHUNITHM 的 B 功能與支援模組集中在 `chuni_penguin/cogs/poopenguin/`，原 `legacy_b` import／設定名稱仍相容；持久資料仍位於 `data/poopenguin/`。修改跨伺服器共用的模板與關鍵字需要在伺服器內具備 Administrator 權限，卡池修改需 Bot owner。查詢與一般使用保持開放。JSON 寫入保留前一版 `.bak` 並原子替換，損壞資料會拒絕覆寫。
 
 下列模組預設關閉，只有管理者明確設定 `[cogs] extra` 後才載入：
 

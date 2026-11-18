@@ -8,8 +8,8 @@
 |---|---|---|
 | 隨機工具 | 問企鵝、幫我選、隨機整數／小數、隨機顏色 | 預設啟用 |
 | 抽卡 | 單抽／十抽、個人目標與保底、紀錄、確認重置、角色瀏覽、機率、擁有者管理卡池與圖片 | 預設啟用 |
-| 文字模板 | 瀏覽／搜尋、隨機套用與填空、擁有者新增／刪除／開關／編輯模板 | 預設啟用 |
-| 關鍵字 | 瀏覽／搜尋、觸發詞與回應、獨立觸發機率、擁有者完整管理 | 管理／瀏覽預設啟用；自動回應需訊息模組 |
+| 文字模板 | 瀏覽／搜尋、隨機套用與填空、伺服器管理員新增／刪除／開關／編輯共用模板 | 預設啟用 |
+| 關鍵字 | 瀏覽／搜尋、觸發詞與回應、獨立觸發機率、伺服器管理員管理共用關鍵字組 | 管理／瀏覽預設啟用；自動回應需訊息模組 |
 | 訊息處理 | 自動反應、自動封鎖規則、提及時 Help／本機 AI、關鍵字及重複訊息回聲 | 沿用選配設定 |
 | 投票禁言 | 時間設定、反應票數、門檻、限制管理員投票 | 沿用選配設定 |
 | 伺服器管理 | 頻道／身分組權限、自動反應／封鎖與語言設定 | 沿用選配設定 |
@@ -35,8 +35,8 @@ The four default extensions are `general_cog`, `gacha_cog`, `copypasta_cog`, and
 | --- | --- | --- |
 | `general_cog` | `ask <question>`, `pick <choices>`, `rng [min_val=1] [max_val=100] [type=int]`, `rcg` | Guild-only random answers, quoted multiword choice selection, integer or float ranges, and a random color embed. The commands use hybrid prefix/slash registration. |
 | `gacha_cog` | `gacha`, `gacha pull`, `gacha target [character]`, `gacha stats` (`results` alias), `gacha reset`, `gacha browse`, `gacha pool`, and owner-only `setfeatured`, `setimage`, `removeimage`, `setthumbnail`, `removethumbnail`, `reload` | Free single and ten-pull menus, personal pity targets, collection statistics, confirmed self-reset, roster browsing, rates, and artwork controls. A target is guaranteed within 200 pulls; each user's pity advances independently. `/gacha pull` opens the menu for slash users. |
-| `copypasta_cog` | `copypasta <type> <values...>` (`cp` alias), `list [search]`, `info` (`show` alias), and owner-only `create`, `delete`, `enable`, `disable`, `add`, `remove` | Global template pools with named placeholders, random selection, type browsing, search, autocomplete, and per-template fill-in menus. Types and templates are managed by the bot owner. |
-| `keywords_cog` | `keyword`, `list [search]`, `info` (`show` alias), and owner-only `create`, `delete`, `enable`, `disable`, `addkeyword`, `removekeyword`, `addresponse`, `removeresponse`, `rate` | Global case-insensitive substring triggers with independently configurable response chance. Read-only browsing is available to server members; edits are restricted to the bot owner. |
+| `copypasta_cog` | `copypasta <type> <values...>` (`cp` alias), `list [search]`, `info` (`show` alias), and `create`, `delete`, `enable`, `disable`, `add`, `remove` | Global template pools with named placeholders, random selection, type browsing, search, autocomplete, and per-template fill-in menus. Edits require the Administrator permission in the invoking guild. |
+| `keywords_cog` | `keyword`, `list [search]`, `info` (`show` alias), and `create`, `delete`, `enable`, `disable`, `addkeyword`, `removekeyword`, `addresponse`, `removeresponse`, `rate` | Global case-insensitive substring triggers with independently configurable response chance. Server members can browse, and edits require the Administrator permission in the invoking guild. |
 | `messages_cog` (optional) | Message listener | Applies configured auto-ban and auto-reaction rules, routes mentions to shared help or local AI, checks keyword sets, and echoes three consecutive matching messages from distinct users. Server administrators are exempt from auto-ban. |
 | `vote_cog` (optional) | `vto <member> [time_str]`, `setvote <count\|admin>`, reaction listener | Opens a timeout vote, records one vote per person, enforces optional admin-only voting, and applies the configured threshold. Durations accept `d`, `h`, `m`, `s`, or `random`. |
 | `admin_cog` (optional) | `setperms <channel_id> <role_id>`, `autoreact [emoji] [user]`, `autoban [reason] [delete_days=0]`, `lang` | Configures channel access, automatic reactions, automatic bans, and the guild's help/response language. Existing command checks and permissions are preserved. |

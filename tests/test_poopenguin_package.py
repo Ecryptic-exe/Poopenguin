@@ -10,6 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
+import discord
 import pytest
 from discord.ext import commands
 from discord.utils import MISSING
@@ -140,12 +141,13 @@ class _Bot:
 
 
 class _Context:
-    def __init__(self, owner_id=11):
+    def __init__(self, user_id=11, *, administrator=False):
         self.author = self.user = SimpleNamespace(
-            id=owner_id,
+            id=user_id,
             name="Fixture",
             display_name="Fixture",
-            mention=f"<@{owner_id}>",
+            mention=f"<@{user_id}>",
+            guild_permissions=discord.Permissions(administrator=administrator),
         )
         self.guild = SimpleNamespace(
             id=33,
@@ -159,7 +161,7 @@ class _Context:
             ),
         )
         self.channel = SimpleNamespace(id=456, mention="<#456>")
-        self.bot = _Bot(owner_id)
+        self.bot = _Bot(user_id)
         self.interaction = None
         self.sent = []
         self.deferred = False
@@ -489,6 +491,13 @@ async def test_gacha_target_pull_stats_reset_artwork_and_close_rebuild(
     cog = GachaCog(SimpleNamespace())
     cog._lang = lambda _: "english"
     ctx = _Context()
+    admin_ctx = _Context(22, administrator=True)
+    admin_ctx.bot = ctx.bot
+    owner_check = GachaCog.gacha_setfeatured.checks[0]
+    assert await owner_check(ctx)
+    with pytest.raises(commands.NotOwner):
+        await owner_check(admin_ctx)
+
     await GachaCog.gacha_target.callback(cog, ctx, character="Target")
     target_view = ctx.sent[-1]["view"]
     await target_view.confirm_button.callback(_Interaction(22))
@@ -534,7 +543,7 @@ async def test_gacha_target_pull_stats_reset_artwork_and_close_rebuild(
 
 
 @pytest.mark.asyncio
-async def test_template_and_keyword_crud_owner_checks_and_menu_ownership(
+async def test_template_and_keyword_crud_guild_permissions_and_menu_ownership(
     monkeypatch, tmp_path
 ):
     from chuni_penguin.cogs.poopenguin import copypasta_manager, keyword_manager
@@ -570,21 +579,32 @@ async def test_template_and_keyword_crud_owner_checks_and_menu_ownership(
     assert keywords.get_set("greeting")["keywords"] == []
     assert keywords.get_set("greeting")["responses"] == []
 
-    owner_ctx = _Context(11)
-    outsider_ctx = _Context(22)
-    outsider_ctx.bot = _Bot(owner_id=11)
+    menu_owner_ctx = _Context(11)
+    member_ctx = _Context(22)
+    member_ctx.bot = menu_owner_ctx.bot
+    admin_ctx = _Context(33, administrator=True)
+    admin_ctx.bot = menu_owner_ctx.bot
+    dm_ctx = _Context(33)
+    dm_ctx.guild = None
     for command in (KeywordsCog.keyword_create, CopypastaCog.copypasta_create):
         assert len(command.checks) == 1
-        assert await command.checks[0](owner_ctx)
-        with pytest.raises(commands.NotOwner):
-            await command.checks[0](outsider_ctx)
+        check = command.checks[0]
+        assert await discord.utils.maybe_coroutine(check, admin_ctx)
+        for ctx in (menu_owner_ctx, member_ctx):
+            with pytest.raises(commands.MissingPermissions) as error:
+                await discord.utils.maybe_coroutine(check, ctx)
+            assert error.value.missing_permissions == ["administrator"]
+        with pytest.raises(commands.NoPrivateMessage):
+            await discord.utils.maybe_coroutine(check, dm_ctx)
 
-    keyword_menu = KeywordMenu(owner_ctx, keywords.list_sets(), "english")
-    pasta_menu = CopypastaMenu(owner_ctx, pasta.list_types(), "english")
-    assert not await keyword_menu.interaction_check(_Interaction(22))
-    assert not await pasta_menu.interaction_check(_Interaction(22))
-    keyword_menu.stop()
-    pasta_menu.stop()
+    keyword_menu = KeywordMenu(menu_owner_ctx, keywords.list_sets(), "english")
+    pasta_menu = CopypastaMenu(menu_owner_ctx, pasta.list_types(), "english")
+    for menu in (keyword_menu, pasta_menu):
+        assert await menu.interaction_check(_Interaction(menu_owner_ctx.author.id))
+        other_admin = _Interaction(admin_ctx.author.id)
+        assert not await menu.interaction_check(other_admin)
+        assert other_admin.response.send_message.await_args.kwargs["ephemeral"] is True
+        menu.stop()
 
 
 @pytest.mark.asyncio

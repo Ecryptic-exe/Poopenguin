@@ -119,16 +119,19 @@ async def test_source_failure_without_fallback_cools_down_then_recovers(
     )
 
     def respond(request):
+        nonlocal now
         endpoint = request.url.path
         requests.append(endpoint)
-        if endpoint == failed_endpoint and now < 1300.0:
+        if endpoint == failed_endpoint and now == 1000.0:
+            # The cooldown starts when the failed request finishes.
+            now = 1010.0
             return httpx.Response(503)
         return httpx.Response(200, json=ALL if endpoint == "/lib-stat-song" else BANDS)
 
     service = TsaibeeStatistics(
         transport=httpx.MockTransport(respond), fallback=tmp_path
     )
-    for _ in range(2):
+    for now in (1000.0, 1309.0):
         if failed_endpoint == "/lib-stat-song":
             with pytest.raises(StatisticsUnavailable):
                 await service.chart(45, "MAS")
@@ -137,7 +140,7 @@ async def test_source_failure_without_fallback_cools_down_then_recovers(
             assert partial.overall.players == 1030 and not partial.bands
 
     assert requests.count(failed_endpoint) == 1
-    now = 1300.0
+    now = 1310.0
     recovered = await service.chart(45, "MAS")
     assert recovered.overall.players == 1030 and len(recovered.bands) == 2
     assert requests.count(failed_endpoint) == 2
