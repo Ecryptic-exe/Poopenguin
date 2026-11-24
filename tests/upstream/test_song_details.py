@@ -148,7 +148,7 @@ async def test_review_groups_and_pagination_leave_room_for_close_and_share_canon
     assert any(isinstance(c, SongPageSelect) for c in view.children)
     assert [c.label for c in view.children if isinstance(c, discord.ui.Button)] == [
         "返回主選單",
-        "關閉"
+        "關閉",
     ]
     rows = view.to_components()
     assert len(rows) == 5
@@ -371,10 +371,16 @@ async def test_score_is_filtered_by_song_and_selected_difficulty():
     )
     rendered = await view.render(SongDetailsState(tab="scores"))
     assert len(rendered.pages) == 1
-    assert "Test network" in rendered.pages[0][0].footer.text
+    assert rendered.pages[0][0].description is not None
+    assert "玩家 123 · Test network" in rendered.pages[0][0].description
+    assert "**1,007,500** · SSS · ALL JUSTICE" in rendered.pages[0][0].description
+    assert rendered.pages[0][0].title == "Song 1"
     assert "16.70" in rendered.pages[0][0].footer.text
     await view.transition(interaction(), tab="scores", difficulty="ULT")
-    assert "尚無此難度" in view.message.edit.call_args.kwargs["embeds"][0].description
+    assert (
+        "沒有回傳這張譜面的個人成績"
+        in view.message.edit.call_args.kwargs["embeds"][0].description
+    )
 
 
 @pytest.mark.asyncio
@@ -389,7 +395,10 @@ async def test_failed_page_can_be_retried_and_does_not_expose_errors():
     assert "/account" in first["embeds"][0].description
     await view.transition(interaction(), tab="overview")
     await view.transition(interaction(), tab="scores")
-    assert "尚無此難度" in view.message.edit.call_args.kwargs["embeds"][0].description
+    assert (
+        "沒有回傳這張譜面的個人成績"
+        in view.message.edit.call_args.kwargs["embeds"][0].description
+    )
     assert data.scores.await_count == 2
 
 

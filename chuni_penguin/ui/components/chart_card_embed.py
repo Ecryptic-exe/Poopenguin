@@ -46,7 +46,11 @@ class ChartCardEmbed(discord.Embed):
         if chart.song.id == 2698:
             if synthesis_alt_jacket == "none":
                 self.set_thumbnail(url=None)
-            elif synthesis_alt_jacket != "default" and config.web.serve_assets:
+            elif (
+                synthesis_alt_jacket not in (None, "default")
+                and config.web.serve_assets
+                and config.web.is_accessible
+            ):
                 self.set_thumbnail(
                     url=f"{config.web.base_url}/assets/jackets/{chart.song.id}_{synthesis_alt_jacket}.webp"
                 )
@@ -57,7 +61,7 @@ class ChartCardEmbed(discord.Embed):
         )
 
         difficulty_display = chart.level
-        if chart.const is not None:
+        if chart.const is not None and difficulty != Difficulty.worlds_end:
             difficulty_display += f" ({chart.const})"
 
         difficulty_link = yt_search_link(chart.song.title, chart.difficulty)
@@ -69,9 +73,9 @@ class ChartCardEmbed(discord.Embed):
         )
 
         if target_score is not None:
-            field_value = str(target_score)
+            field_value = f"{target_score:,}"
 
-            if chart.const is not None:
+            if chart.const is not None and difficulty != Difficulty.worlds_end:
                 target_rating = calculate_rating(target_score, chart.const)
                 field_value += f" ({floor_to_ndp(target_rating, 2)})"
 

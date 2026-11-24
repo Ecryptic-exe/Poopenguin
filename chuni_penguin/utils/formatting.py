@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
-import httpx
 from discord.utils import escape_markdown
 
 from chuni_penguin.constants import INTERNATIONAL_JACKET_BASE, JACKET_BASE
@@ -52,22 +51,19 @@ def get_jacket_url(song: "Song") -> str | None:
     current_time = datetime.now(ZoneInfo("Asia/Tokyo"))
     is_maintenance = 4 <= current_time.hour <= 7
 
-    if song.jacket is not None:
+    if song.jacket:
+        if song.jacket.startswith(("https://", "http://")):
+            return song.jacket
         if song.available and not is_maintenance:
             return f"{INTERNATIONAL_JACKET_BASE}/{song.jacket}"
 
         if not song.removed:
             return f"{JACKET_BASE}/{song.jacket}"
 
-    if config.web.serve_assets and config.web.base_url is not None:
-        url = httpx.URL(config.web.base_url)
-
-        if url.host.startswith("127.") or url.host == "localhost":
-            return song.jacket
-
+    if config.web.serve_assets and config.web.is_accessible:
         return f"{config.web.base_url}/assets/jackets/{song.id}.webp"
 
-    return song.jacket
+    return None
 
 
 def sdvxin_link(view: "SdvxinChartView") -> str:

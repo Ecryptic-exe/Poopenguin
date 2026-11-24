@@ -159,11 +159,11 @@ async def test_slow_panel_renders_processing_and_result_on_same_public_message(
     changed.original_response = AsyncMock(return_value=public)
     await navigate(ctx, changed, "run_sync")
     assert any(
-        "處理中" in (payload.get("embed").description or "")
+        "同步成績處理中" in (payload.get("embed").description or "")
         for payload in public.payloads
         if payload.get("embed")
     )
-    assert public.payloads[-1]["embed"].title == "主資料介面"
+    assert public.payloads[-1]["embed"].author.name == "主資料介面"
     assert "同步完成" in public.payloads[-1]["embed"].description
     assert session_for(ctx).message.id == public.id
     changed.followup.send.assert_not_awaited()
@@ -448,7 +448,7 @@ async def test_navigation_rejects_other_users_and_public_menus_edit_same_message
     session_for(ctx).message = ctx.message
     public = interaction(ctx)
     await navigate(ctx, public, "account")
-    assert "CHUNITHM-NET" in ctx.message.payloads[-1]["embed"].fields[0].value
+    assert ctx.message.payloads[-1]["embed"].title == "CHUNITHM-NET"
     assert session_for(ctx).message is ctx.message
     assert not ctx.message.flags.ephemeral
     public.response.defer.assert_awaited_once_with(thinking=False, ephemeral=False)
@@ -925,7 +925,7 @@ async def test_chunirec_modal_result_returns_to_account_without_retaining_token(
     result = ctx.message.payloads[-1]
     assert previous.is_finished() and previous._panel_inactive
     submitted.followup.send.assert_not_awaited()
-    assert result["embed"].title == "主資料介面"
+    assert result["embed"].author.name == "主資料介面"
     assert modal.token.value == ""
     assert "synthetic-test-credential" not in str(submitted.data)
     assert session_for(ctx).route.section == "account"
@@ -1005,11 +1005,18 @@ async def test_data_landing_shows_accounts_and_direct_controls_without_cross_lin
     await ctx.bot.database.writer.execute_fn(seed)
     view = await show_account(ctx)
     embed = ctx.message.payloads[-1]["embed"]
-    fields = {field.name: field.value for field in embed.fields}
-    assert "**CHUNITHM-NET**：已連結" in fields["帳號連結"]
-    assert "**Chunirec**：jp2 已連結" in fields["帳號連結"]
-    assert "Kamaitachi" not in fields["帳號連結"]
-    assert "**Chunirec jp**" not in fields["帳號連結"]
+    assert embed.title == "CHUNITHM-NET" and "已連結" in embed.description
+    source_menu = next(
+        item
+        for item in view.children
+        if isinstance(item, discord.ui.Select)
+        and item.custom_id == "penguin:panel:source"
+    )
+    assert [(opt.label, opt.description) for opt in source_menu.options] == [
+        ("CHUNITHM-NET", "已連結"),
+        ("Chunirec", "已連結 · 已同步"),
+        ("Chunilib 匯出檔", "未匯入"),
+    ]
     assert "fixture-cookie" not in str(embed.to_dict())
     assert "fixture-encrypted-value" not in str(embed.to_dict())
     assert {
@@ -1083,7 +1090,7 @@ async def test_sync_returns_status_to_same_data_landing_message(ctx, monkeypatch
     await navigate(ctx, changed, "run_sync")
     assert session_for(ctx).route.section == "account"
     assert session_for(ctx).message.id == ctx.message.id
-    assert ctx.message.payloads[-1]["embed"].title == "主資料介面"
+    assert ctx.message.payloads[-1]["embed"].author.name == "主資料介面"
     assert "同步完成" in ctx.message.payloads[-1]["embed"].description
     changed.followup.send.assert_not_awaited()
     assert ctx.new_private_messages == []
@@ -1099,7 +1106,7 @@ async def test_slash_account_result_edits_existing_private_response(ctx, monkeyp
     ctx.reply = AsyncMock(side_effect=AssertionError("must edit the existing response"))
     monkeypatch.setattr(PenguinContext, "from_interaction", AsyncMock(return_value=ctx))
     await ctx.bot.get_cog("V2Players").send_result(ctx.interaction, "狀態已更新")
-    assert ctx.message.payloads[-1]["embeds"][0].title == "主資料介面"
+    assert ctx.message.payloads[-1]["embeds"][0].author.name == "主資料介面"
     ctx.interaction.followup.send.assert_not_awaited()
     ctx.reply.assert_not_awaited()
 
@@ -1203,7 +1210,7 @@ async def test_real_discord_ephemeral_component_uses_webhook_not_channel_edit(
     )
     adapter.edit_original_interaction_response.assert_awaited_once()
     sent = adapter.edit_original_interaction_response.call_args.kwargs["payload"]
-    assert sent["embeds"][0]["title"] == "主資料介面"
+    assert sent["embeds"][0]["author"]["name"] == "主資料介面"
     assert isinstance(session_for(ctx).message, discord.InteractionMessage)
     assert session_for(ctx).message.id == 101
     forbidden.assert_not_awaited()
@@ -1331,7 +1338,7 @@ async def test_import_upload_is_reachable_and_imports_only_owner_into_same_priva
     await modal.on_submit(submitted)
     importer.assert_awaited_once_with(11, b"{}")
     assert session_for(ctx).route.source == "chunilib:export"
-    assert ctx.message.payloads[-1]["embed"].title == "主資料介面"
+    assert ctx.message.payloads[-1]["embed"].author.name == "主資料介面"
     submitted.followup.send.assert_not_awaited()
     modal.stop()
 
@@ -1380,8 +1387,7 @@ async def test_three_account_sources_chunilib_homepage_and_chunirec_region(ctx):
         )
     )
     await show_account(ctx)
-    statuses = ctx.response.payloads[-1]["embed"].fields[0].value
-    assert "**Chunirec**：jp2 未連結；jp 已連結" in statuses
+    assert ctx.response.payloads[-1]["embed"].title == "CHUNITHM-NET"
     anchor = ctx.response
     source = next(
         c for c in session_for(ctx).active_view.children if isinstance(c, SourceSelect)
@@ -1410,7 +1416,10 @@ async def test_three_account_sources_chunilib_homepage_and_chunirec_region(ctx):
         for c in session_for(ctx).active_view.children
         if isinstance(c, ChunirecRegionSelect)
     )
-    assert [c.value for c in region.options] == ["chunirec:jp2", "chunirec:jp"]
+    assert [(c.value, c.description) for c in region.options] == [
+        ("chunirec:jp2", "未連結"),
+        ("chunirec:jp", "已連結 · 已同步"),
+    ]
     region._values = ["chunirec:jp"]
     await region.callback(interaction(ctx))
     assert session_for(ctx).route.source == "chunirec:jp"
@@ -1448,3 +1457,111 @@ async def test_song_entry_preserves_requested_initial_view_and_optional_search(
         "關閉"
     ]
     assert_rows(view)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("fail", [False, True])
+async def test_private_source_search_never_edits_public_parent(ctx, monkeypatch, fail):
+    from chuni_penguin.services.player_sources import SourceError
+
+    saved = await ctx.bot.services.users.fetch_user_config(11)
+    saved.privacy_mode = True
+    await ctx.bot.services.users.save_user_config(saved, is_new=True)
+    parent = ctx.message
+    parent.flags.ephemeral = False
+    session_for(ctx).route = PanelRoute("account", source="chunilib:export")
+    await show_account(ctx)
+    old_payloads = list(parent.payloads)
+    private = Message()
+    private.id = 202
+    submit = interaction(ctx)
+    submit.original_response.return_value = private
+    result = AsyncMock(
+        side_effect=SourceError("synthetic-private-result") if fail else None,
+        return_value=[{"title": "synthetic-private-result", "diff": "MAS", "score": 0}],
+    )
+    monkeypatch.setattr(ctx.bot.get_cog("V2Players"), "matching_rows", result)
+
+    await navigate(ctx, submit, "source_scores", values={"query": "fixture"})
+
+    result.assert_awaited_once()
+    submit.response.defer.assert_awaited_once_with(thinking=True, ephemeral=True)
+    assert "synthetic-private-result" in str(
+        [
+            embed.to_dict()
+            for payload in private.payloads
+            for embed in (
+                [payload["embed"]]
+                if payload.get("embed")
+                else payload.get("embeds", [])
+            )
+        ]
+    )
+    assert parent.payloads == old_payloads
+    assert session_for(ctx).active_view is old_payloads[-1]["view"]
+    assert session_for(ctx).active_view is not None
+    assert not old_payloads[-1]["view"].is_finished()
+
+
+@pytest.mark.asyncio
+async def test_region_with_rejected_saved_credential_offers_reconnect(ctx):
+    from chuni_penguin.database import PlayerSource
+
+    await ctx.bot.database.writer.merge(
+        PlayerSource(
+            discord_id=11,
+            source="chunirec:jp",
+            credential="fixture",
+            payload="{}",
+            status="failed; invalid credential",
+            synced_at="2026-11-21T08:30:00+00:00",
+        )
+    )
+    session_for(ctx).route = PanelRoute("account", source="chunirec:jp")
+    view = await show_account(ctx)
+    embed = ctx.response.payloads[-1]["embed"]
+    assert embed.title == "Chunirec · jp" and "憑證已失效" in embed.description
+    assert embed.fields[0].name == "最後成功同步"
+    assert embed.fields[0].value == "<t:1795249800:f>"
+    assert any(
+        isinstance(item, discord.ui.Button)
+        and getattr(item, "action", None) == "link_source"
+        and item.label == "重新連結"
+        for item in view.children
+    )
+
+
+@pytest.mark.asyncio
+async def test_chunirec_modal_uses_submission_webhook_from_public_button(
+    ctx, monkeypatch
+):
+    from chuni_penguin.cogs.v2_players import ChunirecLinkModal
+    from chuni_penguin.context import PenguinContext
+    from chuni_penguin.ui.panel import sensitive_context
+
+    cog = ctx.bot.get_cog("V2Players")
+    ctx.message.flags.ephemeral = False
+    ctx.respond_or_edit = MethodType(PenguinContext.respond_or_edit, ctx)
+    button = interaction(ctx)
+    # The public parent can be refreshed separately with its own safe status.
+    original = sensitive_context(ctx, button)
+    original._account_parent = None
+    modal = ChunirecLinkModal(cog, 11, "jp", ctx=original)
+    modal.token._value = "fixture-token"
+    target = Message()
+    target.id = 202
+    submit = interaction(ctx)
+    submit.original_response.return_value = target
+    submit.edit_original_response.side_effect = target.edit
+    submit.data = {"components": [{"type": 4, "value": "fixture-token"}]}
+    monkeypatch.setattr(
+        cog.sources,
+        "sync_chunirec",
+        AsyncMock(return_value={"records": [], "mapped": 0, "unmapped": 0}),
+    )
+    await modal.on_submit(submit)
+    button.edit_original_response.assert_not_awaited()
+    submit.edit_original_response.assert_awaited_once()
+    assert target.payloads[-1]["embeds"][0].title == "Chunirec · jp"
+    assert modal.token.value == "" and original.interaction.data == {}
+    assert ctx.message.payloads == []

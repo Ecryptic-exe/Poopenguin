@@ -209,7 +209,7 @@ class ChunithmNetAdapter(NetworkAdapter):
         return player_data
 
     async def get_recent_scores(self) -> list[RecentScore]:
-        soup = await self._request_as_soup("GET", "/mobile/record/playlog")
+        soup = await self._request_as_soup("GET", "/mobile/record/playlog", check_status=True)
 
         return await self._process_records(
             [parse_basic_recent_record(record) for record in soup.css(".frame02.w400")],
@@ -223,6 +223,7 @@ class ChunithmNetAdapter(NetworkAdapter):
         soup = await self._request_as_soup(
             "POST",
             "/mobile/record/playlog/sendPlaylogDetail/",
+            check_status=True,
             data={"idx": idx, "token": self._token},
         )
 

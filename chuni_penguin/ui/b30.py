@@ -19,11 +19,13 @@ class B30PageSource(ListPageSource["Score"]):
     __slots__ = (
         "average",
         "has_estimated_play_rating",
+        "heading",
         "reachable",
         "show_average",
         "show_lamps",
         "show_reachable",
         "synthesis_alt_jacket",
+        "total_rating",
     )
 
     def __init__(
@@ -36,21 +38,32 @@ class B30PageSource(ListPageSource["Score"]):
         show_reachable: bool = True,
         show_lamps: bool = False,
         synthesis_alt_jacket: str | None = None,
+        heading: str = "",
     ) -> None:
         super().__init__(records, per_page=per_page)
 
-        total_rating = sum(
-            (record.rating or Decimal(0) for record in records),
-            start=Decimal(0),
+        known_ratings = [row.rating for row in records if row.rating is not None]
+        self.heading = heading
+        self.total_rating = (
+            sum(known_ratings, start=Decimal(0))
+            if len(known_ratings) == len(records)
+            else None
         )
-        max_play_rating = max(
-            (record.rating or Decimal(0) for record in records), default=Decimal(0)
+        self.average = (
+            floor_to_ndp(self.total_rating / rating_slots, 4)
+            if self.total_rating is not None and rating_slots
+            else None
         )
-
-        self.average = floor_to_ndp(total_rating / rating_slots, 4)
-        self.reachable = floor_to_ndp(total_rating / 40 + max_play_rating / 4, 4)
+        self.reachable = (
+            floor_to_ndp(
+                self.total_rating / 40 + max(known_ratings, default=Decimal(0)) / 4, 4
+            )
+            if self.total_rating is not None
+            else None
+        )
         self.has_estimated_play_rating = any(
-            record.chart.internal_level is None for record in records
+            row.rating is not None and row.chart.internal_level is None
+            for row in records
         )
         self.show_average = show_average
         self.show_reachable = show_reachable
@@ -75,27 +88,30 @@ class B30PageSource(ListPageSource["Score"]):
 
         kwargs: FormatPageReturn = {"embeds": embeds}
 
-        if self.show_average or self.show_reachable or self.has_estimated_play_rating:
-            kwargs["content"] = (
-                (
-                    ui_text(menu.ctx, "Average: **{0}**", self.average)
-                    if self.show_average
-                    else ""
-                )
-                + (
-                    ui_text(menu.ctx, "\nReachable: **{0}**", self.reachable)
-                    if self.show_reachable
-                    else ""
-                )
-                + (
-                    ui_text(
-                        menu.ctx,
-                        "\nPlay ratings marked with asterisks are estimated (due to lack of chart constants).",
-                    )
-                    if self.has_estimated_play_rating
-                    else ""
+        lines = [self.heading] if self.heading else []
+        unknown = ui_text(menu.ctx, "未提供")
+        if self.show_average:
+            lines.append(
+                ui_text(
+                    menu.ctx,
+                    "Average: **{0}**",
+                    self.average if self.average is not None else unknown,
                 )
             )
+        if self.show_reachable:
+            lines.append(
+                ui_text(
+                    menu.ctx,
+                    "\nReachable: **{0}**",
+                    self.reachable if self.reachable is not None else unknown,
+                ).lstrip()
+            )
+        if self.has_estimated_play_rating:
+            lines.append(ui_text(menu.ctx, "缺少已確認定數的單曲 Rating 為估算值。"))
+        if not page:
+            lines.append(ui_text(menu.ctx, "此組別沒有來源紀錄。"))
+        if lines:
+            kwargs["content"] = "\n".join(lines)
 
         return kwargs
 
@@ -112,6 +128,7 @@ class B30View(PaginationView):
         show_reachable: bool = True,
         show_lamps: bool = False,
         synthesis_alt_jacket: str | None = None,
+        heading: str = "",
     ):
         super().__init__(
             ctx,
@@ -123,5 +140,6 @@ class B30View(PaginationView):
                 show_reachable=show_reachable,
                 show_lamps=show_lamps,
                 synthesis_alt_jacket=synthesis_alt_jacket,
+                heading=heading,
             ),
         )

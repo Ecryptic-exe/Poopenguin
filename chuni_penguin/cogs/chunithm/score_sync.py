@@ -11,7 +11,10 @@ from chuni_penguin import flags
 from chuni_penguin.context import PenguinContext
 from chuni_penguin.converters import MemberOrUserConverter
 from chuni_penguin.logging import logged_app_command, logged_prefix_command
+from chuni_penguin.services.native_scores import PartialScoreSync, read_native_scores
 from chuni_penguin.ui import FriendCodeOfferView
+from chuni_penguin.ui.account_state import partial_sync_notice
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
@@ -129,27 +132,23 @@ class ScoreSyncCog(commands.Cog, name="ScoreSync"):
             ctx.typing(),
             self.accounts.network(ctx, target_id, kamaitachi=kamaitachi) as client,
         ):
-            profile = await client.get_minimal_profile()
 
-            await ctx.respond_or_edit(f"Fetching recent scores from {client.NAME}...")
+            async def progress(stage, done, total):
+                if stage == "details":
+                    text = ui_text(
+                        ctx, "讀取 {0} 最近遊玩詳情 · {1}/{2}", client.NAME, done, total
+                    )
+                elif stage == "recent":
+                    text = ui_text(ctx, "正在讀取 {0} 的最近遊玩。", client.NAME)
+                else:
+                    text = ui_text(ctx, "正在讀取 {0} 的個人最佳。", client.NAME)
+                await ctx.respond_or_edit(text)
 
-            recents = await client.get_recent_scores()
-
-            if client.SUPPORTS_DETAILED_RECENT_SCORE:
-                for i, recent in enumerate(recents):
-                    if (i + 1) % 10 == 0 or (i + 1) == len(recents):
-                        await ctx.respond_or_edit(
-                            f"Fetching recent scores from {client.NAME}... {i + 1}/{len(recents)}"
-                        )
-
-                    # Side effect: also processes scores
-                    _ = await client.get_detailed_recent_score(recent)
-
-            await ctx.respond_or_edit(f"Fetching personal bests from {client.NAME}...")
-
-            # Side effect: fetches PBs and puts them into the database
-            _ = await client.get_all_personal_bests()
-
+            try:
+                profile, _, _ = await read_native_scores(client, progress)
+            except PartialScoreSync as error:
+                await ctx.respond_or_edit(partial_sync_notice(ctx, error))
+                return
         await ctx.respond_or_edit(
             f"Successfully synced {client.NAME} scores for {escape_markdown(profile.username)}."
         )

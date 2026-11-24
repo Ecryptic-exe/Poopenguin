@@ -260,9 +260,12 @@ def test_legacy_imports_are_identity_aliases_and_extensions_resolve_old_keys(
         for spec in DEFAULT_EXTENSIONS
         if spec.module.startswith("chuni_penguin.cogs.poopenguin.")
     ]
-    assert len(specs) == 9
+    assert len(specs) == 10
     manager = ExtensionManager(SimpleNamespace(), DEFAULT_EXTENSIONS)
     for spec in specs:
+        if spec.key == "poopenguin.scripture_cog":
+            assert not spec.aliases  # New feature with no legacy_b import.
+            continue
         legacy_key = f"chuni_penguin.legacy_b.{spec.module.rsplit('.', 1)[-1]}"
         assert spec.aliases == (legacy_key,)
         assert manager.resolve(legacy_key) is spec
@@ -270,6 +273,7 @@ def test_legacy_imports_are_identity_aliases_and_extensions_resolve_old_keys(
 
     optional = {spec.key for spec in specs if spec.optional}
     assert optional == {
+        "poopenguin.scripture_cog",
         "poopenguin.messages_cog",
         "poopenguin.vote_cog",
         "poopenguin.admin_cog",

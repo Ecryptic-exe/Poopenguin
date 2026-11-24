@@ -5,6 +5,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from chuni_penguin.context import PenguinContext
+from chuni_penguin.privacy import private_score_response
 from chuni_penguin.utils.chunithm_i18n import ui_text
 
 MOVED_ROOTS = frozenset(
@@ -63,8 +64,10 @@ async def account_entry(interaction: discord.Interaction):
 
 
 async def open_song_entry(interaction, query, *, section, tab):
-    await interaction.response.defer(thinking=True)
+    private = section == "score" and await private_score_response(interaction)
+    await interaction.response.defer(thinking=True, ephemeral=private)
     ctx = await PenguinContext.from_interaction(interaction)
+    ctx._panel_private = private
     return await show_song_entry(ctx, query, section=section, tab=tab)
 
 

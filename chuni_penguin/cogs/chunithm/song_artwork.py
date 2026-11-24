@@ -48,7 +48,11 @@ class SongArtworkCog(commands.Cog, name="SongArtwork"):
                     f"{self.settings.web.base_url}/assets/jackets/{song.id}.webp"
                 )
             else:
-                await ctx.reply(get_jacket_url(song))
+                from chuni_penguin.utils.chunithm_i18n import ui_text
+
+                await ctx.reply(
+                    get_jacket_url(song) or ui_text(ctx, "此歌曲目前沒有可用的曲繪。")
+                )
 
 
 async def setup(bot: "ChuniBot"):

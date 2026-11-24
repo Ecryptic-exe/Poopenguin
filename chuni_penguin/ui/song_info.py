@@ -32,10 +32,6 @@ class SongInfoEmbed(discord.Embed):
         song_description_parts = []
 
         aliases = [escape_markdown(x.alias) for x in song.aliases if x.guild_id == 0]
-        if aliases:
-            song_description_parts.append("-# ")
-            song_description_parts.append(" / ".join(aliases))
-            song_description_parts.append("\n")
 
         if not song.available:
             if song.removed:
@@ -54,8 +50,6 @@ class SongInfoEmbed(discord.Embed):
                         "\n**此歌曲尚未在 CHUNITHM 國際版開放。**\n\n",
                     )
                 )
-        else:
-            song_description_parts.append("\n")
 
         displayed_version = song.version
         displayed_bpm = ui_text(language, "Unknown")
@@ -75,8 +69,7 @@ class SongInfoEmbed(discord.Embed):
 
         song_description_parts.append(
             f"**{ui_text(language, 'Artist')}**: {escape_markdown(song.artist)}\n"
-            f"**{ui_text(language, 'Category')}**: {song.genre}\n"
-            f"**{ui_text(language, 'Version')}**: {displayed_version}\n"
+            f"{escape_markdown(song.genre)} · {ui_text(language, 'Version')} {escape_markdown(displayed_version)}\n"
         )
 
         for chart in charts:
@@ -87,11 +80,11 @@ class SongInfoEmbed(discord.Embed):
                     f"**{ui_text(language, 'Version')} ({difficulty})**: {chart.version}\n"
                 )
 
-        song_description_parts.append(f"**BPM**: {displayed_bpm}\n")
+        song_description_parts.append(f"BPM {displayed_bpm}")
 
         if song.duration is not None:
             song_description_parts.append(
-                f"**{ui_text(language, 'Duration')}**: {song.duration // 60000}:{song.duration % 60000 // 1000:02}\n"
+                f" · {ui_text(language, 'Duration')} {song.duration // 60000}:{song.duration % 60000 // 1000:02}"
             )
 
         super().__init__(title=song.title, color=discord.Color.yellow())
@@ -101,7 +94,11 @@ class SongInfoEmbed(discord.Embed):
             self.set_thumbnail(url=None)
 
         if config.web.serve_assets and config.web.is_accessible:
-            if song.id == 2698 and synthesis_alt_jacket not in ("none", "default"):
+            if song.id == 2698 and synthesis_alt_jacket not in (
+                None,
+                "none",
+                "default",
+            ):
                 self.set_thumbnail(
                     url=f"{config.web.base_url}/assets/jackets/{song.id}_{synthesis_alt_jacket}.webp"
                 )
@@ -133,44 +130,50 @@ class SongInfoEmbed(discord.Embed):
                 difficulty = Difficulty(chart.difficulty)
 
                 link_text = f"Lv.{chart.level}"
-                if chart.const is not None:
+                if chart.const is not None and difficulty != Difficulty.worlds_end:
                     link_text += f" ({chart.const:.1f})"
 
                 desc = f"{difficulty.emoji()} [{link_text}]({url})"
             else:
-                if chart.difficulty == "WE":
-                    displayed_difficulty = "WORLD'S END"
-                else:
-                    displayed_difficulty = chart.difficulty[0]
-
-                desc = f"[{displayed_difficulty}]({url}) {chart.level}"
-
-                if chart.const is not None:
-                    desc += f" ({chart.const:.1f})"
+                desc = f"[{Difficulty(chart.difficulty)}]({url}) · {chart.level}"
+                if chart.difficulty != "WE":
+                    constant = (
+                        f"{chart.const:.1f}"
+                        if chart.const is not None
+                        else ui_text(language, "未知")
+                    )
+                    desc += " · " + ui_text(language, "定數 {0}", constant)
 
             if detailed and chart.charter is not None:
                 desc += f" {ui_text(language, 'NOTES DESIGNER')}: {escape_markdown(chart.charter)}"
 
             if detailed:
-                maxcombo = chart.maxcombo or "-"
-                tap = chart.tap or "-"
-                hold = chart.hold or "-"
-                slide = chart.slide or "-"
-                air = chart.air or "-"
-                flick = chart.flick or "-"
-                desc += f"\n**{maxcombo}** / {tap} / {hold} / {slide} / {air} / {flick}"
+                counts = (
+                    chart.maxcombo,
+                    chart.tap,
+                    chart.hold,
+                    chart.slide,
+                    chart.air,
+                    chart.flick,
+                )
+                desc += "\n" + " / ".join(
+                    str(count) if count is not None else ui_text(language, "未知")
+                    for count in counts
+                )
             chart_level_desc.append(desc)
 
         if len(chart_level_desc) > 0:
-            song_description_parts.append(f"\n**{ui_text(language, 'Level')}**:\n")
+            song_description_parts.append(f"\n\n**{ui_text(language, 'Level')}**\n")
 
             if detailed:
                 song_description_parts.append(
                     "**CHAIN** / TAP / HOLD / SLIDE / AIR / FLICK\n\n"
                 )
-                song_description_parts.append("\n".join(chart_level_desc))
-            else:
-                song_description_parts.append(" / ".join(chart_level_desc))
+            song_description_parts.append("\n".join(chart_level_desc))
+
+        if aliases:
+            song_description_parts.append(f"\n\n**{ui_text(language, '別名')}**\n")
+            song_description_parts.append(" / ".join(aliases))
 
         self.description = "".join(song_description_parts)
 

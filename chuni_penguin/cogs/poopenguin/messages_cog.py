@@ -1,20 +1,4 @@
-"""
-Everything that used to live inside the single giant on_message() in
-vto.py, split into named steps:
-
-  1. auto-react to messages in configured channels
-  2. bare bot-mention -> show the main menu
-  3. process !commands
-  4. keyword-triggered copypasta responses (now data-driven, see
-     keyword_manager.py, instead of the old hardcoded if/elif chain)
-  5. "three different users said the same thing in a row" repeat echo
-
-Kept as one on_message listener (rather than 5 separate ones) because
-steps 2-5 are mutually exclusive-ish and ordered the same way the
-original bot behaved - splitting them into independent listeners would
-change behaviour subtly (e.g. commands firing at the same time as
-keyword matches).
-"""
+"""Guild chat moderation, autoreactions, mentions, keyword replies and repeat echoes."""
 import discord
 from discord.ext import commands
 
@@ -214,6 +198,7 @@ class MessagesCog(commands.Cog, name="messages"):
         # again here made every "!" command fire twice.
         await self._handle_keywords(message)
         await self._handle_repeats(message)
+        self.bot.dispatch("poopenguin_chat_message", message)
 
 
 async def setup(bot):

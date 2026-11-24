@@ -47,10 +47,19 @@ from chuni_penguin.types import (
 )
 from chuni_penguin.ui import B30N20View, B30View, FriendCodeOfferView
 from chuni_penguin.utils import AsyncTemporaryFile
+from chuni_penguin.utils.chunithm_i18n import ui_text
 from chuni_penguin.utils.misc import Reversor
 
 if TYPE_CHECKING:
     from chuni_penguin.bot import ChuniBot
+
+
+def _b50_heading(ctx, profile: Profile, source: str) -> str:
+    name = discord.utils.escape_markdown(
+        discord.utils.escape_mentions(profile.username), ignore_links=False
+    )
+    fetched = discord.utils.format_dt(datetime.now(UTC), style="f")
+    return ui_text(ctx, "**Best 50** · {0} · {1}\n讀取時間 {2}", name, source, fetched)
 
 
 class BestPlaysCog(commands.Cog, name="BestPlays"):
@@ -76,6 +85,8 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
         profile: Profile,
         rating_breakdown: RatingBreakdown,
         user_config: UserConfig | None = None,
+        *,
+        source: str,
     ):
         current_rating = float(rating_breakdown.rating)
         records = rating_breakdown.frames[RatingFrameType.best].scores
@@ -111,6 +122,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
             generation_timestamp = datetime.now(UTC).strftime("%Y-%m-%d_%H-%M-%S")
 
             await ctx.respond_or_edit(
+                content=_b50_heading(ctx, profile, source),
                 files=[
                     discord.File(
                         f,
@@ -165,7 +177,9 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                 else RatingType.ongeki_naive,
                 pbs,
             )
-            await self._best50_ongeki(ctx, profile, breakdown, ctx.user_config)
+            await self._best50_ongeki(
+                ctx, profile, breakdown, ctx.user_config, source=ChunithmNetAdapter.NAME
+            )
             return
         else:
             new_records = []
@@ -201,6 +215,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                 new_records,
                 new_record_slots,
                 "default",
+                source=ChunithmNetAdapter.NAME,
                 classic=classic,
             )
 
@@ -211,6 +226,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
         *,
         classic: bool = False,
         kamaitachi: bool = False,
+        chunithm_net: bool = False,
         new_rating: bool = False,
         rating_system: Literal["naive", "ingame", "ongeki", "ongeki-naive"]
         | None = None,
@@ -221,6 +237,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
         if (
             user is None
             and not kamaitachi
+            and not chunithm_net
             and (
                 cookie is None
                 or (not cookie.cookie and cookie.kamaitachi_token is None)
@@ -248,7 +265,9 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
 
         async with (
             ctx.typing(),
-            self.accounts.network(ctx, target_id, kamaitachi=kamaitachi) as client,
+            self.accounts.network(
+                ctx, target_id, kamaitachi=kamaitachi, chunithm_net=chunithm_net
+            ) as client,
         ):
             user_config = await self.users.fetch_user_config(target_id)
             profile = await client.get_profile()
@@ -263,7 +282,9 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
             breakdown = await client.get_rating_breakdown(rating_type)
 
             if rating_type in (RatingType.ongeki, RatingType.ongeki_naive):
-                await self._best50_ongeki(ctx, profile, breakdown, user_config)
+                await self._best50_ongeki(
+                    ctx, profile, breakdown, user_config, source=client.NAME
+                )
                 return
 
             current_rating = float(breakdown.rating)
@@ -287,6 +308,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                 new_records,
                 new_record_slots,
                 "xversex" if isinstance(client, KamaitachiAdapter) else "default",
+                source=client.NAME,
                 classic=classic,
             )
 
@@ -303,7 +325,9 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
         theme: Literal["default", "xverse", "xversex"],
         *,
         classic: bool,
+        source: str,
     ):
+        heading = _b50_heading(ctx, profile, source)
         if classic:
             if new_records is not None:
                 view = B30N20View(
@@ -311,6 +335,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                     records,
                     new_records,
                     synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    heading=heading,
                 )
             else:
                 view = B30View(
@@ -319,6 +344,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
                     record_slots,
                     show_reachable=False,
                     synthesis_alt_jacket=ctx.user_config.synthesis_alt_jacket,
+                    heading=heading,
                 )
 
             await view.start()
@@ -351,6 +377,7 @@ class BestPlaysCog(commands.Cog, name="BestPlays"):
             generation_timestamp = datetime.now(UTC).strftime("%Y-%m-%d_%H-%M-%S")
 
             await ctx.respond_or_edit(
+                content=heading,
                 files=[
                     discord.File(
                         f,

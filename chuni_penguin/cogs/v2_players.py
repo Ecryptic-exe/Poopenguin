@@ -1,7 +1,7 @@
 # ruff: noqa: RUF001
 """Phase-one player entry points; reuse A's clients, renderers and privacy settings."""
 
-from datetime import UTC, datetime
+from copy import copy
 from typing import Literal
 
 import discord
@@ -9,7 +9,6 @@ from discord import app_commands
 from discord.ext import commands
 from sqlalchemy import delete, select
 
-from chuni_penguin.calculation import calculate_rating
 from chuni_penguin.context import PenguinContext
 from chuni_penguin.database import (
     Cookie,
@@ -19,10 +18,14 @@ from chuni_penguin.database import (
     UserConfig,
 )
 from chuni_penguin.logging import logged_prefix_command
+from chuni_penguin.services.native_scores import PartialScoreSync
 from chuni_penguin.services.player_sources import PlayerSourceService, SourceError
-from chuni_penguin.ui import EmbedPaginationView, ScoreCardEmbed
+from chuni_penguin.ui import EmbedPaginationView
+from chuni_penguin.ui.account_state import partial_sync_notice
 from chuni_penguin.ui.autocomplete import song_title_choices
-from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
+from chuni_penguin.ui.components.score_card_embed import source_score_embed
+from chuni_penguin.ui.imported_b50 import imported_b50_pages
+from chuni_penguin.utils.chunithm_i18n import ui_text
 
 from .chunithm.best_plays import BestPlaysCog
 from .chunithm.recent_scores import RecentScoresCog
@@ -59,6 +62,14 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
         clear(getattr(interaction, "data", None))
         self.stop()
 
+    def bind_submitted_response(self, interaction):
+        # The button that opened the modal can belong to a public message.
+        # Edit with the submission's private webhook. Keep its raw payload out of views.
+        if self.ctx is not None:
+            submitted = copy(interaction)
+            submitted.data = {}
+            self.ctx.interaction = submitted
+
     async def on_submit(self, interaction):
         if interaction.user.id != self.user_id:
             await interaction.response.send_message(
@@ -89,6 +100,7 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
             )
         finally:
             self.clear_submission(interaction)
+            self.bind_submitted_response(interaction)
         if self.ctx is None:
             await interaction.followup.send(content, ephemeral=True)
             return
@@ -110,6 +122,7 @@ class ChunirecLinkModal(discord.ui.Modal, title="綁定自己的 Chunirec 帳號
         # A Modal traceback can contain the submitted secret in locals.
         message = ui_text(interaction, "綁定失敗，請檢查本機資料庫與設定後重試。")
         self.clear_submission(interaction)
+        self.bind_submitted_response(interaction)
         if self.ctx is not None:
             from chuni_penguin.ui.panel import (
                 defer_panel,
@@ -201,10 +214,9 @@ class PlayersCog(commands.Cog, name="V2Players"):
     async def link(
         self, interaction: discord.Interaction, region: Literal["jp2", "jp"] = "jp2"
     ):
-        ctx = await PenguinContext.from_interaction(interaction)
-        await interaction.response.send_modal(
-            ChunirecLinkModal(self, interaction.user.id, region, ctx=ctx)
-        )
+        modal = ChunirecLinkModal(self, interaction.user.id, region)
+        modal.title = ui_text(interaction, "綁定自己的 Chunirec 帳號")
+        await interaction.response.send_modal(modal)
 
     @account.command(name="status", description="查看自己的各來源同步狀態")
     async def status(self, interaction: discord.Interaction):
@@ -276,7 +288,7 @@ class PlayersCog(commands.Cog, name="V2Players"):
         if self.sources.locks[user_id].locked():
             return ui_text(ctx, "帳號目前正在查詢或同步，請結束操作後重試。")
         async with self.sources.locks[user_id]:
-            if self.bot.services.accounts.active_users.get(user_id, 0):
+            if self.bot.services.accounts.active_users.get(user_id, 0) or self.sources.native_sync_active(user_id):
                 return ui_text(ctx, "請先關閉正在使用帳號的成績分頁，再刪除帳號。")
 
             async def erase(session):
@@ -410,45 +422,22 @@ class PlayersCog(commands.Cog, name="V2Players"):
         """The same source-explicit native synchronization for commands and panels."""
         if source not in ("net", "kamaitachi"):
             raise SourceError(ui_text(ctx, "請選擇 NET 或 Kamaitachi。"))
+        network = self.bot.services.accounts.network(
+            ctx, kamaitachi=source == "kamaitachi", chunithm_net=source == "net"
+        )
         try:
-            async with self.bot.services.accounts.network(
-                ctx, kamaitachi=source == "kamaitachi", chunithm_net=source == "net"
-            ) as client:
-                await client.get_minimal_profile()
-                recent = await client.get_recent_scores()
-                if client.SUPPORTS_DETAILED_RECENT_SCORE:
-                    for played in recent:
-                        await client.get_detailed_recent_score(played)
-                records = await client.get_all_personal_bests()
-                await self.bot.database.writer.merge(
-                    PlayerSource(
-                        discord_id=ctx.author.id,
-                        source=source,
-                        credential=None,
-                        payload=None,
-                        synced_at=datetime.now(UTC).isoformat(),
-                        status="synced",
-                    )
-                )
-            return ui_text(
-                ctx,
-                "{0} 已讀取 {1} 筆個人最佳與 {2} 筆最近遊玩，並更新本機快取。",
-                client.NAME,
-                len(records),
-                len(recent),
+            name, recent, bests = await self.sources.sync_native(
+                ctx.author.id, source, network
             )
-        except Exception:
-            row = await self.sources.get(ctx.author.id, source)
-            row = row or PlayerSource(
-                discord_id=ctx.author.id,
-                source=source,
-                credential=None,
-                payload=None,
-                synced_at=None,
-            )
-            row.status = "failed; partial cache possible"
-            await self.bot.database.writer.merge(row)
-            raise
+        except PartialScoreSync as error:
+            raise SourceError(partial_sync_notice(ctx, error)) from None
+        return ui_text(
+            ctx,
+            "{0} 已讀取 {1} 筆個人最佳與 {2} 筆最近遊玩，並更新本機快取。",
+            name,
+            bests,
+            recent,
+        )
 
     async def matching_rows(self, ctx, query, source, difficulty=None, target=None):
         if source in ("net", "kamaitachi"):
@@ -496,18 +485,11 @@ class PlayersCog(commands.Cog, name="V2Players"):
             return
         try:
             rows = await self.matching_rows(ctx, query, source, difficulty)
-            embeds = [
-                ScoreCardEmbed(r["record"], language=get_chunithm_language(interaction))
-                if "record" in r
-                else discord.Embed(
-                    title=r["title"][:256], description=f"{r['diff']} · {r['score']:,}"
-                ).set_footer(text=f"{source} · source ID {r['id']}")
-                for r in rows
-            ]
+            embeds = [source_score_embed(ctx, row, source) for row in rows]
             if not embeds:
                 await self.send_result(
                     interaction,
-                    ui_text(interaction, "此來源沒有符合的已遊玩成績。"),
+                    ui_text(interaction, "此來源查無符合的成績。可切換來源或重新搜尋。"),
                     ephemeral=True,
                 )
                 return
@@ -608,41 +590,19 @@ class PlayersCog(commands.Cog, name="V2Players"):
                         ephemeral=True,
                     )
                     return
-            await self.best._best50_inner(ctx, kamaitachi=source == "kamaitachi")
+            await self.best._best50_inner(
+                ctx, kamaitachi=source == "kamaitachi", chunithm_net=source == "net"
+            )
             return
         try:
             payload, row = await self.sources.records(interaction.user.id, source)
-            ranked = []
-            for record in payload["records"]:
-                constant = record.get("source_const")
-                if constant is not None:
-                    ranked.append((calculate_rating(record["score"], constant), record))
-            ranked.sort(key=lambda pair: pair[0], reverse=True)
-            lines = [
-                f"{i}. {discord.utils.escape_markdown(r['title'][:150])} [{r['diff']}] · {r['score']:,} · {rating:.2f}"
-                for i, (rating, r) in enumerate(ranked[:50], 1)
-            ]
-            if not lines:
-                raise SourceError(
-                    ui_text(
-                        interaction,
-                        "此匯入來源尚無可信譜面定數關聯，無法計算 Best50；請使用 /score 查看原始成績。",
-                    )
-                )
-            header = ui_text(
-                interaction,
-                "來源回報 Rating：{0}\n本機依來源已確認定數排序 Best50；不代表來源遊戲內 Rating 組成。",
-                payload.get("rating") or ui_text(interaction, "未提供"),
-            )
-            embeds = [
-                discord.Embed(
-                    title="Best 50",
-                    description=header + "\n\n" + "\n".join(lines[i : i + 10]),
-                ).set_footer(
-                    text=ui_text(interaction, "{0} · 同步 {1}", source, row.synced_at)
-                )
-                for i in range(0, len(lines), 10)
-            ]
+            embeds = imported_b50_pages(interaction, payload, source, row.synced_at)
+            if not embeds:
+                await self.send_result(interaction, ui_text(
+                    interaction,
+                    "此匯入來源尚無可信譜面定數關聯，無法計算 Best50；請使用 /score 查看原始成績。",
+                ), ephemeral=True)
+                return
             await EmbedPaginationView(ctx, embeds).start(ephemeral=True)
         except SourceError as exc:
             await self.send_result(
@@ -679,7 +639,9 @@ class PlayersCog(commands.Cog, name="V2Players"):
                 )
                 return
         ctx = await PenguinContext.from_interaction(interaction)
-        await self.recent_native._recent_inner(ctx, kamaitachi=source == "kamaitachi")
+        await self.recent_native._recent_inner(
+            ctx, kamaitachi=source == "kamaitachi", chunithm_net=source == "net"
+        )
 
     @score.autocomplete("query")
     @compare.autocomplete("query")

@@ -398,7 +398,7 @@ async def test_core_source_commands_deliver_private_scores_b50_and_history_limit
     cog = PlayersCog.__new__(PlayersCog)
     cog.sources = service
     cog.bot = SimpleNamespace(services=SimpleNamespace(users=users))
-    ctx = SimpleNamespace(author=SimpleNamespace(id=11))
+    ctx = SimpleNamespace(author=SimpleNamespace(id=11, display_name="Fixture"))
     monkeypatch.setattr(PenguinContext, "from_interaction", AsyncMock(return_value=ctx))
     delivered = []
 
@@ -416,6 +416,8 @@ async def test_core_source_commands_deliver_private_scores_b50_and_history_limit
     )
     score.response.defer.assert_awaited_once_with(ephemeral=True, thinking=True)
     assert "1,009,000" in delivered[0][0].description
+    assert delivered[0][0].author.name == "Fixture"
+    assert "chunirec:jp2" in delivered[0][0].footer.text and "official-id" in delivered[0][0].footer.text
     best = fake_interaction()
     await PlayersCog.b50.callback(cog, best, source="chunirec:jp2")
     assert "Best 50" in delivered[1][0].title
@@ -469,6 +471,7 @@ async def test_native_sync_selects_net_explicitly_and_awaits_cache(
         yield client
 
     cog = PlayersCog.__new__(PlayersCog)
+    cog.sources = PlayerSourceService(database, vault_path=tmp_path / "key")
     cog.bot = SimpleNamespace(
         services=SimpleNamespace(accounts=SimpleNamespace(network=network)),
         database=database,
@@ -768,3 +771,15 @@ async def test_find_filters_difficulty_version_and_reviewed_tags(monkeypatch):
     ctx.bot.phase1_charts = None
     await callback(cog, ctx, Level("14", 14.0), tag="trill")
     assert "目前無法使用" in ctx.reply.call_args.args[0]
+
+
+def test_explicit_played_zero_is_preserved_and_absent_history_is_skipped():
+    from chuni_penguin.services.player_sources import clean_records
+
+    rows = [
+        record(id="played", score=0, is_played=True),
+        record(id="unplayed", score=0, is_played=False),
+        record(id="unknown", score=0),
+    ]
+    rows[-1].pop("is_played", None)
+    assert [(r["id"], r["score"]) for r in clean_records(rows)] == [("played", 0)]

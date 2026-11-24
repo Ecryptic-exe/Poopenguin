@@ -55,6 +55,7 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self._panel_private = False
         self.response: discord.Message | None = None
         self.user_config: UserConfig = MISSING
 
@@ -231,7 +232,7 @@ class PenguinContext(EditTrackableContext["ChuniBot"]):
                 "content": content,
                 "attachments": kwargs.get("files", MISSING),
                 "view": kwargs.get("view", MISSING),
-                "allowed_mentions": kwargs.get("allowed_mentions", MISSING),
+                "allowed_mentions": kwargs.get("allowed_mentions", discord.AllowedMentions.none()),
             }
 
             embed = kwargs.get("embed", MISSING)

@@ -220,10 +220,11 @@ async def test_private_link_updates_public_status_without_exposing_submitted_tok
     submitted.original_response = AsyncMock(return_value=private)
     await modal.on_submit(submitted)
     assert session_for(ctx).message is public
-    assert "已連結" in public.payloads[-1]["embed"].fields[0].value
-    assert secret not in str(public.payloads) and "test-encrypted" not in str(
-        public.payloads
-    )
+    public_card = public.payloads[-1]["embed"]
+    assert public_card.title == "Chunirec · jp2" and "已連結" in public_card.description
+    for payload in public.payloads:
+        rendered = str(payload["embed"].to_dict()) + str(payload["view"].to_components())
+        assert secret not in rendered and "test-encrypted" not in rendered
     assert modal.token.value == ""
     assert session_for(ctx).active_view is not session_for(modal.ctx).active_view
     session_for(ctx).active_view.stop()
