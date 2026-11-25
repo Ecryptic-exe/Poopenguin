@@ -13,10 +13,15 @@ from cryptography.fernet import Fernet, InvalidToken
 from sqlalchemy import delete, select
 
 from chuni_penguin.database import Chart, PersonalBest, PlayerSource, Song
+from chuni_penguin.services.native_scores import PartialScoreSync, read_native_scores
 
 
 class SourceError(Exception):
     pass
+
+
+class InvalidSourceCredential(SourceError):
+    """The source rejected the submitted credential."""
 
 
 class CredentialVault:
@@ -63,7 +68,8 @@ def clean_records(rows, *, chunilib=False):
         value = raw.get("score")
         if type(value) is not int or not 0 <= value <= 1010000:
             raise SourceError("成績分數超出範圍。")
-        if value == 0 or raw.get("is_played") is False:
+        played = raw.get("is_played")
+        if played is False or (value == 0 and played is not True):
             continue
         native = raw.get("idx") if chunilib else raw.get("id")
         diff = raw.get("difficulty") if chunilib else raw.get("diff")
@@ -112,6 +118,7 @@ class PlayerSourceService:
         self.transport = transport
         self.locks = defaultdict(asyncio.Lock)
         self._vault = None
+        self._active_native_syncs: set[tuple[int, str]] = set()
 
     @property
     def vault(self):
@@ -122,6 +129,46 @@ class PlayerSourceService:
     async def get(self, user_id, source):
         async with self.database.read_sessionmaker() as session:
             return await session.get(PlayerSource, (user_id, source))
+
+    def native_sync_active(self, user_id: int) -> bool:
+        return any(owner == user_id for owner, _ in self._active_native_syncs)
+
+    async def sync_native(self, user_id: int, source: str, network):
+        key = (user_id, source)
+        if key in self._active_native_syncs:
+            msg = "A sync is already in progress for this source. Wait for it to finish."
+            raise SourceError(msg)
+        self._active_native_syncs.add(key)
+
+        async def save_status(status):
+            async def write(db):
+                row = await db.get(PlayerSource, key)
+                if row is None:
+                    row = PlayerSource(discord_id=user_id, source=source)
+                    db.add(row)
+                row.status = status
+                if status == "synced":
+                    row.synced_at = datetime.now(UTC).isoformat()
+
+            await self.database.writer.execute_fn(write)
+
+        try:
+            async with network as client:
+                _, recent, bests = await read_native_scores(client)
+        except asyncio.CancelledError:
+            await save_status("failed; partial cache possible")
+            raise
+        except PartialScoreSync:
+            await save_status("partial; recent scores read")
+            raise
+        except Exception:
+            await save_status("failed")
+            raise
+        else:
+            await save_status("synced")
+            return client.NAME, recent, bests
+        finally:
+            self._active_native_syncs.discard(key)
 
     async def _fetch(self, token, region):
         if region not in ("jp", "jp2"):
@@ -138,8 +185,10 @@ class PlayerSourceService:
                         params={"region": region, "token": token},
                     ) as response:
                         if response.status_code != 200:
+                            if response.status_code == 401:
+                                msg = "憑證無效。請重新連結帳號。"
+                                raise InvalidSourceCredential(msg)
                             messages = {
-                                401: "憑證無效。",
                                 403: "來源拒絕存取。",
                                 404: "此區域沒有玩家資料。",
                                 429: "來源請求額度已用完，請稍後再試。",
@@ -183,6 +232,7 @@ class PlayerSourceService:
         source = f"chunirec:{region}"
         async with self.locks[user_id]:
             old = await self.get(user_id, source)
+            using_saved_token = token is None
             if token is None:
                 if old is None or old.credential is None:
                     raise SourceError(
@@ -198,14 +248,19 @@ class PlayerSourceService:
                 ):
                     raise SourceError("Token 持有者已變更，請先解除綁定。")
                 await self._save(user_id, source, payload, self.vault.seal(token))
-            except SourceError:
-                if old is not None:
+            except SourceError as error:
+                if old is not None and using_saved_token:
+                    status = (
+                        "failed; invalid credential"
+                        if isinstance(error, InvalidSourceCredential)
+                        else "failed; previous snapshot retained"
+                    )
                     await self.database.writer.execute_fn(
                         lambda session: self._status(
                             session,
                             user_id,
                             source,
-                            "failed; previous snapshot retained",
+                            status,
                         )
                     )
                 raise

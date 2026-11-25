@@ -1,5 +1,6 @@
 """Recent scores with the original detailed-score View and explicit account handoff."""
 
+import sys
 from typing import TYPE_CHECKING
 
 import discord
@@ -26,16 +27,18 @@ class RecentScoresCog(commands.Cog, name="RecentScores"):
         user: discord.User | discord.Member | None = None,
         *,
         kamaitachi: bool = False,
+        chunithm_net: bool = False,
     ):
         target_id = ctx.author.id if user is None else user.id
-        client_manager = self.accounts.network(ctx, target_id, kamaitachi=kamaitachi)
-        client = await client_manager.__aenter__()
-
+        client_manager = self.accounts.network(
+            ctx, target_id, kamaitachi=kamaitachi, chunithm_net=chunithm_net
+        )
+        client = None
         view: RecentRecordsView | None = None
         try:
             async with ctx.typing():
+                client = await client_manager.__aenter__()
                 profile = await client.get_minimal_profile()
-
                 recents = await client.get_recent_scores()
 
             view = RecentRecordsView(
@@ -47,17 +50,15 @@ class RecentScoresCog(commands.Cog, name="RecentScores"):
                 profile,
                 ctx.user_config.synthesis_alt_jacket,
             )
-            await view.start(
-                content=f"Most recent scores for {profile.username} on {client.NAME}:"
-            )
+            await view.start()
         except BaseException:
-            try:
-                if view is None:
-                    await client_manager.__aexit__(None, None, None)
-                else:
+            if view is None:
+                if client is not None:
+                    await client_manager.__aexit__(*sys.exc_info())
+            else:
+                try:
                     await view.close_network()
-            finally:
-                if view is not None:
+                finally:
                     view.stop()
             raise
 

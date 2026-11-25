@@ -45,6 +45,7 @@ async def test_native_b50_renders_and_delivers_real_discord_attachment(
         rating=Decimal("16.70"),
     )
     client = SimpleNamespace(
+        NAME="Fixture network",
         DEFAULT_RATING_SYSTEM=RatingType.in_game,
         get_profile=AsyncMock(
             return_value=SimpleNamespace(username="Attachment fixture")
@@ -61,8 +62,8 @@ async def test_native_b50_renders_and_delivers_real_discord_attachment(
     )
 
     @asynccontextmanager
-    async def network(ctx, target, *, kamaitachi):
-        assert target == 11 and kamaitachi is False
+    async def network(ctx, target, *, kamaitachi, chunithm_net):
+        assert target == 11 and kamaitachi is False and chunithm_net is True
         yield client
 
     @asynccontextmanager
@@ -71,7 +72,12 @@ async def test_native_b50_renders_and_delivers_real_discord_attachment(
 
     delivered = []
 
-    async def respond(*, files):
+    async def respond(*, content, files):
+        assert (
+            "Fixture network" in content
+            and "Attachment fixture" in content
+            and "<t:" in content
+        )
         (attachment,) = files
         assert isinstance(attachment, discord.File)
         assert isinstance(attachment.fp, io.IOBase)

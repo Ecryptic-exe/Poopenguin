@@ -75,7 +75,7 @@ async def test_best50_routes_the_theme_by_source(kamaitachi, expected, monkeypat
     client = (
         KamaitachiAdapter.__new__(KamaitachiAdapter)
         if kamaitachi
-        else SimpleNamespace()
+        else SimpleNamespace(NAME="CHUNITHM International")
     )
     profile = AsyncMock(return_value=SimpleNamespace(username="Fixture"))
     breakdown = AsyncMock(
@@ -128,7 +128,8 @@ async def test_mate_never_draws_a_removed_uncross_logo(monkeypatch, theme, expec
     cog._random = SimpleNamespace(random=lambda: 0)
     cog.database = SimpleNamespace(user_found_easter_egg=AsyncMock())
     cog._prepare_jackets = AsyncMock()
-    async def respond(*, files):
+    async def respond(*, content, files):
+        assert "Fixture" in content
         for attachment in files:
             attachment.close()
 
@@ -143,6 +144,7 @@ async def test_mate_never_draws_a_removed_uncross_logo(monkeypatch, theme, expec
         [],
         20,
         theme,
+        source="Fixture network",
         classic=False,
     )
     assert rendered[0]["uncross_verse"] is expected

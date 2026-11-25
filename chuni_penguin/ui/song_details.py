@@ -14,13 +14,19 @@ from discord.utils import escape_markdown, format_dt
 from chuni_penguin.adapters.errors import (
     AuthenticationError,
     ChartNotFound,
+    MaintenanceError,
     NetworkError,
     SongNotFound,
 )
 from chuni_penguin.calculation import calculate_rating
 from chuni_penguin.database import Chart, Song
 from chuni_penguin.logging import logger
-from chuni_penguin.services.song_details import NetworkChoice, SongDetailsData
+from chuni_penguin.privacy import private_score_response
+from chuni_penguin.services.song_details import (
+    MissingScoreSnapshot,
+    NetworkChoice,
+    SongDetailsData,
+)
 from chuni_penguin.types import Difficulty, LeaderboardEntry
 from chuni_penguin.utils import sdvxin_link, yt_search_link
 from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
@@ -162,6 +168,8 @@ class SongDifficultySelect(discord.ui.Select["SongDetailsView"]):
             metadata = {song.id: song for song in songs}
             options = []
             for variant in variant_charts:
+                if len(variant_charts) > 25 and variant.song_id != songs[song_index].id:
+                    continue
                 song = metadata[variant.song_id]
                 is_we = variant.difficulty == "WE"
                 status = availability_label(song, ctx=self.ctx)
@@ -278,13 +286,13 @@ class SongPageSelect(discord.ui.Select["SongDetailsView"]):
                     label=ui_text(view.ctx, "下一頁"), value="next_page"
                 )
             )
-        if not view.variant_charts and view.state.song_index > 0:
+        if view.show_song_navigation and view.state.song_index > 0:
             options.append(
                 discord.SelectOption(
                     label=ui_text(view.ctx, "上一首"), value="previous_song"
                 )
             )
-        if not view.variant_charts and view.state.song_index + 1 < len(view.songs):
+        if view.show_song_navigation and view.state.song_index + 1 < len(view.songs):
             options.append(
                 discord.SelectOption(
                     label=ui_text(view.ctx, "下一首"), value="next_song"
@@ -355,6 +363,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
     """One song, all available information, in one message."""
 
     _panel_own_navigation = True
+    search_query: str
 
     def __init__(
         self,
@@ -390,6 +399,14 @@ class SongDetailsView(PenguinView["PenguinContext"]):
         self._revision = 0
         self._edit_lock = asyncio.Lock()
         self._expired = False
+        self._opening_private_scores = False
+
+    @property
+    def show_song_navigation(self) -> bool:
+        # A Discord string select has room for 25 chart/variant choices.
+        return len(self.songs) > 1 and (
+            not self.variant_charts or len(self.variant_charts) > 25
+        )
 
     def _info_embed(self, song: Song, charts: Sequence[Chart]) -> SongInfoEmbed:
         embed = SongInfoEmbed(
@@ -411,7 +428,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 labels.append(("▶ " if item.id == song.id else "• ") + label)
             embed.add_field(
                 name=ui_text(self.ctx, "譜面版本"),
-                value="\n".join(labels)[:1024],
+                value="\n".join(labels),
                 inline=False,
             )
         return embed
@@ -428,7 +445,10 @@ class SongDetailsView(PenguinView["PenguinContext"]):
             for row in manual:
                 details = []
                 if row["tags"]:
-                    details.append(ui_text(self.ctx, "標籤：") + ", ".join(row["tags"]))
+                    details.append(
+                        ui_text(self.ctx, "標籤：")
+                        + ", ".join(escape_markdown(tag) for tag in row["tags"])
+                    )
                 if row["sss_stars"] is not None:
                     details.append(
                         ui_text(self.ctx, "來源 SSS 星數：") + "★" * row["sss_stars"]
@@ -457,7 +477,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 )
                 embed.add_field(
                     name=ui_text(self.ctx, "社群譜面資料"),
-                    value="\n".join(details)[:1024],
+                    value="\n".join(details),
                     inline=False,
                 )
             for row in extras.semantic_for(chart) if include_semantic else ():
@@ -465,9 +485,9 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                     name=ui_text(self.ctx, "LLM 語義（來源：")
                     + str(row["source"])[:100]
                     + "）",
-                    value=str(row.get("summary") or ui_text(self.ctx, "沒有文字描述"))[
-                        :1024
-                    ],
+                    value=escape_markdown(
+                        str(row.get("summary") or ui_text(self.ctx, "沒有文字描述"))
+                    ),
                     inline=False,
                 )
 
@@ -482,6 +502,14 @@ class SongDetailsView(PenguinView["PenguinContext"]):
         image = None
         if state.tab == "overview":
             pages = _embed_pages(self._info_embed(song, charts))
+            if chart is None:
+                pages[0][0].add_field(
+                    name=ui_text(self.ctx, "目前選擇"),
+                    value=ui_text(
+                        self.ctx, "此歌曲沒有可選譜面。可返回重新搜尋其他歌曲。"
+                    ),
+                    inline=False,
+                )
         elif state.tab == "jacket":
             embed = self._info_embed(song, ())
             embed.description = ui_text(self.ctx, "曲繪")
@@ -531,11 +559,9 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 f"**{ui_text(self.ctx, 'Artist')}**: {escape_markdown(song.artist)}\n"
                 f"**{ui_text(self.ctx, 'NOTES DESIGNER')}**: {escape_markdown(_value(chart.charter, ctx=self.ctx))}\n"
                 f"**{ui_text(self.ctx, 'Version')}**: {_value(chart.version or song.version, ctx=self.ctx)}\n\n"
-                f"**CHAIN**: {_value(chart.maxcombo, ctx=self.ctx)}\n"
-                f"**TAP**: {_value(chart.tap, ctx=self.ctx)}\n"
-                f"**HOLD**: {_value(chart.hold, ctx=self.ctx)}\n"
-                f"**SLIDE**: {_value(chart.slide, ctx=self.ctx)}\n"
-                f"**AIR**: {_value(chart.air, ctx=self.ctx)}\n"
+                f"**{ui_text(self.ctx, 'Note Count')}**: {_value(chart.maxcombo, ctx=self.ctx)}\n"
+                f"**TAP**: {_value(chart.tap, ctx=self.ctx)} · **HOLD**: {_value(chart.hold, ctx=self.ctx)}\n"
+                f"**SLIDE**: {_value(chart.slide, ctx=self.ctx)} · **AIR**: {_value(chart.air, ctx=self.ctx)}\n"
                 f"**FLICK**: {_value(chart.flick, ctx=self.ctx)}"
             )
             await self.add_community_annotations(embed, chart)
@@ -596,7 +622,9 @@ class SongDetailsView(PenguinView["PenguinContext"]):
             if state.tab == "borders" and not chart.maxcombo:
                 embed.add_field(
                     name=ui_text(self.ctx, "容錯"),
-                    value=ui_text(self.ctx, "總物量未知，無法計算容錯與失分。"),
+                    value=ui_text(self.ctx, "這張譜面的物量為零。無法計算容錯與失分。")
+                    if chart.maxcombo == 0
+                    else ui_text(self.ctx, "總物量未知，無法計算容錯與失分。"),
                     inline=False,
                 )
             elif state.tab == "borders" and state.custom_justice is not None:
@@ -743,30 +771,36 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 and r.chart.difficulty == Difficulty(state.difficulty)
             ]
             pages = []
+            player = getattr(self.ctx.author, "display_name", str(self.ctx.author.id))
+            network = {
+                "chunirec:jp2": "Chunirec jp2",
+                "chunirec:jp": "Chunirec jp",
+                "chunilib:export": ui_text(self.ctx, "Chunilib 匯出檔"),
+            }.get(result.network, result.network)
+            origin = ui_text(
+                self.ctx, "玩家 {0} · {1}", escape_markdown(player), network
+            )
+            if result.saved_at:
+                origin += "\n" + ui_text(
+                    self.ctx, "快照儲存於 {0}", format_dt(result.saved_at, "f")
+                )
             for record in records:
                 embed = ScoreCardEmbed(
                     record,
                     detailed=True,
+                    clear_reported=result.reported_clear is None
+                    or state.difficulty in result.reported_clear,
                     synthesis_alt_jacket=self.synthesis_alt_jacket,
                     language=get_chunithm_language(self.ctx),
                 )
-                embed.title = ui_text(self.ctx, "我的成績")
-                original_footer = embed.footer.text or ""
-                embed.set_footer(
-                    text=f"{result.network} · {original_footer}".rstrip(" ·")
-                )
+                embed.title = song.title[:256]
+                embed.description = f"{embed.description}\n{origin}"
                 pages.extend(_embed_pages(embed))
             if not pages:
-                pages = [
-                    [
-                        self._notice(
-                            song,
-                            ui_text(
-                                self.ctx, "{0} 尚無此難度的個人成績。", result.network
-                            ),
-                        )
-                    ]
-                ]
+                reason = ui_text(self.ctx, "此來源沒有回傳這張譜面的個人成績。")
+                if result.has_unmapped:
+                    reason += "\n" + ui_text(self.ctx, "此來源仍有待對應的紀錄。")
+                pages = [[self._notice(song, f"{reason}\n{origin}")]]
         elif state.tab == "leaderboard":
             result = await self.data.leaderboard(chart, state.network)
             pages = []
@@ -882,6 +916,13 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                     name=ui_text(self.ctx, "分頁切換"), value=notice, inline=False
                 )
             return rendered
+        except MissingScoreSnapshot:
+            text = ui_text(self.ctx, "此來源尚無成績，請從 /account 同步或匯入。")
+        except MaintenanceError:
+            text = ui_text(
+                self.ctx,
+                "CHUNITHM-NET is currently undergoing maintenance. Please try again later.",
+            )
         except (AuthenticationError, commands.CommandError):
             if state.tab == "scores":
                 text = ui_text(
@@ -979,7 +1020,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                     selected=self.state.review_group,
                 )
             )
-        if len(rendered.pages) > 1 or len(self.songs) > 1 and not self.variant_charts:
+        if len(rendered.pages) > 1 or self.show_song_navigation:
             self.add_item(SongPageSelect(self, rendered))
         if self.state.tab in ("scores", "leaderboard"):
             self.add_item(SongNetworkSelect(self.state, self.ctx))
@@ -993,15 +1034,35 @@ class SongDetailsView(PenguinView["PenguinContext"]):
 
     def _kwargs(self, rendered: SongDetailsPage, *, editing: bool) -> dict:
         self.state = replace(
-            rendered.state, page=min(rendered.state.page, len(rendered.pages) - 1)
+            rendered.state,
+            page=max(0, min(rendered.state.page, len(rendered.pages) - 1)),
         )
         self._controls(rendered)
         embeds = [embed.copy() for embed in rendered.pages[self.state.page]]
+        chart = next(
+            (
+                item
+                for item in rendered.charts
+                if item.difficulty == self.state.difficulty
+            ),
+            None,
+        )
+        if chart is not None:
+            difficulty = Difficulty(chart.difficulty)
+            identity = f"{difficulty} · {chart.level}"
+            if chart.difficulty != "WE":
+                identity += " · " + ui_text(
+                    self.ctx, "定數 {0}", _value(chart.const, self.ctx)
+                )
+            for embed in embeds:
+                embed.color = difficulty.color()
+                if self.state.tab != "leaderboard" or not embed.author.name:
+                    embed.set_author(name=identity[:256])
         footer = embeds[-1].footer.text or ""
         label = ui_text(self.ctx, dict(TABS)[self.state.tab])
         selected_song = self.songs[self.state.song_index]
         variant = record_label(selected_song, rendered.charts, ctx=self.ctx)
-        if len(self.songs) > 1 and not self.variant_charts:
+        if self.show_song_navigation:
             variant = ui_text(
                 self.ctx,
                 "歌曲 {0}/{1} · {2}",
@@ -1012,6 +1073,8 @@ class SongDetailsView(PenguinView["PenguinContext"]):
         navigation = (
             f"{variant} · {label} · {self.state.page + 1}/{len(rendered.pages)}"
         )
+        navigation = navigation[:384]
+        footer = footer[: 2048 - len(navigation) - 1]
         embeds[-1].set_footer(text=f"{footer}\n{navigation}".strip())
         files = []
         if rendered.image is not None:
@@ -1024,10 +1087,40 @@ class SongDetailsView(PenguinView["PenguinContext"]):
             "attachments" if editing else "files": files,
         }
 
+    async def _open_private_scores(
+        self, interaction: discord.Interaction, state: SongDetailsState
+    ):
+        from .panel import defer_panel, sensitive_context
+
+        # Once a public message has been sent its visibility cannot be changed.
+        # Deferring a new private response also gives its View an independent anchor.
+        updated = sensitive_context(self.ctx, interaction)
+        await defer_panel(updated, interaction)
+        child = SongDetailsView(
+            updated,
+            self.songs,
+            variant_charts=self.variant_charts,
+            synthesis_alt_jacket=self.synthesis_alt_jacket,
+            fun_mode=self.fun_mode,
+        )
+        child.state = state
+        child.search_query = getattr(
+            self, "search_query", self.songs[state.song_index].title
+        )
+        await child.start(ephemeral=True)
+
     async def transition(self, interaction: discord.Interaction, **changes):
         if self._expired:
             await interaction.response.send_message(
                 ui_text(self.ctx, "資訊卡已逾時，請重新搜尋。"), ephemeral=True
+            )
+            return
+        if (
+            self._opening_private_scores
+            and changes.get("tab", self.state.tab) == "scores"
+        ):
+            await interaction.response.send_message(
+                ui_text(self.ctx, "正在開啟歌曲，請稍候。"), ephemeral=True
             )
             return
         self._revision += 1
@@ -1037,8 +1130,28 @@ class SongDetailsView(PenguinView["PenguinContext"]):
             for key in ("song_index", "difficulty")
         ):
             changes["custom_justice"] = None
-        self.state = replace(self.state, **changes)
-        state = self.state
+        state = replace(self.state, **changes)
+        from .panel import private_message
+
+        if (
+            state.tab == "scores"
+            and getattr(self.ctx, "guild", None) is not None
+            and not private_message(self.message)
+            and await private_score_response(interaction)
+        ):
+            if self._expired or revision != self._revision:
+                await interaction.response.defer()
+                return
+            self._opening_private_scores = True
+            try:
+                await self._open_private_scores(interaction, state)
+            finally:
+                self._opening_private_scores = False
+            return
+        if self._expired or revision != self._revision:
+            await interaction.response.defer()
+            return
+        self.state = state
         await interaction.response.defer()
 
         async def show_processing():
@@ -1050,6 +1163,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                         interaction,
                         content=None,
                         embeds=[processing_embed(dict(TABS)[state.tab], self.ctx)],
+                        attachments=[],
                     )
                 except discord.HTTPException:
                     pass
@@ -1057,7 +1171,7 @@ class SongDetailsView(PenguinView["PenguinContext"]):
         rendered = await run_with_processing(
             self._safe_render(
                 state,
-                recover_unavailable="difficulty" in changes or "song_index" in changes,
+                recover_unavailable="song_index" in changes and not self.variant_charts,
             ),
             show_processing,
         )
@@ -1083,6 +1197,19 @@ class SongDetailsView(PenguinView["PenguinContext"]):
                 except discord.HTTPException:
                     pass
 
+        from .panel import private_message
+
+        protected = (
+            self.state.tab == "scores"
+            and getattr(self.ctx, "guild", None) is not None
+            and getattr(getattr(self.ctx, "user_config", None), "privacy_mode", False)
+            and not getattr(self.ctx, "_panel_private", False)
+            and not private_message(getattr(self.ctx, "response", None))
+        )
+        if protected:
+            # A guild text command or an already-public deferred interaction can
+            # safely offer a private score action on its public song overview.
+            self.state = replace(self.state, tab="overview", page=0)
         rendered = (
             await self._safe_render(self.state)
             if getattr(self.ctx, "_processing_response_active", False)
@@ -1091,7 +1218,12 @@ class SongDetailsView(PenguinView["PenguinContext"]):
             )
         )
         kwargs = self._kwargs(rendered, editing=False)
-        kwargs["content"] = content
+        kwargs["allowed_mentions"] = discord.AllowedMentions.none()
+        kwargs["content"] = (
+            ui_text(self.ctx, "個人成績已設為私人。請使用 /score 或在 Bot 私訊中查詢。")
+            if protected
+            else content
+        )
         return cast(MessageKwargs, kwargs)
 
     @override

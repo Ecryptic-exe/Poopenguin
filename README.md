@@ -86,7 +86,7 @@ Kamaitachi 帳號綁定需配置 A 原有 client 設定並顯式啟用 `chunithm
 
 預設載入 `/ask`、`/pick`、`/rng`、`/rcg`、`/gacha`、`/copypasta`（文字別名 `cp`）、`/keyword` 及其原有子指令／互動。文字模板與關鍵字從新的空資料開始，抽卡使用原預設卡池；舊資料沒有自動複製或覆寫。
 
-所有非 CHUNITHM 的 B 功能與支援模組集中在 `chuni_penguin/cogs/poopenguin/`，原 `legacy_b` import／設定名稱仍相容；持久資料仍位於 `data/poopenguin/`。全伺服器共用的模板、關鍵字及卡池修改需 Bot owner；查詢與一般使用保持開放。JSON 寫入保留前一版 `.bak` 並原子替換，損壞資料會拒絕覆寫。
+所有非 CHUNITHM 的 B 功能與支援模組集中在 `chuni_penguin/cogs/poopenguin/`，原 `legacy_b` import／設定名稱仍相容；持久資料仍位於 `data/poopenguin/`。修改跨伺服器共用的模板與關鍵字需要在伺服器內具備 Administrator 權限，卡池修改需 Bot owner。查詢與一般使用保持開放。JSON 寫入保留前一版 `.bak` 並原子替換，損壞資料會拒絕覆寫。
 
 下列模組預設關閉，只有管理者明確設定 `[cogs] extra` 後才載入：
 
@@ -96,6 +96,7 @@ Kamaitachi 帳號綁定需配置 A 原有 client 設定並顯式啟用 `chunithm
 extra = poopenguin.messages_cog, poopenguin.vote_cog, poopenguin.admin_cog
 ```
 
+- `scripture_cog` 使用原佩麗卡經文索引辨識聊天中的引文。啟用 `poopenguin.scripture_cog`，譯本、頻道及比對設定見 [Poopenguin 功能清單](docs/POOPENGUIN_FEATURES.md)。
 - `messages_cog`：關鍵字自動回應、重複訊息、指定頻道自動反應。已移除訊息內容日誌，文字指令不會重複觸發。
 - `vote_cog`、`admin_cog`：保留 vto／setvote、autoreact／autoban／setperms／lang；管理設定仍需原必要權限。B 原 `!sync` 管理入口已移除，統一使用 A 的 owner `!treesync`，避免與成績同步混淆。
 - `feed_cog`：Bluesky 追蹤與自動發訊，設定仍限 Manage Server；沒有預設追蹤帳號。

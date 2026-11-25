@@ -211,6 +211,7 @@ class PenguinViewMixin(Generic[ContextT]):
         from .dismiss import ensure_close
 
         ensure_close(self, self.ctx.author.id, ctx=self.ctx)
+        kwargs["allowed_mentions"] = discord.AllowedMentions.none()
         from .panel import bind_panel_message, private_message
 
         if private_message(getattr(self, "message", None)):
@@ -231,7 +232,6 @@ class PenguinViewMixin(Generic[ContextT]):
             await self.message.edit(
                 **kwargs,
                 view=self,  # pyright: ignore[reportArgumentType]
-                allowed_mentions=discord.AllowedMentions.none(),
             )
             return
 

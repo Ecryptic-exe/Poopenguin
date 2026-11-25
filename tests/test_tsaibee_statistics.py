@@ -1,3 +1,4 @@
+import asyncio
 import json
 from decimal import Decimal
 from types import SimpleNamespace
@@ -7,6 +8,7 @@ import pytest
 
 from chuni_penguin.services.tsaibee_statistics import (
     RANKS,
+    StatisticsUnavailable,
     TsaibeeStatistics,
     parse_statistics,
 )
@@ -76,6 +78,72 @@ async def test_post_contract_and_shared_cache_never_use_credentials():
     assert not result.source.stale
     await service.chart(45, "MAS")
     assert len(calls) == 2
+
+
+@pytest.mark.asyncio
+async def test_cached_cohorts_do_not_wait_for_request_pacing(monkeypatch):
+    waits = []
+    requests = []
+
+    async def record_wait(delay):
+        waits.append(delay)
+
+    def respond(request):
+        requests.append(request.url.path)
+        return httpx.Response(
+            200, json=ALL if request.url.path.endswith("lib-stat-song") else BANDS
+        )
+
+    monkeypatch.setattr(
+        "chuni_penguin.services.tsaibee_statistics.asyncio",
+        SimpleNamespace(sleep=record_wait, to_thread=asyncio.to_thread, Lock=asyncio.Lock),
+    )
+    service = TsaibeeStatistics(transport=httpx.MockTransport(respond))
+    first, second = await asyncio.gather(service.chart(45, "MAS"), service.chart(45, "MAS"))
+
+    assert first.bands == second.bands and len(second.bands) == 2
+    assert requests == ["/lib-stat-song", "/lib-stat-songr"]
+    assert waits == [0.25]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failed_endpoint", ["/lib-stat-song", "/lib-stat-songr"])
+async def test_source_failure_without_fallback_cools_down_then_recovers(
+    failed_endpoint, monkeypatch, tmp_path
+):
+    now = 1000.0
+    requests = []
+    monkeypatch.setattr(
+        "chuni_penguin.services.tsaibee_statistics.time",
+        SimpleNamespace(monotonic=lambda: now),
+    )
+
+    def respond(request):
+        nonlocal now
+        endpoint = request.url.path
+        requests.append(endpoint)
+        if endpoint == failed_endpoint and now == 1000.0:
+            # The cooldown starts when the failed request finishes.
+            now = 1010.0
+            return httpx.Response(503)
+        return httpx.Response(200, json=ALL if endpoint == "/lib-stat-song" else BANDS)
+
+    service = TsaibeeStatistics(
+        transport=httpx.MockTransport(respond), fallback=tmp_path
+    )
+    for now in (1000.0, 1309.0):
+        if failed_endpoint == "/lib-stat-song":
+            with pytest.raises(StatisticsUnavailable):
+                await service.chart(45, "MAS")
+        else:
+            partial = await service.chart(45, "MAS")
+            assert partial.overall.players == 1030 and not partial.bands
+
+    assert requests.count(failed_endpoint) == 1
+    now = 1310.0
+    recovered = await service.chart(45, "MAS")
+    assert recovered.overall.players == 1030 and len(recovered.bands) == 2
+    assert requests.count(failed_endpoint) == 2
 
 
 @pytest.mark.asyncio

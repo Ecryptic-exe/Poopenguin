@@ -1,73 +1,80 @@
+import asyncio
 import itertools
-from typing import TYPE_CHECKING, Any, AsyncContextManager, override
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, AsyncContextManager, override
 
 import discord.ui
 from discord.ext.commands import Context
 
-from chuni_penguin.ui import ScoreCardEmbed
-from chuni_penguin.utils.chunithm_i18n import get_chunithm_language
+from chuni_penguin.utils.chunithm_i18n import get_chunithm_language, ui_text
 
+from ._base import MessageKwargs
 from ._pagination import ListPageSource, PaginationView
+from .components.score_card_embed import ScoreCardEmbed
 
 if TYPE_CHECKING:
     from chuni_penguin.adapters.base import NetworkAdapter
     from chuni_penguin.types import Profile, RecentScore
 
 
-def split_scores_into_credits(
-    scores: list["RecentScore"],
-) -> list[list["RecentScore"]]:
-    if any(s.track_no is None for s in scores):
+def split_scores_into_credits(scores: list["RecentScore"]) -> list[list["RecentScore"]]:
+    if not scores or any(s.track_no is None for s in scores):
         return [list(c) for c in itertools.batched(scores, 3, strict=False)]
 
     credits = []
-    current_credit = [scores[0]]
-    last_track = scores[0].track_no
-
-    for score in scores[1:]:
+    current_credit = []
+    last_track = None
+    for score in scores:
         assert score.track_no is not None
-        assert last_track is not None
-
-        if score.track_no >= last_track:
+        if last_track is not None and score.track_no >= last_track:
             credits.append(current_credit)
             current_credit = []
         current_credit.append(score)
         last_track = score.track_no
-
-    if len(current_credit) > 0:
-        credits.append(current_credit)
-
+    credits.append(current_credit)
     return credits
 
 
 class RecentRecordsPageSource(ListPageSource[list["RecentScore"]]):
-    __slots__ = ("synthesis_alt_jacket",)
-
-    def __init__(
-        self,
-        credits: list[list["RecentScore"]],
-        *,
-        synthesis_alt_jacket: str | None = None,
-    ) -> None:
-        super().__init__(credits, per_page=1)
-
+    def __init__(self, pages, *, player, source, synthesis_alt_jacket):
+        super().__init__(pages, per_page=1)
+        self.player = discord.utils.escape_markdown(
+            discord.utils.escape_mentions(player), ignore_links=False
+        )
+        self.source = source
         self.synthesis_alt_jacket = synthesis_alt_jacket
 
-    @override
-    async def format_page(  # pyright: ignore[reportIncompatibleMethodOverride]
-        self, menu: "PaginationView", page: list[list["RecentScore"]]
-    ) -> dict[str, Any]:
-        scores = page[0]
-        embeds: list[discord.Embed] = [
-            ScoreCardEmbed(
-                s,
-                synthesis_alt_jacket=self.synthesis_alt_jacket,
-                language=get_chunithm_language(menu.ctx),
-            )
-            for s in scores
-        ]
+    def heading(self, ctx):
+        return f"**{ui_text(ctx, '最近遊玩')}** · {self.player} · {self.source}"
 
-        return {"embeds": embeds}
+    @override
+    async def format_page(
+        self, menu: "PaginationView", page: Sequence[list["RecentScore"]]
+    ) -> MessageKwargs:
+        if not page:
+            return {
+                "embed": discord.Embed(
+                    title=ui_text(menu.ctx, "最近遊玩"),
+                    description=ui_text(
+                        menu.ctx,
+                        "{0} 沒有回傳 {1} 的最近遊玩紀錄。",
+                        self.source,
+                        self.player,
+                    ),
+                )
+            }
+        language = get_chunithm_language(menu.ctx)
+        return {
+            "content": self.heading(language),
+            "embeds": [
+                ScoreCardEmbed(
+                    score,
+                    synthesis_alt_jacket=self.synthesis_alt_jacket,
+                    language=language,
+                )
+                for score in page[0]
+            ],
+        }
 
 
 class RecentRecordsView(PaginationView):
@@ -83,102 +90,141 @@ class RecentRecordsView(PaginationView):
     ):
         self.target_id = target_id
         self.scores = scores
-        self.credits = split_scores_into_credits(scores)
-
-        super().__init__(
-            ctx,
-            source=RecentRecordsPageSource(
-                self.credits, synthesis_alt_jacket=synthesis_alt_jacket
-            ),
-        )
-        self.add_item(self.dropdown)
-
         self.network_client = network_client
         self.network_client_manager: AsyncContextManager["NetworkAdapter"] | None = (
             network_client_manager
         )
-        self.userinfo = userinfo
-        self.synthesis_alt_jacket = synthesis_alt_jacket
+        self._network_lock = asyncio.Lock()
+        self._edit_lock = asyncio.Lock()
+        self._revision = 0
+        self._selected: int | None = None
+        self._details: dict[int, RecentScore] = {}
 
-        self._dropdown_options: list[list[discord.SelectOption]] = []
+        # Unusually long credits still fit the multi-embed message limits.
+        pages = [
+            list(group)
+            for credit in split_scores_into_credits(scores)
+            for group in itertools.batched(credit, 3, strict=False)
+        ]
+        source = RecentRecordsPageSource(
+            pages,
+            player=userinfo.username,
+            source=network_client.NAME,
+            synthesis_alt_jacket=synthesis_alt_jacket,
+        )
+        super().__init__(ctx, source)
 
-        score_idx = 0
-
-        for scores in self.credits:
-            options: list[discord.SelectOption] = []
-
-            for idx, score in enumerate(scores):
+        self._options: list[list[discord.SelectOption]] = []
+        position = 0
+        for page in pages:
+            options = []
+            for play in page:
+                label = " ".join(play.song.title.split()) or str(play.chart.difficulty)
                 options.append(
                     discord.SelectOption(
-                        label=f"{score.track_no or idx + 1}. {score.song.title} - {score.chart.difficulty}",
-                        value=f"{score_idx}",
+                        label=label if len(label) <= 100 else label[:99] + "…",
+                        description=f"{play.chart.difficulty} · {play.score:,}",
+                        value=str(position),
                     )
                 )
-                score_idx += 1
-
-            self._dropdown_options.append(options)
-
-        self.dropdown.options = (
-            self._dropdown_options[0] if len(self._dropdown_options) > 0 else []
-        )
+                position += 1
+            self._options.append(options)
+        if pages:
+            self.dropdown.placeholder = ui_text(ctx, "選擇一筆遊玩查看詳情")
+            self.dropdown.options = self._options[0]
+            self.back_to_plays.label = ui_text(ctx, "返回本頁紀錄")
+            self.add_item(self.dropdown)
+            self.add_item(self.back_to_plays)
 
     async def _before_start(self, *, content: str | None = None):
-        if not self.network_client.SUPPORTS_DETAILED_RECENT_SCORE:
+        if not self.scores or not self.network_client.SUPPORTS_DETAILED_RECENT_SCORE:
             await self.close_network()
-
         return await super()._before_start(content=content)
 
     async def show_page(self, interaction: discord.Interaction, page_index: int):
-        self.dropdown.options = self._dropdown_options[page_index]
-        return await super().show_page(interaction, page_index)
+        self._revision += 1
+        revision = self._revision
+        self._selected = None
+        if not interaction.response.is_done():
+            await interaction.response.defer()
+        async with self._edit_lock:
+            if revision != self._revision:
+                return
+            self.dropdown.options = self._options[page_index]
+            for option in self.dropdown.options:
+                option.default = False
+            self.back_to_plays.disabled = True
+            await super().show_page(interaction, page_index)
 
     async def on_timeout(self):
+        self._revision += 1
         await self.close_network()
-
-        return await super().on_timeout()
+        async with self._edit_lock:
+            await super().on_timeout()
 
     async def close_network(self) -> None:
-        manager, self.network_client_manager = self.network_client_manager, None
-        if manager is not None:
-            await manager.__aexit__(None, None, None)
+        async with self._network_lock:
+            manager, self.network_client_manager = self.network_client_manager, None
+            if manager is not None:
+                await manager.__aexit__(None, None, None)
 
-    @discord.ui.select(placeholder="View details of...", row=2)
+    @discord.ui.button(label="Back to plays", row=4, disabled=True)
+    async def back_to_plays(
+        self, interaction: discord.Interaction, _: discord.ui.Button
+    ):
+        await self.show_page(interaction, self.current_page)
+
+    @discord.ui.select(placeholder="Select a play", row=2)
     async def dropdown(
         self, interaction: discord.Interaction, select: discord.ui.Select
     ):
-        if not isinstance(interaction.channel, discord.abc.Messageable):
-            return
-
-        await interaction.response.defer()
-
         idx = int(select.values[0])
+        if idx == self._selected or not any(
+            option.value == str(idx) for option in self.dropdown.options
+        ):
+            await interaction.response.defer()
+            return
+        self._selected = idx
+        self._revision += 1
+        revision = self._revision
+        await interaction.response.defer()
+        try:
+            async with self._network_lock:
+                if revision != self._revision:
+                    return
+                if (
+                    self.network_client.SUPPORTS_DETAILED_RECENT_SCORE
+                    and idx not in self._details
+                ):
+                    if self.network_client_manager is None:
+                        return
+                    self._details[
+                        idx
+                    ] = await self.network_client.get_detailed_recent_score(
+                        self.scores[idx]
+                    )
+                score = self._details.get(idx, self.scores[idx])
 
-        if self.network_client.SUPPORTS_DETAILED_RECENT_SCORE:
-            score = await self.network_client.get_detailed_recent_score(
-                self.scores[idx]
-            )
-        else:
-            score = self.scores[idx]
-
-        if interaction.message is not None:
-            await self.edit_message(
-                interaction,
-                content=f"Score of {self.userinfo.username}",
-                embed=ScoreCardEmbed(
-                    score,
-                    synthesis_alt_jacket=self.synthesis_alt_jacket,
-                    detailed=True,
-                    language=get_chunithm_language(interaction),
-                ),
-            )
-        else:
-            await interaction.channel.send(
-                content=f"Score of {self.userinfo.username}",
-                embed=ScoreCardEmbed(
-                    score,
-                    synthesis_alt_jacket=self.synthesis_alt_jacket,
-                    detailed=True,
-                    language=get_chunithm_language(interaction),
-                ),
-                view=self,
-            )
+            async with self._edit_lock:
+                if revision != self._revision or getattr(
+                    self, "_panel_inactive", False
+                ):
+                    return
+                for option in self.dropdown.options:
+                    option.default = option.value == str(idx)
+                self.back_to_plays.disabled = False
+                assert isinstance(self.source, RecentRecordsPageSource)
+                await self.edit_message(
+                    interaction,
+                    content=self.source.heading(self.ctx),
+                    embed=ScoreCardEmbed(
+                        score,
+                        synthesis_alt_jacket=self.source.synthesis_alt_jacket,
+                        detailed=True,
+                        language=get_chunithm_language(self.ctx),
+                    ),
+                )
+        except Exception:
+            if revision == self._revision:
+                self._selected = None
+                raise

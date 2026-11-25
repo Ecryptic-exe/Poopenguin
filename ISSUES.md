@@ -1,5 +1,11 @@
 # Engineering constraints and resolutions
 
+## CHUNILIB statistics delayed cached reads and retried failed sources per view
+
+The Song card reloads statistics when changing pages. Each MASTER or ULTIMA read waited 250 ms inside the shared service lock, including reads that used cached data. A source failure followed by a missing or invalid backup returned before recording a retry time, so the next card tried the same endpoint again.
+
+`TsaibeeStatistics` now paces outgoing cohort requests and remembers unavailability per endpoint and difficulty for up to five minutes. A failed cohort request still allows overall counts to display. Existing stale data keeps its original timestamp. Regression tests in `tests/test_tsaibee_statistics.py` exercise concurrent cache reads and recovery from both overall and cohort failures with synthetic HTTP responses.
+
 ## Clean checkout omitted the reviewed annotation baseline
 
 **Problem**

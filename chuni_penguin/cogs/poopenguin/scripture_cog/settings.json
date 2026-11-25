@@ -1,0 +1,8 @@
+{
+  "channel_ids": [],
+  "editions": ["editions/cuvt.jsonl", "editions/occb-t.jsonl", "editions/web.jsonl"],
+  "blocked_phrases": [],
+  "match_mode": "bm25",
+  "match_threshold": 0.85,
+  "aliases": {}
+}

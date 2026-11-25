@@ -21,6 +21,7 @@ class ScoreCardEmbed(discord.Embed):
         record: Score,
         *,
         show_lamps: bool = True,
+        clear_reported: bool = True,
         index: int | None = None,
         synthesis_alt_jacket: str | None = None,
         detailed: bool = False,
@@ -34,13 +35,19 @@ class ScoreCardEmbed(discord.Embed):
         if record.song.id == 2698:
             if synthesis_alt_jacket == "none":
                 self.set_thumbnail(url=None)
-            elif synthesis_alt_jacket != "default" and config.web.serve_assets:
+            elif (
+                synthesis_alt_jacket not in (None, "default")
+                and config.web.serve_assets
+                and config.web.is_accessible
+            ):
                 self.set_thumbnail(
                     url=f"{config.web.base_url}/assets/jackets/2698_{synthesis_alt_jacket}.webp"
                 )
 
         if show_lamps:
-            lamps: list[ChainLamp | ClearLamp | ComboLamp] = [record.clear_lamp]
+            lamps: list[ChainLamp | ClearLamp | ComboLamp] = (
+                [record.clear_lamp] if clear_reported else []
+            )
 
             if (
                 record.combo_lamp != ComboLamp.none
@@ -61,9 +68,13 @@ class ScoreCardEmbed(discord.Embed):
             else:
                 lamps_str = [str(x) for x in lamps]
 
-            score_data = f"▸ {config.icons.rank_icon(record.rank)} ▸ {' / '.join(lamps_str)} ▸ {record.score}"
+            achievements = " / ".join(lamps_str)
         else:
-            score_data = f"▸ {config.icons.rank_icon(record.rank)} ▸ {record.score}"
+            achievements = ""
+
+        score_data = f"**{record.score:,}** · {config.icons.rank_icon(record.rank)}"
+        if achievements:
+            score_data += f" · {achievements}"
 
         footer_sections = []
         if (
@@ -79,6 +90,7 @@ class ScoreCardEmbed(discord.Embed):
             record.chart.difficulty != Difficulty.worlds_end
             and (play_overpower := record.overpower) is not None
             and (overpower_max := record.chart.max_overpower) is not None
+            and overpower_max > 0
         ):
             play_op_display = f"{play_overpower} ({floor_to_ndp(play_overpower / overpower_max * 100, 2)}%)"
 
@@ -87,10 +99,11 @@ class ScoreCardEmbed(discord.Embed):
         if isinstance(record, PersonalBest) and record.play_count is not None:
             footer_sections.append(ui_text(language, "遊玩次數 {0}", record.play_count))
 
-        self.set_footer(text="  •  ".join(footer_sections))
-
         if isinstance(record, PersonalBest) and record.ajc_count is not None:
-            score_data += "\n▸ " + ui_text(language, "AJC 次數：{0}", record.ajc_count)
+            footer_sections.append(ui_text(language, "AJC 次數：{0}", record.ajc_count))
+
+        if footer_sections:
+            self.set_footer(text=" · ".join(footer_sections))
 
         total_combo = record.chart.max_combo
 
@@ -135,7 +148,7 @@ class ScoreCardEmbed(discord.Embed):
                     loss_miss = None
 
                 self.add_field(
-                    name="\u200b",
+                    name=ui_text(language, "判定明細"),
                     value=(
                         f"CRITICAL {record.judgements.justice_critical}\n"
                         f"JUSTICE {record.judgements.justice}{f' (-{loss_justice // 100}.{loss_justice % 100:02})' if loss_justice else ''}\n"
@@ -149,7 +162,7 @@ class ScoreCardEmbed(discord.Embed):
                 assert record.note_percentage is not None
 
                 self.add_field(
-                    name="\u200b",
+                    name=ui_text(language, "音符達成率"),
                     value=(
                         f"TAP {record.note_percentage.tap:.2f}%\n"
                         f"HOLD {record.note_percentage.hold:.2f}%\n"
@@ -173,16 +186,18 @@ class ScoreCardEmbed(discord.Embed):
                 self.set_author(name=f"TRACK {record.track_no}")
 
             self.description = (
-                f"**{escape_markdown(record.song.title)} [{_displayed_difficulty(record)}]**\n"
+                f"**{escape_markdown(record.song.title)[:220]} [{_displayed_difficulty(record)[:30]}]**\n"
                 "\n"
                 f"{score_data}"
             )
         else:
-            name = f"{record.song.title} [{_displayed_difficulty(record)}]"
-            if index is not None:
-                name = f"{index}. {name}"
-
-            self.set_author(name=name)
+            prefix = f"{index}. " if index is not None else ""
+            suffix = f" [{_displayed_difficulty(record)[:30]}]"
+            self.set_author(
+                name=prefix
+                + record.song.title[: 256 - len(prefix) - len(suffix)]
+                + suffix
+            )
             self.description = score_data
 
 
@@ -191,8 +206,29 @@ def _displayed_difficulty(record: Score) -> str:
     level = record.chart.level
     internal_level = record.chart.internal_level
 
-    if internal_level:
+    if internal_level is not None and difficulty != Difficulty.worlds_end:
         return f"{difficulty} {internal_level}"
     if level != "0" and level:
         return f"{difficulty} {level}"
     return f"{difficulty}"
+
+
+def source_score_embed(ctx, row, source: str) -> discord.Embed:
+    """Show a search result from its own source, including unmapped snapshot rows."""
+    if "record" in row:
+        embed = ScoreCardEmbed(row["record"], language=get_chunithm_language(ctx))
+    else:
+        difficulty = Difficulty(row["diff"])
+        embed = discord.Embed(
+            title=discord.utils.escape_mentions(row["title"])[:256],
+            color=difficulty.color(),
+            description=f"**{row['score']:,}** · {difficulty.name}",
+        )
+        embed.set_author(name=ctx.author.display_name[:256])
+    footer = [source]
+    if "id" in row:
+        footer.append(ui_text(ctx, "來源 ID {0}", row["id"]))
+    if embed.footer.text:
+        footer.append(embed.footer.text)
+    embed.set_footer(text=" · ".join(footer)[:2048])
+    return embed
